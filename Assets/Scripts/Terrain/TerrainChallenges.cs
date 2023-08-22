@@ -128,7 +128,7 @@ public class TerrainChallenges : MonoBehaviour
         {
             IntensityStart();
         }
-        Debug.Log("intensity: " + intensityCurrent + " - coinsAcc: " + coinsAcc + " - hazardAcc: " + hazardAcc);
+        //Debug.Log("intensity: " + intensityCurrent + " - coinsAcc: " + coinsAcc + " - hazardAcc: " + hazardAcc);
     }
 
     // have hazards accumulated, set up spawning
@@ -142,8 +142,6 @@ public class TerrainChallenges : MonoBehaviour
             coinCurrentX = coinTargetX;
         else
             coinCurrentX = Random.Range(challengeXMin, challengeXMax);
-
-        Debug.Log("Spawning " + hazardsLeft + " hazards");
     }
 
     // have coins accumulated, set up a coin chain to start spawning them
@@ -179,8 +177,6 @@ public class TerrainChallenges : MonoBehaviour
             // go in a straight line
             coinTargetX = coinCurrentX;
         }
-
-        Debug.Log("Spawning " + coinsLeft + " coins");
     }
 
     // place a single coin in the current coin chain
@@ -338,8 +334,6 @@ public class TerrainChallenges : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log("next Z: " + coinNextZ);
 
         if (coinsActive.Count > 0)
         {

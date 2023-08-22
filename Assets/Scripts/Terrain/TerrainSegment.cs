@@ -19,6 +19,7 @@ public class TerrainSegment : MonoBehaviour
     [SerializeField] private float scatterXMax = 10f;
     [SerializeField] private float scatterY = 0.5f;
     [SerializeField] private GameObject[] borderOptions; // trees or other objects that can be arrayed along the edge of the terrain
+    [SerializeField] private GameObject[] borderDecorOptions; // scatter that should be restricted to the border
     [SerializeField] private int borderMin = 3; // minimum and maximum border per segment EACH SIDE
     [SerializeField] private int borderMax = 6;
     [SerializeField] private float borderXMin = 5f; // the minimum and maximum X values of border objects
@@ -59,6 +60,15 @@ public class TerrainSegment : MonoBehaviour
             decor.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
             decor.transform.localPosition = pos;
         }
+        // place right border decor
+        for (int i = 0; i < Random.Range(borderMin, borderMax); i++)
+        {
+            pos.x = Random.Range(borderXMin, borderXMax);
+            pos.z = Random.Range(decorZMin, decorZMax);
+            decor = Instantiate(borderDecorOptions[Random.Range(0, borderDecorOptions.Length)], transform);
+            decor.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            decor.transform.localPosition = pos;
+        }
 
         // place left border
         for (int i = 0; i < Random.Range(borderMin, borderMax); i++)
@@ -66,6 +76,15 @@ public class TerrainSegment : MonoBehaviour
             pos.x = -Random.Range(borderXMin, borderXMax);
             pos.z = Random.Range(decorZMin, decorZMax);
             decor = Instantiate(borderOptions[Random.Range(0, borderOptions.Length)], transform);
+            decor.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            decor.transform.localPosition = pos;
+        }
+        // place left border decor
+        for (int i = 0; i < Random.Range(borderMin, borderMax); i++)
+        {
+            pos.x = -Random.Range(borderXMin, borderXMax);
+            pos.z = Random.Range(decorZMin, decorZMax);
+            decor = Instantiate(borderDecorOptions[Random.Range(0, borderDecorOptions.Length)], transform);
             decor.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
             decor.transform.localPosition = pos;
         }
