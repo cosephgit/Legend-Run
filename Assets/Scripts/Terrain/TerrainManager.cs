@@ -15,6 +15,8 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private float terrainGap = 20f;
     [SerializeField] private float terrainDisappear = -10f;
     [SerializeField] private float circleRadius = 100f; // the radius of the track circle
+    [Header("Music")]
+    [SerializeField] private AudioClip music;
     private List<TerrainSegment> terrain; // a list of all existing terrain, from furthest back (lowest index) to furthest forward (highest index)
     private float terrainSpeed;
     private float degreesPerSegment; // the number of degrees between each segment
@@ -36,6 +38,7 @@ public class TerrainManager : MonoBehaviour
     private void Start()
     {
         terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainMax, 0f, 0f));
+        AudioManager.instance.MusicPlay(music);
     }
 
     // add the next terrain segment at the end of the track (circular track version)

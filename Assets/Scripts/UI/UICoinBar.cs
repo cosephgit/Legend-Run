@@ -11,6 +11,7 @@ public class UICoinBar : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI counter;
     [SerializeField] private float updateTime = 0.1f; // time between counter updates
+    [SerializeField] private AudioClip updatePip;
     private int coinsCurrent;
     private int coinsDisplay;
     private float updateNext;
@@ -45,22 +46,17 @@ public class UICoinBar : MonoBehaviour
 
                 if (loss) difference = -difference;
 
-                Debug.Log("Difference actual " + difference + " log(difference)" + Mathf.Log10(difference));
-
                 int exponent = Mathf.FloorToInt(Mathf.Log10(difference));
                 int coefficient = Mathf.FloorToInt(difference / Mathf.Pow(10f, exponent));
 
-                Debug.Log("coinsCurrent " + coinsCurrent + " coinsDisplay " + coinsDisplay + " exponent " + exponent + " coefficient " + coefficient);
-
                 if (coefficient > 5)
                     change = 5;
-
-                Debug.Log("change original " + change + " change adjusted " + Mathf.FloorToInt(change * Mathf.Pow(10, exponent)));
 
                 change = Mathf.FloorToInt(change * Mathf.Pow(10, exponent));
 
                 coinsDisplay += (loss ? -1 : 1) * change;
 
+                AudioManager.instance.SoundPlayEven(updatePip, Vector2.zero, 0.3f);
                 DisplayCoins();
 
                 updateNext = updateTime;

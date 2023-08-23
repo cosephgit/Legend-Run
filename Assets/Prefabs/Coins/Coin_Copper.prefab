@@ -67,6 +67,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8611083aa9cc9704384638c3a6ca81e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  degreesPerSec: 360
+  coinSound:
+  - {fileID: 8300000, guid: e66c05008dfd54b65a39750fb4ca35be, type: 3}
+  - {fileID: 8300000, guid: 3cd33786ea8c04c65a99918066a87684, type: 3}
+  - {fileID: 8300000, guid: 7b34a1c3f2d86478f8ece94c4c46c8dd, type: 3}
+  - {fileID: 8300000, guid: a6b96b8ff0a354589a034b674322e457, type: 3}
+  - {fileID: 8300000, guid: 6663bacc2a6d846cda16feed5740b544, type: 3}
 --- !u!1001 &6920899371420878090
 PrefabInstance:
   m_ObjectHideFlags: 0

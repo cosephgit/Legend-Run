@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // HazardBase
@@ -10,17 +11,21 @@ using UnityEngine;
 public class HazardBase : MonoBehaviour
 {
     [SerializeField] private Animator hazardAnim;
+    [SerializeField] private AudioClip[] hazardSound;
     [field: SerializeField] public bool awake { get; private set; } = true;
 
     public void Collided()
     {
         if (awake)
         {
-            Debug.Log("Bear go ROAR");
             if (CoSephUtils.RandomBool())
                 hazardAnim.SetTrigger("Attack3");
             else
                 hazardAnim.SetTrigger("Attack5");
+
+            if (hazardSound.Length > 0)
+                AudioManager.instance.SoundPlayVaried(hazardSound[Random.Range(0, hazardSound.Length)], transform.position);
+
             awake = false;
         }
     }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4159889538133082841}
   - component: {fileID: 5191626444639089536}
   - component: {fileID: 6432021030971637623}
+  - component: {fileID: 2994394899652238338}
   - component: {fileID: 586785414972877838}
   - component: {fileID: 1935911330034546034}
   m_Layer: 0
@@ -51,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pawnHealth: {fileID: 5191626444639089536}
   pawnLoco: {fileID: 6432021030971637623}
+  pawnPurse: {fileID: 2994394899652238338}
   terrain: {fileID: 0}
   minX: -3
   maxX: 3
@@ -68,6 +70,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 267036c5840afab458c5e21c6872b3d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthMax: 5
+  healthBar: {fileID: 0}
+  painSounds:
+  - {fileID: 8300000, guid: 6c59dbffd27b58c49885406956de3c9f, type: 3}
+  - {fileID: 8300000, guid: 9272b4fc0cf39f24f9d83d0d82049fd9, type: 3}
+  - {fileID: 8300000, guid: 17b15cb8cbd5e7c44a504109467a2413, type: 3}
 --- !u!114 &6432021030971637623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,8 +88,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a359cfa577ab6c149899094f1dc7c560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pawnAnim: {fileID: 8505033852671847580}
+  <pawnAnim>k__BackingField: {fileID: 8505033852671847580}
   <moveRate>k__BackingField: 6
+--- !u!114 &2994394899652238338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693126819496428363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa30a94048c29cb4798875fcdc6f1c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinBar: {fileID: 0}
 --- !u!136 &586785414972877838
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -163,6 +163,26 @@ PrefabInstance:
       propertyPath: hazardAnim
       value: 
       objectReference: {fileID: 3145440774971490518}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSound.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSound.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 182d805475db82d44b0ee6a3f091ddeb, type: 3}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSound.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 08f64512c677e3a48b4a2c81212c8ac6, type: 3}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSound.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 4a1616db1b6b90f4ba4b038d602fdea1, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

@@ -10,11 +10,14 @@ using UnityEngine;
 public class CollectibleCoin : MonoBehaviour
 {
     [SerializeField] private float degreesPerSec = 360f; // how quickly the coin rotates
+    [SerializeField] private AudioClip[] coinSound;
 
     public void Collected()
     {
-        Debug.Log("collected");
         Destroy(gameObject);
+
+        if (coinSound.Length > 0)
+            AudioManager.instance.SoundPlayVaried(coinSound[Random.Range(0, coinSound.Length)], transform.position);
     }
 
     private void Update()
