@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // player coin manager component
-// created 18/8/23
+// created 23/8/23
 // last modified 23/8/23
 
 public class PlayerPawnPurse : MonoBehaviour

@@ -5,9 +5,9 @@ using TMPro;
 
 // shows the current coin count of the player
 // created 22/8/23
-// last modified 22/8/23
+// last modified 23/8/23
 
-public class UICoinBar : MonoBehaviour
+public class UICoinBar : UIBase
 {
     [SerializeField] private TextMeshProUGUI counter;
     [SerializeField] private float updateTime = 0.1f; // time between counter updates
@@ -30,8 +30,9 @@ public class UICoinBar : MonoBehaviour
         if (force) DisplayCoins();
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         if (coinsCurrent != coinsDisplay)
         {
             if (updateNext > 0)
@@ -56,6 +57,7 @@ public class UICoinBar : MonoBehaviour
 
                 coinsDisplay += (loss ? -1 : 1) * change;
 
+                AddShake(0.5f);
                 AudioManager.instance.SoundPlayEven(updatePip, Vector2.zero, 0.3f);
                 DisplayCoins();
 

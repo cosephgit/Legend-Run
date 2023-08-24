@@ -6,10 +6,10 @@ using UnityEngine.UI;
 // UIHealthBar
 // updates the player's health bar
 // created 22/8/23
-// last modified 22/8/23
+// last modified 23/8/23
 
 
-public class UIHealthBar : MonoBehaviour
+public class UIHealthBar : UIBase
 {
     [SerializeField] private Slider healthFadeSlider; // the fade to show health loss
     [SerializeField] private Slider healthActualSlider; // the actual health level
@@ -33,10 +33,12 @@ public class UIHealthBar : MonoBehaviour
         }
         healthActual = health;
         healthActualSlider.value = health;
+        if (!forcefill) AddShake(4f);
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         if (healthFade > healthActual)
         {
             healthFade = Mathf.Max(healthFade - (Time.deltaTime * healthFadePerSecond), healthActual);

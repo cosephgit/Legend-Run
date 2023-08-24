@@ -33,11 +33,11 @@ using UnityEngine.PlayerLoop;
 
 public class TerrainChallenges : MonoBehaviour
 {
-    [SerializeField] private float challengeXMin = -4f;
-    [SerializeField] private float challengeXMax = 4f;
-    [SerializeField] private float challengeZRemoval = -10f;
+    [SerializeField] private float challengeXMin = -2.5f;
+    [SerializeField] private float challengeXMax = 2.5f;
+    [SerializeField] private float challengeZRemoval = -1f;
     [Header("Coins")]
-    [SerializeField] private GameObject[] coins; // coins to spawn - TODO make a custom class with value by coin type
+    [SerializeField] private CollectibleCoin[] coins; // coins to spawn - TODO make a custom class with value by coin type
     [SerializeField] private float coinsPerDistanceBase = 0.2f; // the number of coins spawned for each unit of distance per point of difficulty
     [SerializeField] private float coinsPerDistancePerDifficulty = 0.1f; // the number of coins spawned for each unit of distance per point of difficulty
     [SerializeField] private int coinsMin = 5; // minimum number of coins appearing in one stretch
@@ -49,7 +49,7 @@ public class TerrainChallenges : MonoBehaviour
     [SerializeField] private float coinAngledXMax = 4f; // the minimum x offset for an angled run of coins
     [SerializeField] private float coinRunGap = 5f; // the minimum gap between two runs of coins
     [Header("hazards")]
-    [SerializeField] private GameObject[] hazards; // hazards to spawn - TODO make a custom class with danger by hazard type
+    [SerializeField] private HazardBase[] hazards; // hazards to spawn - TODO make a custom class with danger by hazard type
     [SerializeField] private float hazardPerDistanceBase = 0f; // the number of hazards spawned for each unit of distance per point of difficulty
     [SerializeField] private float hazardPerDistancePerDifficulty = 0.05f; // the number of hazards spawned for each unit of distance per point of difficulty
     [SerializeField] private int hazardMin = 1;
@@ -77,14 +77,16 @@ public class TerrainChallenges : MonoBehaviour
     private float intensityTarget; // the target intensity level before the next intensity shift
     private float intensityChangeZ; // z movement before the next shift in intensity
     // object records
-    private List<GameObject> coinsActive;
-    private List<GameObject> hazardsActive;
+    private List<CollectibleCoin> coinsActive;
+    private List<HazardBase> hazardsActive;
 
     private void Awake()
     {
         SetDifficulty(0f);
-        coinsActive = new List<GameObject>();
-        hazardsActive = new List<GameObject>();
+        coinsActive = new List<CollectibleCoin>();
+        hazardsActive = new List<HazardBase>();
+        coinsAcc = 0f;
+        hazardAcc = -1f; // ensure coins always appear first before any hazards
     }
     // initialise the terrainchallenges with the parameters from the main terrain manager
     // circleheight is the size of the rotating circle track (for positioning) and the rotation of the origin point (the furthest terrain that is out of sight)
@@ -183,7 +185,7 @@ public class TerrainChallenges : MonoBehaviour
     private void PlaceCoin()
     {
         Vector3 pos = transform.position + baseRot * new Vector3(coinCurrentX, baseHeight + coinHeight, 0f);
-        GameObject coin = Instantiate(coins[0], pos, baseRot, transform);
+        CollectibleCoin coin = Instantiate(coins[0], pos, baseRot, transform);
 
         coinsLeft--;
         coinsActive.Add(coin);
@@ -252,7 +254,7 @@ public class TerrainChallenges : MonoBehaviour
         for (int i = 0; i < hazardsLeft; i++)
         {
             Vector3 pos = transform.position + baseRot * new Vector3(hazardX[i], baseHeight, 0f);
-            GameObject hazard = Instantiate(hazards[0], pos, baseRot, transform);
+            HazardBase hazard = Instantiate(hazards[0], pos, baseRot, transform);
             hazardsActive.Add(hazard);
             hazardAcc--;
         }
@@ -341,14 +343,14 @@ public class TerrainChallenges : MonoBehaviour
             {
                 if (coinsActive[0].transform.position.z < challengeZRemoval)
                 {
-                    Destroy(coinsActive[0]);
+                    coinsActive[0].Remove();
                     coinsActive.RemoveAt(0);
                 }
             }
             else
             {
                 // TODO do this properly
-                // remove a deleted coin
+                // remove a coin that has been deleted
                 coinsActive.RemoveAt(0);
             }
         }

@@ -574,6 +574,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5479698b1dc884cb9193cd0aa4c7ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shakeDrag: 0.4
+  shakeDamping: 1
   healthFadeSlider: {fileID: 1948484288}
   healthActualSlider: {fileID: 1977801633}
   healthFillSlider: {fileID: 639669999}
@@ -1464,9 +1466,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   challengeXMin: -2.5
   challengeXMax: 2.5
-  challengeZRemoval: -10
+  challengeZRemoval: -1
   coins:
-  - {fileID: 8831477073994523258, guid: af85708e890cc24418e4049817d57c21, type: 3}
+  - {fileID: 2205523457048140323, guid: af85708e890cc24418e4049817d57c21, type: 3}
   coinsPerDistanceBase: 0.2
   coinsPerDistancePerDifficulty: 0.1
   coinsMin: 5
@@ -1478,7 +1480,7 @@ MonoBehaviour:
   coinAngledXMax: 3
   coinRunGap: 10
   hazards:
-  - {fileID: 6945374522587595434, guid: 72b1fd698fad90b4bbf2315bb95846b4, type: 3}
+  - {fileID: 754630004767667496, guid: 72b1fd698fad90b4bbf2315bb95846b4, type: 3}
   hazardPerDistanceBase: 0.02
   hazardPerDistancePerDifficulty: 0.05
   hazardMin: 1
@@ -1650,6 +1652,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62382bc5e59c84c4b8d2627c67a29cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shakeDrag: 0.4
+  shakeDamping: 1
   counter: {fileID: 1006058419}
   updateTime: 0.2
   updatePip: {fileID: 8300000, guid: 3620262c4c46f684ea65274f334991c4, type: 3}
@@ -2282,6 +2286,56 @@ PrefabInstance:
       propertyPath: healthBar
       value: 
       objectReference: {fileID: 684465668}
+    - target: {fileID: 6432021030971637623, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: jumpHeight
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6432021030971637623, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: jumpGravity
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7093847
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7047212
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.011810517
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0014070747
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -91.136
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 109.013
+      objectReference: {fileID: 0}
+    - target: {fileID: 8593546475151206520, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -109.856
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599442992248454260, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

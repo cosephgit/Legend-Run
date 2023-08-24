@@ -24,4 +24,9 @@ public class CollectibleCoin : MonoBehaviour
     {
         transform.Rotate(0f, degreesPerSec * Time.deltaTime, 0f);
     }
+
+    public void Remove()
+    {
+        Destroy(gameObject);
+    }
 }

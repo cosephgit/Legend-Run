@@ -168,8 +168,8 @@ MonoBehaviour:
   wallOptions:
   - {fileID: 1855710351377478, guid: 5c9211eb71cff4f4996a21d92317f601, type: 3}
   - {fileID: 1694894201118028, guid: 6dcae7204dd466c4c862bc640ea7c02e, type: 3}
-  wallY: -25
+  wallY: -10
   wallZSpaceMin: 0
   wallZSpaceMax: 0
-  wallXMin: 40
-  wallXMax: 50
+  wallXMin: 30
+  wallXMax: 40
