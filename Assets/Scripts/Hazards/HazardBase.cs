@@ -29,4 +29,9 @@ public class HazardBase : MonoBehaviour
             awake = false;
         }
     }
+
+    public void Remove()
+    {
+        Destroy(gameObject);
+    }
 }

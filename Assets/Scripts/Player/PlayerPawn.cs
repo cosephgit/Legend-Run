@@ -4,7 +4,7 @@ using UnityEngine;
 
 // takes player input and moves the player pawn depending on input
 // created 18/8/23
-// last modified 18/8/23
+// last modified 24/8/23
 
 public class PlayerPawn : MonoBehaviour
 {
@@ -12,7 +12,9 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private PlayerPawnHealth pawnHealth;
     [SerializeField] private PlayerPawnLoco pawnLoco;
     [SerializeField] private PlayerPawnPurse pawnPurse;
+    [SerializeField] private PlayerWeapon pawnWeapon;
     [SerializeField] private TerrainManager terrain;
+    [SerializeField] private UIPointer pointer;
     [Header("Movement parameters")]
     [SerializeField] private float minX = -4f;
     [SerializeField] private float maxX = 4f;
@@ -33,34 +35,46 @@ public class PlayerPawn : MonoBehaviour
         speed = 0;
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        OnTriggerEnter(other);
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         CollectibleCoin coin = other.gameObject.GetComponent<CollectibleCoin>();
 
         if (coin)
         {
-            // have run into a coin, collect it!
-            coin.Collected();
-            pawnPurse.AddCoins(1);
+            if (coin.unused)
+            {
+                // have run into a coin, collect it!
+                pawnPurse.AddCoins(coin.coinValue);
+                coin.Collected();
+            }
         }
         else
         {
-            HazardBase hazard = other.gameObject.GetComponent<HazardBase>();
+            CollectibleWeapon weapon = other.gameObject.GetComponent<CollectibleWeapon>();
 
-            if (hazard && hazard.awake)
+            if (weapon)
             {
-                if (!pawnLoco.jumping)
+                if (weapon.unused)
                 {
-                    // have run into a hazard!
-                    hazard.Collided();
-                    pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
-                    speed = 0f;
-                    pawnHealth.TakeDamage(1f);
+                    Debug.Log("weapon found");
+                    pawnWeapon.GetWeapon(weapon);
+                    weapon.Collected();
+                }
+            }
+            else
+            {
+                HazardBase hazard = other.gameObject.GetComponent<HazardBase>();
+
+                if (hazard && hazard.awake)
+                {
+                    if (!pawnLoco.jumping)
+                    {
+                        // have run into a hazard!
+                        hazard.Collided();
+                        pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
+                        speed = 0f;
+                        pawnHealth.TakeDamage(1f);
+                    }
                 }
             }
         }
@@ -73,6 +87,8 @@ public class PlayerPawn : MonoBehaviour
         float touchX = (Mathf.Clamp(touchPos.x / Screen.width, screenActiveXMin, screenActiveXMax) - screenActiveXMin) / (screenActiveXMax - screenActiveXMin);
         float touchY = touchPos.y / Screen.height;
 
+        pointer.ShowPointer(touchPos);
+
         // convert the touch inside the main area to a movement position
         pawnTargetX = minX + (maxX - minX) * touchX;
         pawnLoco.SetMoveTarget(pawnTargetX);
@@ -80,12 +96,8 @@ public class PlayerPawn : MonoBehaviour
         if (touchY > screenJumpY)
         {
             // jump input received
-            Debug.Log("Jump!");
             if (!jumpHeld)
-            {
-                jumpHeld = true;
-                pawnLoco.StartJump();
-            }
+                jumpHeld = pawnLoco.StartJump();
         }
         else
             jumpHeld = false;
@@ -113,15 +125,16 @@ public class PlayerPawn : MonoBehaviour
         else
         {
             // temp for testing
-            pawnTargetX = Mathf.Clamp(transform.position.x + (Input.GetAxis("Horizontal") * pawnLoco.moveRate * Time.deltaTime), minX, maxX);
-            pawnLoco.SetMoveTarget(pawnTargetX);
-
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                pawnTargetX = Mathf.Clamp(transform.position.x + (Input.GetAxis("Horizontal") * pawnLoco.moveRate * Time.deltaTime), minX, maxX);
+                pawnLoco.SetMoveTarget(pawnTargetX);
+            }
             if (Input.GetButton("Jump"))
             {
                 if (!jumpHeld)
                 {
-                    jumpHeld = true;
-                    pawnLoco.StartJump();
+                    jumpHeld = pawnLoco.StartJump();
                 }
             }
             else

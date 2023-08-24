@@ -9,7 +9,7 @@ using UnityEngine.PlayerLoop;
 // this class manages the challenges in the game - collectibles, bonuses, and hazards
 // this is procedurally generated with a number of patterns
 // created 19/8/23
-// last modified 21/8/23
+// last modified 24/8/23
 
 /*
  * types of spawn:
@@ -55,14 +55,21 @@ public class TerrainChallenges : MonoBehaviour
     [SerializeField] private int hazardMin = 1;
     [SerializeField] private int hazardMax = 3;
     [SerializeField] private float hazardXGap = 2f; // the minimum gap between hazards
+    [Header("powerups")]
+    [SerializeField] private CollectibleBase[] powerups;
+    [SerializeField] private float powerupPerDistanceBase = 0.01f;
+    [SerializeField] private float powerupPerDistancePerDifficulty = 0.01f;
+    [SerializeField] private float powerupGap = 4f; // the minimum gap between powerups
     [Header("Intensity")]
     [SerializeField] private float intensityChangeZMin = 10f;
     [SerializeField] private float intensityChangeZMax = 30f;
     private float difficulty;
     private float coinsPerDistanceCurrent;
     private float hazardPerDistanceCurrent;
+    private float powerupPerDistanceCurrent;
     private float coinsAcc; // accumulated coin points
     private float hazardAcc; // accumulated hazard points
+    private float powerupAcc; // accumulated hazard points
     private float baseHeight;
     private Quaternion baseRot;
     // coin chain variables
@@ -72,6 +79,8 @@ public class TerrainChallenges : MonoBehaviour
     private float coinNextZ; // the Z distance left before the next coin is spawned
     // hazard spawn variables
     private int hazardsLeft;
+    // powerup spawn variables
+    private int powerupsLeft;
     // intensity tracking
     private float intensityCurrent; // the current intensity level
     private float intensityTarget; // the target intensity level before the next intensity shift
@@ -79,14 +88,17 @@ public class TerrainChallenges : MonoBehaviour
     // object records
     private List<CollectibleCoin> coinsActive;
     private List<HazardBase> hazardsActive;
+    private List<CollectibleBase> powerupsActive;
 
     private void Awake()
     {
         SetDifficulty(0f);
         coinsActive = new List<CollectibleCoin>();
         hazardsActive = new List<HazardBase>();
+        powerupsActive = new List<CollectibleBase>();
         coinsAcc = 0f;
         hazardAcc = -1f; // ensure coins always appear first before any hazards
+        powerupAcc = -1f;
     }
     // initialise the terrainchallenges with the parameters from the main terrain manager
     // circleheight is the size of the rotating circle track (for positioning) and the rotation of the origin point (the furthest terrain that is out of sight)
@@ -102,6 +114,7 @@ public class TerrainChallenges : MonoBehaviour
         difficulty = diff;
         coinsPerDistanceCurrent = coinsPerDistanceBase + (difficulty * coinsPerDistancePerDifficulty);
         hazardPerDistanceCurrent = hazardPerDistanceBase + (difficulty * hazardPerDistancePerDifficulty);
+        powerupPerDistanceCurrent = powerupPerDistanceBase + (difficulty * powerupPerDistancePerDifficulty);
         IntensityStart();
     }
     // starts the intensity cycle
@@ -116,6 +129,7 @@ public class TerrainChallenges : MonoBehaviour
     {
         coinsAcc += dist * coinsPerDistanceCurrent * intensityCurrent;
         hazardAcc += dist * hazardPerDistanceCurrent * intensityCurrent;
+        powerupAcc += dist * powerupPerDistanceCurrent * (2f - intensityCurrent); // powerups work inversely with intensity - appearing in lulls rather than peaks
         coinNextZ -= dist;
         if (intensityChangeZ > 0)
         {
@@ -137,8 +151,21 @@ public class TerrainChallenges : MonoBehaviour
     private void StartHazardChain(bool keepCurrentX = false)
     {
         float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
-        hazardsLeft = Mathf.FloorToInt(Mathf.Lerp(hazardMin, hazardMax, spawnStrength * hazardAcc/ (float)hazardMax));
+        hazardsLeft = Mathf.FloorToInt(Mathf.Lerp(hazardMin, hazardMax, spawnStrength * hazardAcc / (float)hazardMax));
         hazardAcc -= hazardsLeft;
+        coinNextZ = coinRunGap;
+        if (keepCurrentX) // place them immediately (normally means appear at the end of a coin chain)
+            coinCurrentX = coinTargetX;
+        else
+            coinCurrentX = Random.Range(challengeXMin, challengeXMax);
+    }
+
+    // have hazards accumulated, set up spawning
+    private void StartPowerupChain(bool keepCurrentX = false)
+    {
+        float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
+        powerupsLeft = 1;
+        powerupAcc -= powerupsLeft;
         coinNextZ = coinRunGap;
         if (keepCurrentX) // place them immediately (normally means appear at the end of a coin chain)
             coinCurrentX = coinTargetX;
@@ -193,6 +220,7 @@ public class TerrainChallenges : MonoBehaviour
 
     }
 
+    // calculates positions for hazards, mainly for events when 2 or 3 hazards are being spawned in one row
     private float CalcHazardX(float leftmost, float rightmost)
     {
         float returnX = coinCurrentX;
@@ -256,22 +284,60 @@ public class TerrainChallenges : MonoBehaviour
             Vector3 pos = transform.position + baseRot * new Vector3(hazardX[i], baseHeight, 0f);
             HazardBase hazard = Instantiate(hazards[0], pos, baseRot, transform);
             hazardsActive.Add(hazard);
-            hazardAcc--;
         }
         hazardsLeft = 0;
         coinNextZ = coinRunGap;
     }
 
+    private void PlacePowerup()
+    {
+        Vector3 pos = transform.position + baseRot * new Vector3(coinCurrentX, baseHeight + coinHeight, 0f);
+        CollectibleBase powerup = Instantiate(powerups[0], pos, baseRot, transform);
+        powerupsActive.Add(powerup);
+
+        powerupsLeft = 0;
+        coinNextZ = coinRunGap;
+    }
+
     private void Update()
     {
-        if (hazardsLeft > 0)
+        if (powerupsLeft > 0)
+        {
+            if (coinNextZ <= 0)
+            {
+                PlacePowerup();
+
+                // powerupsLeft will always be 0 here, they're placed one at a time
+                // never place powerups twice in a row
+                if (hazardAcc > 0)
+                {
+                    // place a hazard right away after the powerup if built up
+                    StartHazardChain(true);
+                }
+                else if (coinsAcc > 0)
+                {
+                    // if there are coins built up, place them offset from the powerup
+                    StartCoinChain();
+                }
+                else
+                {
+                    // nothing can appear right away so force a gap before the next run of coins to look more structured
+                    coinNextZ = coinRunGap;
+                }
+            }
+        }
+        else if (hazardsLeft > 0)
         {
             if (coinNextZ <= 0)
             {
                 PlaceHazard();
 
                 // hazardsLeft will always be 0 here, they're always placed at once in a row not in a chain
-                if (coinsAcc > 0)
+                if (powerupAcc > 0)
+                {
+                    StartPowerupChain(true);
+                }
+                else if (coinsAcc > 0)
                 {
                     // if there are coins built up, always place them after a hazard before more hazards
                     StartCoinChain(true);
@@ -308,6 +374,11 @@ public class TerrainChallenges : MonoBehaviour
                     // if there are hazards built up, always place them after a coin chain before more coins
                     StartHazardChain(true);
                 }
+                else if (powerupAcc > 0)
+                {
+                    // if there is a powerup built up, don't place it always in line! 
+                    StartPowerupChain();
+                }
                 else if (coinsAcc > 0)
                 {
                     // start another coin chain immediately following this one, when two coin chains are in sequence let them connect
@@ -333,6 +404,11 @@ public class TerrainChallenges : MonoBehaviour
                 else if (coinsAcc > 0)
                 {
                     StartCoinChain();
+                }
+                else if (powerupAcc > 0)
+                {
+                    // always try to place powerups after other things to make collecting them more interesting
+                    StartPowerupChain();
                 }
             }
         }
@@ -360,7 +436,7 @@ public class TerrainChallenges : MonoBehaviour
             {
                 if (hazardsActive[0].transform.position.z < challengeZRemoval)
                 {
-                    Destroy(hazardsActive[0]);
+                    hazardsActive[0].Remove();
                     hazardsActive.RemoveAt(0);
                 }
             }
@@ -369,5 +445,23 @@ public class TerrainChallenges : MonoBehaviour
                 hazardsActive.RemoveAt(0);
             }
         }
+        if (powerupsActive.Count > 0)
+        {
+            if (powerupsActive[0])
+            {
+                if (powerupsActive[0].transform.position.z < challengeZRemoval)
+                {
+                    powerupsActive[0].Remove();
+                    powerupsActive.RemoveAt(0);
+                }
+            }
+            else
+            {
+                // TODO do this properly
+                // remove a coin that has been deleted
+                powerupsActive.RemoveAt(0);
+            }
+        }
+
     }
 }

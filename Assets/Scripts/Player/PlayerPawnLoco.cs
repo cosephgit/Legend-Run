@@ -4,7 +4,7 @@ using UnityEngine;
 
 // locomotion component for the player pawn
 // created 18/8/23
-// last modified 18/8/23
+// last modified 24/8/23
 
 public class PlayerPawnLoco : MonoBehaviour
 {
