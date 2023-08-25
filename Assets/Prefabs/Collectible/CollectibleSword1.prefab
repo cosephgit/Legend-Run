@@ -5009,7 +5009,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   degreesPerSec: 360
-  pickupSound: []
+  pickupSound:
+  - {fileID: 8300000, guid: 85e890e800369403ea5af9b10adecb94, type: 3}
   <weaponUses>k__BackingField: 1
   <weaponDamage>k__BackingField: 1
   <weaponObject>k__BackingField: {fileID: 3932059665474409786}

@@ -21,6 +21,8 @@ public class UIHealthBar : UIBase
 
     public void SetHealth(float health, bool forcefill = false)
     {
+        if (health == healthActual) return;
+
         if (forcefill || health > healthActual)
         {
             healthFade = health;

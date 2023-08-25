@@ -292,7 +292,7 @@ public class TerrainChallenges : MonoBehaviour
     private void PlacePowerup()
     {
         Vector3 pos = transform.position + baseRot * new Vector3(coinCurrentX, baseHeight + coinHeight, 0f);
-        CollectibleBase powerup = Instantiate(powerups[0], pos, baseRot, transform);
+        CollectibleBase powerup = Instantiate(powerups[Random.Range(0, powerups.Length)], pos, baseRot, transform);
         powerupsActive.Add(powerup);
 
         powerupsLeft = 0;

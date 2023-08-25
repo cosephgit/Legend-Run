@@ -183,6 +183,26 @@ PrefabInstance:
       propertyPath: hazardSound.Array.data[2]
       value: 
       objectReference: {fileID: 8300000, guid: 4a1616db1b6b90f4ba4b038d602fdea1, type: 3}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSoundDefeat.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSoundDefeat.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 4a1616db1b6b90f4ba4b038d602fdea1, type: 3}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSoundDefeat.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 39325aeb1108df3459c07997c6e5ec48, type: 3}
+    - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
+        type: 3}
+      propertyPath: hazardSoundDefeat.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: b743925dd0cb3ca4cb98fa7ab21c7aed, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

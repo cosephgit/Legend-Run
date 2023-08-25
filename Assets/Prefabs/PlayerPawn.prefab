@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5191626444639089536}
   - component: {fileID: 6432021030971637623}
   - component: {fileID: 2994394899652238338}
+  - component: {fileID: 7846197909282872248}
   - component: {fileID: 586785414972877838}
   - component: {fileID: 1935911330034546034}
   m_Layer: 0
@@ -53,11 +54,16 @@ MonoBehaviour:
   pawnHealth: {fileID: 5191626444639089536}
   pawnLoco: {fileID: 6432021030971637623}
   pawnPurse: {fileID: 2994394899652238338}
+  pawnWeapon: {fileID: 7846197909282872248}
   terrain: {fileID: 0}
+  pointer: {fileID: 0}
   minX: -3
   maxX: 3
   speedMax: 16
   speedAccel: 4
+  screenActiveXMin: 0.2
+  screenActiveXMax: 0.8
+  screenJumpY: 0.5
 --- !u!114 &5191626444639089536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,6 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a359cfa577ab6c149899094f1dc7c560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jumpHeight: 2
+  jumpGravity: -20
   <pawnAnim>k__BackingField: {fileID: 8505033852671847580}
   <moveRate>k__BackingField: 6
 --- !u!114 &2994394899652238338
@@ -103,6 +111,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinBar: {fileID: 0}
+--- !u!114 &7846197909282872248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693126819496428363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86f9898b63e8ee94eb1296bfa41d23c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDiscardTime: 0.25
+  weaponNode: {fileID: 8593665608621806420}
+  pawnAnim: {fileID: 8505033852671847580}
+  attackSounds:
+  - {fileID: 8300000, guid: 22347abb186f9294baded3b8184fc048, type: 3}
+  - {fileID: 8300000, guid: 6ddc54648a41778498b9f245ec55bd3a, type: 3}
+  - {fileID: 8300000, guid: 7840e0fe9f0b6a14393a35925839a084, type: 3}
 --- !u!136 &586785414972877838
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -161,6 +188,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2493697846856358166}
     m_Modifications:
+    - target: {fileID: 1173177213022252, guid: 7e6e29f21a00d5f499e21eb93d6fabaa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1668188202801692, guid: 7e6e29f21a00d5f499e21eb93d6fabaa, type: 3}
       propertyPath: m_Name
       value: Male A
@@ -218,6 +249,12 @@ PrefabInstance:
 --- !u!95 &8505033852671847580 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 95844511793012932, guid: 7e6e29f21a00d5f499e21eb93d6fabaa,
+    type: 3}
+  m_PrefabInstance: {fileID: 8598340536236674136}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8593665608621806420 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4965937427930892, guid: 7e6e29f21a00d5f499e21eb93d6fabaa,
     type: 3}
   m_PrefabInstance: {fileID: 8598340536236674136}
   m_PrefabAsset: {fileID: 0}

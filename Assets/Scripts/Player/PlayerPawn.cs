@@ -4,7 +4,7 @@ using UnityEngine;
 
 // takes player input and moves the player pawn depending on input
 // created 18/8/23
-// last modified 24/8/23
+// last modified 25/8/23
 
 public class PlayerPawn : MonoBehaviour
 {
@@ -56,24 +56,86 @@ public class PlayerPawn : MonoBehaviour
             {
                 if (weapon.unused)
                 {
-                    Debug.Log("weapon found");
                     pawnWeapon.GetWeapon(weapon);
                     weapon.Collected();
                 }
             }
             else
             {
-                HazardBase hazard = other.gameObject.GetComponent<HazardBase>();
+                CollectiblePotion potion = other.gameObject.GetComponent<CollectiblePotion>();
 
-                if (hazard && hazard.awake)
+                if (potion)
                 {
-                    if (!pawnLoco.jumping)
+                    if (potion.unused)
                     {
-                        // have run into a hazard!
-                        hazard.Collided();
-                        pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
-                        speed = 0f;
-                        pawnHealth.TakeDamage(1f);
+                        pawnHealth.GainHealth(1f);
+                        potion.Collected();
+                    }
+                }
+                else
+                {
+                    HazardBase hazard = other.gameObject.GetComponent<HazardBase>();
+
+                    if (hazard && hazard.awake)
+                    {
+                        if (!pawnLoco.jumping)
+                        {
+                            // have run into a hazard!
+                            float takeDamage = 1f;
+
+                            if (pawnWeapon.weapon)
+                            {
+                                float hazardStrength = pawnWeapon.UseWeapon(takeDamage);
+
+                                // possibly move this to the weapon itself
+                                switch (Random.Range(0, 3))
+                                {
+                                    default:
+                                    case 0:
+                                        {
+                                            pawnLoco.pawnAnim.SetTrigger("Attack1");
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            pawnLoco.pawnAnim.SetTrigger("Attack2");
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            pawnLoco.pawnAnim.SetTrigger("Attack3");
+                                            break;
+                                        }
+                                }
+
+                                if (hazardStrength > 0)
+                                {
+                                    // the hazard was not defeated
+                                    takeDamage = hazardStrength;
+                                }
+                                else
+                                {
+                                    // the hazard was defeated
+                                    takeDamage = 0f;
+                                }
+                            }
+                            else
+                            {
+                                pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
+                            }
+
+                            speed = 0f;
+
+                            if (takeDamage > 0)
+                            {
+                                hazard.Collided();
+                                pawnHealth.TakeDamage(takeDamage);
+                            }
+                            else
+                            {
+                                hazard.Defeated();
+                            }
+                        }
                     }
                 }
             }
