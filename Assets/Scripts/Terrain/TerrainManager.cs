@@ -51,7 +51,7 @@ public class TerrainManager : MonoBehaviour
         {
             float angle = terrain[terrain.Count - 1].transform.eulerAngles.x + degreesPerSegment;
             facing = Quaternion.Euler(angle, 0, 0);
-            pos = facing * Vector3.up * circleRadius + transform.position;
+            //pos = facing * Vector3.up * circleRadius + transform.position;
 
             //pos = terrain[terrain.Count - 1].transform.position;
 
@@ -59,10 +59,13 @@ public class TerrainManager : MonoBehaviour
         }
         else
         {
-            pos = transform.position; // the first segment will always be placed above the origin
-            pos.y += circleRadius;
-            facing = Quaternion.identity;
+            //pos = transform.position; // the first segment will always be placed above the origin
+            //pos.y += circleRadius;
+            //facing = Quaternion.identity;
+            facing = transform.rotation;
         }
+
+        pos = facing * Vector3.up * circleRadius + transform.position;
 
         TerrainSegment terrainNew = Instantiate(terrainPrefab, pos, facing, transform);
         terrainNew.Generate();
