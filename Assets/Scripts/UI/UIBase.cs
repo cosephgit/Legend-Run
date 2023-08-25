@@ -4,21 +4,21 @@ using UnityEngine;
 
 // base UI class for all UI elements
 // created 23/8/23
-// last modified 23/8/23
+// last modified 25/8/23
 
 public class UIBase : MonoBehaviour
 {
-    [SerializeField] private float shakeDrag = 0.1f;
+    [SerializeField] private float shakeDrag = 0.4f;
     [SerializeField] private float shakeDamping = 1f;
-    private Vector2 posOriginal;
-    private float shakeIntensity;
+    protected Vector2 posOriginal;
+    protected float shakeIntensity;
     private float shakeX;
     private float shakeY;
     private float freqX;
     private float freqY;
     private float shakeTime;
 
-    private void Start()
+    protected virtual void Start()
     {
         posOriginal = transform.position;
     }

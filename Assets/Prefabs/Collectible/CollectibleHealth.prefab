@@ -88,6 +88,11 @@ PrefabInstance:
       propertyPath: pickupSound.Array.data[4]
       value: 
       objectReference: {fileID: 8300000, guid: 6663bacc2a6d846cda16feed5740b544, type: 3}
+    - target: {fileID: 2287453409369591613, guid: af85708e890cc24418e4049817d57c21,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 1.13
+      objectReference: {fileID: 0}
     - target: {fileID: 8831477073994523258, guid: af85708e890cc24418e4049817d57c21,
         type: 3}
       propertyPath: m_Name

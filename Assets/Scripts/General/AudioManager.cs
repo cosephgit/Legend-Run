@@ -258,6 +258,11 @@ public class AudioManager : MonoBehaviour
         SoundPlay(sound, pos, volume, Random.Range(0.9f, 1.1f));
     }
 
+    public void SoundPlayCustom(AudioClip sound, Vector2 pos, float volume = 1f, float pitch = 1f)
+    {
+        SoundPlay(sound, pos, volume, pitch);
+    }
+
     private void SoundPlay(AudioClip sound, Vector2 pos, float volume, float pitch)
     {
         sourceSingle[sourceSingleNext].Stop();

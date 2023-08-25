@@ -10,4 +10,14 @@ using UnityEngine;
 public class CollectibleCoin : CollectibleBase
 {
     [field: SerializeField] public int coinValue { get; private set; } = 1; // how many coins it is worth
+
+    public void CollectedCoin(float pitch)
+    {
+        unused = false;
+
+        Destroy(gameObject);
+
+        if (pickupSound.Length > 0)
+            AudioManager.instance.SoundPlayCustom(pickupSound[Random.Range(0, pickupSound.Length)], transform.position, 1f, pitch);
+    }
 }

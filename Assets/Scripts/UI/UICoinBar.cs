@@ -12,6 +12,7 @@ public class UICoinBar : UIBase
     [SerializeField] private TextMeshProUGUI counter;
     [SerializeField] private float updateTime = 0.1f; // time between counter updates
     [SerializeField] private AudioClip updatePip;
+    [SerializeField] private Transform popPos; // if this UI uses pops, they should spawn around this point
     private int coinsCurrent;
     private int coinsDisplay;
     private float updateNext;
@@ -56,6 +57,9 @@ public class UICoinBar : UIBase
                 change = Mathf.FloorToInt(change * Mathf.Pow(10, exponent));
 
                 coinsDisplay += (loss ? -1 : 1) * change;
+
+                if (change > 0)
+                    UIPopManager.instance.ShowPops(popPos.position, 0.1f * change, Color.yellow);
 
                 AddShake(0.5f);
                 AudioManager.instance.SoundPlayEven(updatePip, Vector2.zero, 0.3f);

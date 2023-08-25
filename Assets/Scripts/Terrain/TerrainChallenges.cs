@@ -415,12 +415,13 @@ public class TerrainChallenges : MonoBehaviour
 
         if (coinsActive.Count > 0)
         {
-            if (coinsActive[0])
+            if (coinsActive[0] && coinsActive[0].unused)
             {
                 if (coinsActive[0].transform.position.z < challengeZRemoval)
                 {
                     coinsActive[0].Remove();
                     coinsActive.RemoveAt(0);
+                    PlayerPawn.instance.StreakEnd();
                 }
             }
             else

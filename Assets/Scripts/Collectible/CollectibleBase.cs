@@ -11,8 +11,8 @@ public class CollectibleBase : MonoBehaviour
 {
     [Header("Collectible")]
     [SerializeField] private float degreesPerSec = 360f; // how quickly the coin rotates
-    [SerializeField] private AudioClip[] pickupSound;
-    public bool unused { get; private set; } = true;
+    [SerializeField] protected AudioClip[] pickupSound;
+    public bool unused { get; protected set; } = true;
 
     public virtual void Collected()
     {

@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class PlayerPawn : MonoBehaviour
 {
+    public static PlayerPawn instance;
     [Header("Components")]
     [SerializeField] private PlayerPawnHealth pawnHealth;
     [SerializeField] private PlayerPawnLoco pawnLoco;
@@ -15,6 +16,7 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private PlayerWeapon pawnWeapon;
     [SerializeField] private TerrainManager terrain;
     [SerializeField] private UIPointer pointer;
+    [SerializeField] private UIStreak streakDisplay;
     [Header("Movement parameters")]
     [SerializeField] private float minX = -4f;
     [SerializeField] private float maxX = 4f;
@@ -24,15 +26,48 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private float screenActiveXMin = 0.2f; // left side main zone of screen
     [SerializeField] private float screenActiveXMax = 0.8f; // right side main zone of screen
     [SerializeField] private float screenJumpY = 0.5f; // minimum screen height to jump
+    [Header("Streak params")]
+    [SerializeField] private int streakCountBase = 5;
+    [SerializeField] private int streakCountPerLevel = 5;
+    [SerializeField] private AudioClip streakLevelSound;
+    [SerializeField] private AudioClip streakFailSound;
+    [SerializeField] private float streakCoinPitchBase = 1f;
+    [SerializeField] private float streakCoinPitchPerLevel = 0.05f;
+    [SerializeField] private float streakCoinPitchForProgress = 0.2f;
     private float pawnTargetX; // the pawn's current X target
     private bool pawnJump; // the pawn has been instructed to jump
     private float speed;
     private bool jumpHeld;
+    // streak values
+    private int streakCoins;
+    private int streakLevel;
 
     private void Awake()
     {
+        if (instance)
+        {
+            if (instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+        else
+            instance = this;
+
         pawnTargetX = transform.position.x;
         speed = 0;
+    }
+
+    public void StreakEnd()
+    {
+        if (streakLevel > 0)
+        {
+            streakDisplay.StreakBreak();
+            AudioManager.instance.SoundPlayEven(streakFailSound, Vector2.zero);
+        }
+        streakLevel = 0;
+        streakCoins = 0;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -43,9 +78,33 @@ public class PlayerPawn : MonoBehaviour
         {
             if (coin.unused)
             {
+                int streakCoinsLevel = streakCountBase * streakLevel + streakCountPerLevel * (streakLevel - 1) * (streakLevel) / 2; // number of coins to the start of this level
+                int streakCoinsLevelNext = streakCountBase + streakCountPerLevel * streakLevel; // number of coins from the start of this level to the next level
+                float pitch = streakCoinPitchBase;
+                bool level = false;
+
                 // have run into a coin, collect it!
                 pawnPurse.AddCoins(coin.coinValue);
-                coin.Collected();
+
+                streakCoins++;
+                if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
+                {
+                    streakLevel++;
+                    streakCoinsLevel = streakCoinsLevel + streakCoinsLevelNext;
+                    streakCoinsLevelNext += streakCountPerLevel;
+
+                    level = true;
+                }
+                if (streakLevel > 0)
+                {
+                    float streakFill = (float)(streakCoins - streakCoinsLevel) / (float)streakCoinsLevelNext;
+                    streakDisplay.StreakUpdate(streakLevel, streakFill);
+                    pitch += streakLevel * streakCoinPitchPerLevel + streakFill * streakCoinPitchForProgress;
+                    if (level)
+                        AudioManager.instance.SoundPlayCustom(streakLevelSound, Vector2.zero, 1f, pitch);
+                }
+
+                coin.CollectedCoin(pitch);
             }
         }
         else
@@ -130,6 +189,7 @@ public class PlayerPawn : MonoBehaviour
                             {
                                 hazard.Collided();
                                 pawnHealth.TakeDamage(takeDamage);
+                                StreakEnd();
                             }
                             else
                             {
