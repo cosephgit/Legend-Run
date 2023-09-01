@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 // takes player input and moves the player pawn depending on input
 // created 18/8/23
-// last modified 31/8/23
+// last modified 1/9/23
 
 public class PlayerPawn : MonoBehaviour
 {
@@ -106,7 +106,6 @@ public class PlayerPawn : MonoBehaviour
                 // have run into a coin, collect it!
                 pawnPurse.AddCoins(coin.coinValue);
 
-                TerrainManager.instance.PlayerCoinCollected(coin.coinValue);
                 streakCoins += coin.coinValue;
                 if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
                 {
@@ -185,7 +184,6 @@ public class PlayerPawn : MonoBehaviour
 
                             SetSpeed(0f);
                             speedLines.Stop();
-                            TerrainManager.instance.PlayerHitTaken();
 
                             if (takeDamage > 0)
                             {

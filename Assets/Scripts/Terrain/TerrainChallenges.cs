@@ -46,7 +46,6 @@ public class TerrainChallenges : MonoBehaviour
     [SerializeField] private float coinHeight = 1f;
     [SerializeField] private float coinGapZ = 1f; // the space between coins in a chain
     [SerializeField] private float spawnGroupGapZ = 5f; // the minimum gap between two runs of coins or powerups
-    [SerializeField] private float spawnEndingBuffer = 20f; // the distance at the end of a level to finish spawning pre-emptively
     [Header("hazards")]
     [SerializeField] private HazardBase[] hazards; // hazards to spawn - TODO make a custom class with danger by hazard type
     [SerializeField] private float hazardPerDistanceBase = 0f; // the number of hazards spawned for each unit of distance per point of difficulty
@@ -74,12 +73,9 @@ public class TerrainChallenges : MonoBehaviour
     private float baseHeight;
     private Quaternion baseRot;
     // coin chain variables
-    private int coinsValueTarget;
-    public int coinsValueTotal { get; private set; } // the total value of all coins spawned
     private int coinsLeft; // coins left to spawn in the current chain of coins
     private int coinsWorthLeft; // coins left to spawn in the current chain of coins
     private float coinPowerupNextZ; // the Z distance left before the next coin or powerup is spawned
-    private float coinsEssential; // the value of coins that MUST be placed with each coin spot before the level ends
     // hazard spawn variables
     private float hazardNextZ; // the Z distance left before the next hazard can be spawned
     // intensity tracking
@@ -94,14 +90,13 @@ public class TerrainChallenges : MonoBehaviour
     private void Awake()
     {
         // for testing
-        SetDifficulty(0f, 1000f);
+        SetDifficulty(0f);
         coinsActive = new List<CollectibleCoin>();
         hazardsActive = new List<HazardBase>();
         powerupsActive = new List<CollectibleBase>();
         coinsAcc = 0f;
         hazardAcc = -1f; // ensure coins always appear first before any hazards
         powerupAcc = -1f; // or powerups
-        coinsValueTotal = 0;
     }
     // initialise the terrainchallenges with the parameters from the main terrain manager
     // circleheight is the size of the rotating circle track (for positioning) and the rotation of the origin point (the furthest terrain that is out of sight)
@@ -112,12 +107,10 @@ public class TerrainChallenges : MonoBehaviour
         IntensityStart();
     }
     // updates with the current difficulty level
-    public void SetDifficulty(float diff, float distance)
+    public void SetDifficulty(float diff)
     {
         difficulty = diff;
         coinsPerDistanceCurrent = coinsPerDistanceBase + (difficulty * coinsPerDistancePerDifficulty);
-        coinsValueTarget = Mathf.CeilToInt(coinsPerDistanceCurrent * distance);
-        Debug.Log("coin target " + coinsValueTarget);
         hazardPerDistanceCurrent = hazardPerDistanceBase + (difficulty * hazardPerDistancePerDifficulty);
         powerupPerDistanceCurrent = powerupPerDistanceBase + (difficulty * powerupPerDistancePerDifficulty);
         coinsWorthCurrent = coinsAverageWorthBase + (difficulty * coinsAverageWorthPerDifficulty);
@@ -132,17 +125,11 @@ public class TerrainChallenges : MonoBehaviour
     }
 
     // called by the TerrainManager in each Update to add the distance travelled for the frame
-    public void AddDistance(float dist, float safeCurrentX, bool special, float distanceLeft)
+    public void AddDistance(float dist, float safeCurrentX, bool special)
     {
         coinsAcc += dist * coinsPerDistanceCurrent * intensityCurrent;
         hazardAcc += dist * hazardPerDistanceCurrent * intensityCurrent;
         powerupAcc += dist * powerupPerDistanceCurrent * (2f - intensityCurrent); // powerups work inversely with intensity - appearing in lulls rather than peaks
-
-        // this is the minimum value of coin that MUST be placed with each coin position
-        if (distanceLeft < spawnEndingBuffer)
-            coinsEssential = coinsValueTarget - coinsValueTotal; // drop everything now!
-        else
-            coinsEssential = (coinsValueTarget - coinsValueTotal) / (distanceLeft - spawnEndingBuffer) / coinGapZ;
 
         coinPowerupNextZ -= dist;
         hazardNextZ -= dist;
@@ -160,7 +147,7 @@ public class TerrainChallenges : MonoBehaviour
             IntensityStart();
         }
 
-        PlaceChallenges(safeCurrentX, special, distanceLeft);
+        PlaceChallenges(safeCurrentX, special);
     }
 
     // have coins accumulated, set up a coin chain to start spawning them
@@ -170,11 +157,6 @@ public class TerrainChallenges : MonoBehaviour
 
         coinsLeft = Mathf.FloorToInt(Mathf.Lerp(coinsMin, coinsMax, spawnStrength / 2f));
         coinsWorthLeft = Mathf.CeilToInt(coinsLeft * Mathf.Max(1f, coinsWorthCurrent * spawnStrength));
-
-        if (coinsWorthLeft > coinsValueTarget - coinsValueTotal)
-            coinsWorthLeft = coinsValueTarget - coinsValueTotal;
-        if (coinsLeft > coinsValueTarget - coinsValueTotal)
-            coinsLeft = coinsValueTarget - coinsValueTotal;
 
         coinsAcc -= coinsWorthLeft;
         coinPowerupNextZ = spawnGroupGapZ;
@@ -186,60 +168,28 @@ public class TerrainChallenges : MonoBehaviour
         Vector3 pos = transform.position + baseRot * new Vector3(safeCurrentX, baseHeight + coinHeight, 0f);
         int coinIndex = 0;
         int coinsWorthExcess = coinsLeft - coinsWorthLeft;
-        int coinEssentialValue = Mathf.FloorToInt(coinsEssential);
-        int coinsLeftTotal = coinsValueTarget - coinsValueTotal;
 
-        if (coinsLeftTotal <= 0)
-        {
-            Debug.Log("trying to spawn coins with no coins left");
-            coinsLeft = 0;
-            coinsWorthLeft = 0;
-        }
-
-        if (coinEssentialValue >= 1)
-        {
-            int coinsRemainder = coinsLeftTotal % 10;
-
-            // reaching the end of the level - even out the coins and drop them as fast as possible
-            if (coinsRemainder == 0)
-            {
-                coinIndex = 2;
-            }
-            else if (coinsRemainder == 5)
-            {
-                coinIndex = 1;
-            }
-        }
+        // coin selection to give variety in coin chains
+        if (coinsWorthLeft / coinsLeft > 8f) coinIndex = 2; // definitely want to start dropping gold
+        else if (coinsWorthLeft / coinsLeft > 2f) coinIndex = 1; // definitely want to start dropping silver
         else
         {
-            // normal coin selection to give variety in coin chains
-            if (coinsWorthLeft / coinsLeft > 8f) coinIndex = 2; // definitely want to start dropping gold
-            else if (coinsWorthLeft / coinsLeft > 2f) coinIndex = 1; // definitely want to start dropping silver
-            else
+            if (coinsWorthExcess > 4)
             {
-                if (coinsWorthExcess > 4)
-                {
-                    // have enough excess to consider a gold
-                    if (Random.Range(2f, 4f) < coinsWorthExcess / coinsLeft)
-                        coinIndex = 2;
-                }
-                if (coinIndex == 0 && coinsWorthExcess > 0)
-                {
-                    // have enough excess to consider a silver
-                    if (Random.Range(0f, 1f) < coinsWorthExcess / coinsLeft)
-                        coinIndex = 1;
+                // have enough excess to consider a gold
+                if (Random.Range(1f, 4f) < coinsWorthExcess / coinsLeft)
+                    coinIndex = 2;
+            }
+            if (coinIndex == 0 && coinsWorthExcess > 0)
+            {
+                // have enough excess to consider a silver
+                if (Random.Range(0f, 1f) < coinsWorthExcess / coinsLeft)
+                    coinIndex = 1;
 
-                }
             }
         }
 
-        // make sure not to drop a coin that is bigger than we have left
-        if (coinIndex == 2 && coinsLeftTotal < 10) coinIndex = 1;
-        if (coinIndex == 1 && coinsLeftTotal < 5) coinIndex = 0;
-
         CollectibleCoin coin = Instantiate(coins[coinIndex], pos, baseRot, transform);
-
-        Debug.Log("coins left " + coinsLeftTotal + " coinsEssential " + coinsEssential + " coin value selected " + coin.coinValue);
 
         coinsWorthLeft -= coin.coinValue;
         if (coinsWorthLeft > 0)
@@ -251,7 +201,6 @@ public class TerrainChallenges : MonoBehaviour
         }
 
         coinsActive.Add(coin);
-        coinsValueTotal += coin.coinValue;
     }
 
     // calculates positions for hazards, mainly for events when 2 or 3 hazards are being spawned in one row
@@ -344,7 +293,7 @@ public class TerrainChallenges : MonoBehaviour
     // safeCurrentX is the current X position of the projected safe walking path - coins appear here and hazards do not
     // special - this indicates this is a good position to start new coin chains/spawn powerups
     // final - the stage has nearly finished, just finish off the current coin chain
-    private void PlaceChallenges(float safeCurrentX, bool special, float distance)
+    private void PlaceChallenges(float safeCurrentX, bool special)
     {
         // if there are coins left: spawn coins
         if (coinsLeft > 0)
@@ -354,28 +303,11 @@ public class TerrainChallenges : MonoBehaviour
                 // currently in the middle of spawning a coin chain
                 PlaceCoin(safeCurrentX);
 
-                if (coinsEssential > 5)
-                    coinPowerupNextZ = coinGapZ * 5f / coinsEssential; // start spawning more quickly if it starts getting tight
-                else if (coinsLeft > 0)
+                if (coinsLeft > 0)
                     coinPowerupNextZ = coinGapZ;
                 else
                     coinPowerupNextZ = spawnGroupGapZ;
-
-                if (coinsEssential >= 0.9f)
-                {
-                    // we're nearing the end of the stage - coins must keep spawning to reach the target (do this a little bit early to avoid missing the last one)
-                    if (coinsEssential > 10) Debug.LogError("coinsEssential unreachable " + coinsEssential);
-                    coinsLeft = coinsValueTarget - coinsValueTotal;
-                    coinsWorthLeft = coinsLeft;
-                }
             }
-        }
-        else if (coinsEssential >= 0.9f)
-        {
-            // we're nearing the end of the stage - coins must keep spawning to reach the target (do this a little bit early to avoid missing the last one)
-            if (coinsEssential > 10) Debug.LogError("coinsEssential unreachable " + coinsEssential);
-            coinsLeft = coinsValueTarget - coinsValueTotal;
-            coinsWorthLeft = coinsLeft;
         }
         else
         {

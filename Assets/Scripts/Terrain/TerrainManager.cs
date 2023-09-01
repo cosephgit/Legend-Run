@@ -11,7 +11,6 @@ using UnityEngine.SceneManagement;
 public class TerrainManager : MonoBehaviour
 {
     public static TerrainManager instance;
-    [SerializeField] private float testingDiff = 0f;
     [SerializeField] private TerrainSegment terrainPrefab;
     [SerializeField] private int terrainMax = 5;
     [SerializeField] private float terrainGap = 20f;
@@ -24,12 +23,13 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private float safeRouteZMax = 20f; // maximum distance between safe route direction changes
     [SerializeField] private float safeRouteChanceAngled = 0.5f; // the proportion of coin chains that will run at an angle
     [SerializeField] private float safeRouteAngledXMin = 2f; // the minimum x offset for an angled run of coins
-    [SerializeField] private float safeRouteAngledXMax = 8f; // the minimum x offset for an angled run of coins
+    [SerializeField] private float safeRoutePlayerMoveFraction = 0.8f; // the maximum fraction of the player's move speed that an angled route can require
     [Header("Challenge settings")]
     [SerializeField] private TerrainChallenges terrainChallenges;
     [SerializeField] private int terrainChallengeLead = 3;
     [Header("Pause and menu settings")]
     [SerializeField] private UIMenus menuScreens;
+    [SerializeField] private UIOdometer odometer;
     [SerializeField] private float pauseOutTime = 1f; // how long to take before resuming full game speed
     [Header("Music")]
     [SerializeField] private AudioClip music;
@@ -37,9 +37,10 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private AudioClip playerVictory;
     [SerializeField] private AudioClip playerAchievement;
     [SerializeField] private AudioClip playerDefeat;
-    [Header("Checkpoint settings")]
+    [Header("Difficulty")]
     [SerializeField] private float checkpointDistance = 1000f;
-    [SerializeField] private float checkpointDistanceEnding = 900f; // no more spawning at this point
+    [SerializeField] private float difficultyBase = 0;
+    [SerializeField] private float difficultyPerKM = 0.5f;
     private List<TerrainSegment> terrain; // a list of all existing terrain, from furthest back (lowest index) to furthest forward (highest index)
     private float terrainSpeed;
     private float degreesPerSegment; // the number of degrees between each segment
@@ -55,10 +56,7 @@ public class TerrainManager : MonoBehaviour
     private float safeNextZ; // Z distance before the next change in safe route direction
     // checkpoint scoring
     private float distanceTravelled;
-    private int coinsCollected;
-    private int hitsTaken;
-    private float timeTaken;
-    private float timePar;
+    private float difficulty;
 
     private void Awake()
     {
@@ -84,15 +82,13 @@ public class TerrainManager : MonoBehaviour
         safeCurrentX = Random.Range(moveMinX, moveMaxX);
         CalcNextSafeX();
         distanceTravelled = 0f;
-        coinsCollected = 0;
-        hitsTaken = 0;
-        timeTaken = 0f;
     }
 
 private void Start()
     {
+        difficulty = difficultyBase;
         terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainChallengeLead, 0f, 0f));
-        terrainChallenges.SetDifficulty(testingDiff, checkpointDistanceEnding);
+        terrainChallenges.SetDifficulty(difficulty);
         AudioManager.instance.MusicPlay(music);
     }
 
@@ -103,19 +99,19 @@ private void Start()
         if (GameManager.instance.KarmicChance(safeRouteChanceAngled))
         {
             // angle off
-            float offsetMaxX = Mathf.Min(safeRouteAngledXMax, safeNextZ / PlayerPawn.instance.PlayerXPerZ(), Mathf.Max(safeCurrentX - moveMinX, moveMaxX - safeCurrentX));
-            float offset = Random.Range(safeRouteAngledXMin, offsetMaxX);
+            float shiftRightMaxX = Mathf.Min(safeRoutePlayerMoveFraction * safeNextZ / PlayerPawn.instance.PlayerXPerZ(), moveMaxX - safeCurrentX);
+            float shiftLeftMaxX = Mathf.Min(safeRoutePlayerMoveFraction * safeNextZ / PlayerPawn.instance.PlayerXPerZ(), safeCurrentX - moveMinX);
             bool right;
 
-            if (safeCurrentX + offset > moveMaxX)
+            if (shiftRightMaxX < safeRouteAngledXMin)
                 right = false;
-            else if (safeCurrentX - offset < moveMinX)
+            else if (shiftLeftMaxX < safeRouteAngledXMin)
                 right = true;
             else
-                right = CoSephUtils.RandomBool();
+                right = (Random.Range(-shiftLeftMaxX, shiftRightMaxX) >= 0);
 
-            if (right) safeTargetX = safeCurrentX + offset;
-            else safeTargetX = safeCurrentX - offset;
+            if (right) safeTargetX = safeCurrentX + Random.Range(safeRouteAngledXMin, shiftRightMaxX);
+            else safeTargetX = safeCurrentX - Random.Range(safeRouteAngledXMin, shiftLeftMaxX);
         }
         else
         {
@@ -185,10 +181,19 @@ private void Start()
             Vector3 rot = transform.eulerAngles;
             float frameDist = terrainSpeed * Time.deltaTime;
             bool specialSpawn = false;
+            float distanceNew = distanceTravelled + frameDist;
 
-            distanceTravelled += frameDist;
-            timeTaken += Time.deltaTime;
+            if (Mathf.Floor(distanceTravelled / checkpointDistance) < Mathf.Floor(distanceNew / checkpointDistance))
+            {
+                // have passed a difficulty milestone
+                difficulty = difficultyBase + (Mathf.Floor(distanceNew / checkpointDistance) * difficultyPerKM);
+                terrainChallenges.SetDifficulty(difficulty);
+                Debug.Log("new difficulty is " + difficulty);
+            }
 
+            distanceTravelled = distanceNew;
+
+            odometer.SetDistance(distanceTravelled);
 
             transform.Rotate(-degreesPerSpeed * frameDist, 0, 0);
 
@@ -202,8 +207,7 @@ private void Start()
                 CalcNextSafeX();
             }
 
-            if (checkpointDistanceEnding > distanceTravelled)
-                terrainChallenges.AddDistance(frameDist, safeCurrentX, specialSpawn, checkpointDistanceEnding - distanceTravelled);
+            terrainChallenges.AddDistance(frameDist, safeCurrentX, specialSpawn);
 
             // remove the nearest terrain segment if it's past out of sight
             if (terrain[0].transform.position.z < terrainDisappear)
@@ -212,11 +216,6 @@ private void Start()
                 terrain.RemoveAt(0);
                 //AddTerrainSegment();
                 AddTerrainSegmentCircle();
-            }
-
-            if (distanceTravelled > checkpointDistance)
-            {
-                PlayerVictory();
             }
         }
 
@@ -272,7 +271,7 @@ private void Start()
     {
         AudioManager.instance.MusicPlaySting(playerVictory);
         Time.timeScale = 0f;
-        menuScreens.OpenVictoryMenu(coinsCollected, terrainChallenges.coinsValueTotal, hitsTaken, timeTaken, timePar);
+        //menuScreens.OpenVictoryMenu(coinsCollected, terrainChallenges.coinsValueTotal, hitsTaken, timeTaken, timePar);
         paused = true;
         victory = true;
     }
@@ -285,14 +284,5 @@ private void Start()
         menuScreens.OpenDefeatMenu();
         paused = true;
         defeat = true;
-    }
-
-    public void PlayerCoinCollected(int value)
-    {
-        coinsCollected += value;
-    }
-    public void PlayerHitTaken()
-    {
-        hitsTaken++;
     }
 }

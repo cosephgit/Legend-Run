@@ -11,9 +11,13 @@ public class PlayerPawnLoco : MonoBehaviour
     private const string ANIM_RUN = "Run Blend"; // the keyword used in the animator for running speed
     private const string ANIM_FLY = "Flying"; // keyword for the flying animator boolean
     private const string ANIM_AIRSPEED = "Air Speed"; // keyword for the flying animator boolean
+    [Header("Animation settings")]
+    [SerializeField] private float animSpeedBase = 1f;
+    [SerializeField] private float animSpeedPerSpeed = 1f;
     [Header("Jump settings")]
     [SerializeField] private float jumpHeight = 4f; // desired jump height
     [SerializeField] private float jumpGravity = -10f; // fake gravity
+    [SerializeField] private AudioClip[] jumpSounds;
     [field: SerializeField] public Animator pawnAnim { get; private set; }
     [field: SerializeField] public float moveRate { get; private set; } = 4f;
     private float targetX;
@@ -59,6 +63,7 @@ public class PlayerPawnLoco : MonoBehaviour
     public void SetSpeed(float speedNew)
     {
         speed = speedNew;
+        pawnAnim.speed = animSpeedBase + (animSpeedPerSpeed * speed);
         pawnAnim.SetFloat(ANIM_RUN, speed);
     }
 
@@ -127,6 +132,8 @@ public class PlayerPawnLoco : MonoBehaviour
             jumping = true;
             speedY = jumpStartSpeed;
             pawnAnim.SetBool(ANIM_FLY, true);
+            if (jumpSounds.Length > 0)
+                AudioManager.instance.SoundPlayVaried(jumpSounds[Random.Range(0, jumpSounds.Length)], Vector2.zero);
             return true;
         }
     }
