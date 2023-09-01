@@ -29,7 +29,8 @@ public class UIPointer : MonoBehaviour
             Color colorFade = pointerColor;
             colorFade.a = pointerFadeTime / pointerFadeDuration;
 
-            pointerFadeTime -= Time.deltaTime;
+            // want this to still fade during pause
+            pointerFadeTime -= Time.unscaledDeltaTime;
 
             if (pointerFadeTime <= 0)
                 pointerImage.color = Color.clear;

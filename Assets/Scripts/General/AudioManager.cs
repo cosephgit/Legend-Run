@@ -4,7 +4,7 @@ using UnityEngine;
 
 // manages all sounds in the game
 // created 22/8/23
-// last modified 22/8/23
+// last modified 1/9/23
 
 public enum MusicTheme
 {
@@ -141,6 +141,7 @@ public class AudioManager : MonoBehaviour
         if (sourceMusicIsAlt)
         {
             sourceMusic.Stop();
+            sourceMusic.loop = true;
             sourceMusic.clip = musicLoop;
             sourceMusic.volume = 0f;
             sourceMusic.Play();
@@ -149,6 +150,7 @@ public class AudioManager : MonoBehaviour
         else
         {
             sourceMusicAlt.Stop();
+            sourceMusicAlt.loop = true;
             sourceMusicAlt.clip = musicLoop;
             sourceMusicAlt.volume = 0f;
             sourceMusicAlt.Play();
@@ -197,6 +199,20 @@ public class AudioManager : MonoBehaviour
         StartMusic(musicLoop);
         // when forcing a specific track, turn off the track switcher
         MusicSwitcher(MusicTheme.None);
+    }
+
+    // play a non-looping music sting (sets music audio to non-looping)
+    public void MusicPlaySting(AudioClip musicSting)
+    {
+        MusicSwitcher(MusicTheme.None);
+        sourceMusic.Stop();
+        sourceMusicAlt.Stop();
+
+        sourceMusic.loop = false;
+        sourceMusic.clip = musicSting;
+        sourceMusic.volume = 1f;
+        sourceMusic.Play();
+        sourceMusicIsAlt = false;
     }
 
     public void MusicStop()

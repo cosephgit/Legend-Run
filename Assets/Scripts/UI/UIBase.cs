@@ -4,7 +4,7 @@ using UnityEngine;
 
 // base UI class for all UI elements
 // created 23/8/23
-// last modified 25/8/23
+// last modified 1/9/23
 
 public class UIBase : MonoBehaviour
 {
@@ -51,8 +51,8 @@ public class UIBase : MonoBehaviour
         {
             Vector2 pos = posOriginal;
 
-            shakeIntensity = Mathf.Max((shakeIntensity * (1f - shakeDrag * Time.deltaTime)) - Time.deltaTime * shakeDamping, 0f);
-            shakeTime += Time.deltaTime;
+            shakeIntensity = Mathf.Max((shakeIntensity * (1f - shakeDrag * Time.unscaledDeltaTime)) - Time.unscaledDeltaTime * shakeDamping, 0f);
+            shakeTime += Time.unscaledDeltaTime;
 
             if (shakeIntensity > 0)
             {
@@ -78,7 +78,7 @@ public class UIBase : MonoBehaviour
         while (timeLeft > 0)
         {
             element.localScale = scaleOriginal * Mathf.Lerp(scale, 1f, (0.5f - timeLeft) / 0.5f);
-            timeLeft -= Time.deltaTime;
+            timeLeft -= Time.unscaledDeltaTime;
             yield return new WaitForEndOfFrame();
         }
 

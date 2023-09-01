@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// UIPopManager
+// shows UI pops and sparkles
+// created 24/8/23
+// last modified 1/9/23
+
 public class UIPopManager : MonoBehaviour
 {
     public static UIPopManager instance;
@@ -61,7 +66,7 @@ public class UIPopManager : MonoBehaviour
             {
                 Vector2 pos = popsActive[i].transform.position;
 
-                pos += popsSpeed[i] * Time.deltaTime;
+                pos += popsSpeed[i] * Time.unscaledDeltaTime;
 
                 popsActive[i].transform.position = pos;
 
@@ -77,7 +82,7 @@ public class UIPopManager : MonoBehaviour
                     Quaternion rot = popsActive[i].transform.rotation * Quaternion.Euler(0f, 0f, popsSpeed[i].x);
                     Vector2 vee = popsSpeed[i];
 
-                    vee.y += popGravity * popScreenScale * Time.deltaTime;
+                    vee.y += popGravity * popScreenScale * Time.unscaledDeltaTime;
 
                     popsSpeed[i] = vee;
                     popsActive[i].transform.rotation = rot;

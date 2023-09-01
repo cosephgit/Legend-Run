@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // UIHealthBar
 // updates the player's health bar
 // created 22/8/23
-// last modified 23/8/23
+// last modified 1/9/23
 
 
 public class UIHealthBar : UIBase
@@ -43,12 +43,12 @@ public class UIHealthBar : UIBase
         base.Update();
         if (healthFade > healthActual)
         {
-            healthFade = Mathf.Max(healthFade - (Time.deltaTime * healthFadePerSecond), healthActual);
+            healthFade = Mathf.Max(healthFade - (Time.unscaledDeltaTime * healthFadePerSecond), healthActual);
             healthFadeSlider.value = healthFade;
         }
         if (healthFill < healthActual)
         {
-            healthFill = Mathf.Min(healthActual, healthFill + (Time.deltaTime * healthFadePerSecond));
+            healthFill = Mathf.Min(healthActual, healthFill + (Time.unscaledDeltaTime * healthFadePerSecond));
             healthFillSlider.value = healthFill;
         }
     }

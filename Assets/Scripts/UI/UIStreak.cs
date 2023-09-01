@@ -7,7 +7,7 @@ using UnityEngine.UI;
 // UIStreak
 // shows the collection streak bar
 // created 25/8/23
-// last modified 25/8/23
+// last modified 1/9/23
 
 public class UIStreak : UIBase
 {
@@ -51,7 +51,7 @@ public class UIStreak : UIBase
             streakSlideFill.color = colorNew;
             StopAllCoroutines();
             StartCoroutine(LevelPop());
-            UIPopManager.instance.ShowPops(popPos.position, level / 5f, colorNew);
+            UIPopManager.instance.ShowPops(popPos.position, level, colorNew);
         }
 
         streakLevel = level;
@@ -90,7 +90,7 @@ public class UIStreak : UIBase
         {
             streakText.transform.localScale = levelScale * Mathf.Lerp(1f, streakPopScale, popTime / streakPopTime);
             yield return new WaitForEndOfFrame();
-            popTime -= Time.deltaTime;
+            popTime -= Time.fixedDeltaTime;
         }
 
         streakText.transform.localScale = levelScale;
@@ -109,9 +109,9 @@ public class UIStreak : UIBase
 
         while (shatterTime > 0)
         {
-            streakFill -= barEmptyRate * Time.deltaTime;
+            streakFill -= barEmptyRate * Time.fixedDeltaTime;
             streakSlider.value = streakFill;
-            shatterTime -= Time.deltaTime;
+            shatterTime -= Time.fixedDeltaTime;
             yield return new WaitForEndOfFrame();
         }
 

@@ -66,8 +66,6 @@ public class PlayerWeapon : MonoBehaviour
         if (weapon)
             DiscardWeapon();
 
-        Debug.Log("GetWeapon with " + weaponNew);
-
         weapon = weaponNew.weaponObject;
         weapon.transform.parent = weaponNode;
         weapon.transform.localPosition = Vector3.zero;

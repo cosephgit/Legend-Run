@@ -22,6 +22,7 @@ public class PlayerPawnLoco : MonoBehaviour
     private float speedY; // current vertical speed
     private float height; // current fake height (> 0  means off the ground and invulnerable)
     private float heightFloor;
+    private float speedBonus;
     public bool jumping { get; private set; }
 
     private void Awake()
@@ -30,6 +31,7 @@ public class PlayerPawnLoco : MonoBehaviour
         heightFloor = transform.position.y;
         speedY = 0;
         speed = 0;
+        speedBonus = 1f;
         /* working out the math:
          * s = ut + 1/2at^2
          * find the peak:
@@ -60,6 +62,11 @@ public class PlayerPawnLoco : MonoBehaviour
         pawnAnim.SetFloat(ANIM_RUN, speed);
     }
 
+    public void SetSpeedBoost(float boostNew)
+    {
+        speedBonus = boostNew;
+    }
+
     private void FixedUpdate()
     {
         bool moving = !Mathf.Approximately(transform.position.x, targetX);
@@ -71,11 +78,11 @@ public class PlayerPawnLoco : MonoBehaviour
             {
                 if (targetX > pos.x)
                 {
-                    pos.x = Mathf.Min(targetX, pos.x + Time.fixedDeltaTime * moveRate * (1f + speed) * 0.5f);
+                    pos.x = Mathf.Min(targetX, pos.x + Time.fixedDeltaTime * moveRate * speedBonus * (1f + speed) * 0.5f);
                 }
                 else if (targetX < pos.x)
                 {
-                    pos.x = Mathf.Max(targetX, pos.x - Time.fixedDeltaTime * moveRate * (1f + speed) * 0.5f);
+                    pos.x = Mathf.Max(targetX, pos.x - Time.fixedDeltaTime * moveRate * speedBonus * (1f + speed) * 0.5f);
                 }
             }
 

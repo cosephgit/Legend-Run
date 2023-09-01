@@ -5,7 +5,7 @@ using TMPro;
 
 // shows the current coin count of the player
 // created 22/8/23
-// last modified 23/8/23
+// last modified 1/9/23
 
 public class UICoinBar : UIBase
 {
@@ -38,7 +38,7 @@ public class UICoinBar : UIBase
         {
             if (updateNext > 0)
             {
-                updateNext -= Time.deltaTime;
+                updateNext -= Time.unscaledDeltaTime;
             }
             else
             {
@@ -59,7 +59,7 @@ public class UICoinBar : UIBase
                 coinsDisplay += (loss ? -1 : 1) * change;
 
                 if (change > 0)
-                    UIPopManager.instance.ShowPops(popPos.position, 0.1f * change, Color.yellow);
+                    UIPopManager.instance.ShowPops(popPos.position, 1 + exponent, Color.yellow);
 
                 AddShake(0.5f);
                 AudioManager.instance.SoundPlayEven(updatePip, Vector2.zero, 0.3f);

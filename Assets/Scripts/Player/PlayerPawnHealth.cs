@@ -33,4 +33,9 @@ public class PlayerPawnHealth : MonoBehaviour
         health = Mathf.Min(health + heal, healthMax);
         healthBar.SetHealth(health / healthMax);
     }
+
+    public bool IsAlive()
+    {
+        return (health > 0);
+    }
 }
