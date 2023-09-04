@@ -22,8 +22,8 @@ public class UIMenus : UIMainMenu
     [SerializeField] private Button buttonPause; // the main pause button - so it can be disabled on defeat screen
     [SerializeField] private Button buttonResume; // the menu resume button - so it can be disabled on defeat screen
     [Header("Defeat references")]
-    [SerializeField] private TextMeshProUGUI textDefeatCoins;
-    [SerializeField] private TextMeshProUGUI textDefeatDistance;
+    [SerializeField] private UIBaseAccumulator defeatCoins;
+    [SerializeField] private UIBaseAccumulator defeatDistance;
 
     private void Awake()
     {
@@ -115,8 +115,8 @@ public class UIMenus : UIMainMenu
     public void OpenEndingMenu(float distance, int coins)
     {
         SoundButton();
-        textDefeatCoins.text = "" + coins;
-        textDefeatDistance.text = distance + " km";
+        defeatCoins.SetValue(coins);
+        defeatDistance.SetValue(distance);
         buttonPause.interactable = false;
         menuUnderlay.gameObject.SetActive(true);
         menuDefeat.gameObject.SetActive(true);

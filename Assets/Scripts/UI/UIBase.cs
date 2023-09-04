@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class UIBase : MonoBehaviour
 {
+    [Header("General UI settings")]
     [SerializeField] private float shakeDrag = 0.4f;
     [SerializeField] private float shakeDamping = 1f;
     protected Vector2 posOriginal;

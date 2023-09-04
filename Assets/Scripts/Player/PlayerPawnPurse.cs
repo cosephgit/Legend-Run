@@ -15,12 +15,12 @@ public class PlayerPawnPurse : MonoBehaviour
     private void Awake()
     {
         coins = 0;
-        coinBar.SetCoins(coins, true);
+        coinBar.SetValue(coins, true);
     }
 
     public void AddCoins(int amount)
     {
         coins += amount;
-        coinBar.SetCoins(coins);
+        coinBar.SetValue(coins);
     }
 }

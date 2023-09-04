@@ -187,8 +187,6 @@ public class TerrainChallenges : MonoBehaviour
             }
         }
 
-        Debug.Log("coinsWorthLeft " + coinsWorthLeft + " - coinsLeft " + coinsLeft + " - coin chosen " + coinIndex);
-
         CollectibleCoin coin = Instantiate(coins[coinIndex], pos, baseRot, transform);
 
         coinsWorthLeft -= coin.coinValue;
