@@ -153,10 +153,8 @@ public class TerrainChallenges : MonoBehaviour
     // have coins accumulated, set up a coin chain to start spawning them
     private void StartCoinChain()
     {
-        float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
-
-        coinsLeft = Mathf.FloorToInt(Mathf.Lerp(coinsMin, coinsMax, spawnStrength / 2f));
-        coinsWorthLeft = Mathf.CeilToInt(coinsLeft * Mathf.Max(1f, coinsWorthCurrent * spawnStrength));
+        coinsLeft = Mathf.FloorToInt(Mathf.Lerp(coinsMin, coinsMax, intensityCurrent / 2f));
+        coinsWorthLeft = Mathf.CeilToInt(coinsLeft * Mathf.Max(1f, coinsWorthCurrent * intensityCurrent));
 
         coinsAcc -= coinsWorthLeft;
         coinPowerupNextZ = spawnGroupGapZ;
@@ -167,7 +165,7 @@ public class TerrainChallenges : MonoBehaviour
     {
         Vector3 pos = transform.position + baseRot * new Vector3(safeCurrentX, baseHeight + coinHeight, 0f);
         int coinIndex = 0;
-        int coinsWorthExcess = coinsLeft - coinsWorthLeft;
+        int coinsWorthExcess = coinsWorthLeft - coinsLeft;
 
         // coin selection to give variety in coin chains
         if (coinsWorthLeft / coinsLeft > 8f) coinIndex = 2; // definitely want to start dropping gold
@@ -188,6 +186,8 @@ public class TerrainChallenges : MonoBehaviour
 
             }
         }
+
+        Debug.Log("coinsWorthLeft " + coinsWorthLeft + " - coinsLeft " + coinsLeft + " - coin chosen " + coinIndex);
 
         CollectibleCoin coin = Instantiate(coins[coinIndex], pos, baseRot, transform);
 

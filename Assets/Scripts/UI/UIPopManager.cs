@@ -72,6 +72,7 @@ public class UIPopManager : MonoBehaviour
 
                 if (pos.y < -100f)
                 {
+                    // deactivate when off screen
                     pops.Add(popsActive[i]);
                     popsActive[i].gameObject.SetActive(false);
                     popsActive.RemoveAt(i);
@@ -79,6 +80,7 @@ public class UIPopManager : MonoBehaviour
                 }
                 else
                 {
+                    // apply gravity
                     Quaternion rot = popsActive[i].transform.rotation * Quaternion.Euler(0f, 0f, popsSpeed[i].x);
                     Vector2 vee = popsSpeed[i];
 

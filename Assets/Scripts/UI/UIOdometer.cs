@@ -26,6 +26,7 @@ public class UIOdometer : UIBase
 
     public void SetDistance(float distance)
     {
+        // go through the defined ping distances to find how big of a ping we should use for the latest update (if any)
         for (int i = 0; i < pingCount; i++)
         {
             if (Mathf.FloorToInt(distance / pingDistances[i]) > Mathf.FloorToInt(distanceOld / pingDistances[i]))
@@ -43,6 +44,7 @@ public class UIOdometer : UIBase
         }
         else if (distance < 1000000)
         {
+            // you're not going to get here, but just in case
             distanceText.text = (Mathf.Floor(distance / 10f) / 100f).ToString("N2") + " km";
         }
         else

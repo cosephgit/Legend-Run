@@ -15,12 +15,15 @@ public class UIMenus : UIMainMenu
     [SerializeField] private GameObject menuPauseQuitConfirm;
     [Header("In-game menu general objects")]
     [SerializeField] private GameObject menuUnderlay; // covers the game view while menus are open to make the menu pop more
-    [SerializeField] private GameObject menuPauseDefeat;
-    [SerializeField] private GameObject menuVictory;
-    [Header("Pause/defeat references")]
+    [SerializeField] private GameObject menuPause;
+    [SerializeField] private GameObject menuDefeat;
+    [Header("Pause references")]
     [SerializeField] private TextMeshProUGUI textPauseDefeatTitle; // text on the title so it can be changed between PAUSED and DEFEAT
     [SerializeField] private Button buttonPause; // the main pause button - so it can be disabled on defeat screen
     [SerializeField] private Button buttonResume; // the menu resume button - so it can be disabled on defeat screen
+    [Header("Defeat references")]
+    [SerializeField] private TextMeshProUGUI textDefeatCoins;
+    [SerializeField] private TextMeshProUGUI textDefeatDistance;
 
     private void Awake()
     {
@@ -33,7 +36,7 @@ public class UIMenus : UIMainMenu
         buttonPause.interactable = true;
         buttonResume.interactable = true;
         menuUnderlay.gameObject.SetActive(true);
-        menuPauseDefeat.gameObject.SetActive(true);
+        menuPause.gameObject.SetActive(true);
         ButtonBack(); // show the default pause menu options
     }
 
@@ -43,15 +46,15 @@ public class UIMenus : UIMainMenu
         buttonPause.interactable = false;
         buttonResume.interactable = false;
         menuUnderlay.gameObject.SetActive(true);
-        menuPauseDefeat.gameObject.SetActive(true);
+        menuPause.gameObject.SetActive(true);
         ButtonBack(); // show the default pause menu options
     }
 
     public void CloseMenu()
     {
         menuUnderlay.gameObject.SetActive(false);
-        menuPauseDefeat.gameObject.SetActive(false);
-        menuVictory.gameObject.SetActive(false);
+        menuPause.gameObject.SetActive(false);
+        menuDefeat.gameObject.SetActive(false);
     }
     // the pause button is available during play as well as when paused, so is a toggle
     public void ButtonPause()
@@ -109,40 +112,14 @@ public class UIMenus : UIMainMenu
     }
 
     // open the victory menu and show the player how well they've done
-    public void OpenVictoryMenu(int coins, int coinsAll, int hits, float time, float timeTarget)
+    public void OpenEndingMenu(float distance, int coins)
     {
         SoundButton();
+        textDefeatCoins.text = "" + coins;
+        textDefeatDistance.text = distance + " km";
         buttonPause.interactable = false;
-        buttonResume.interactable = false;
-        if (coins < coinsAll)
-        {
-            // failed coins star
-
-        }
-        else
-        {
-
-        }
-        if (hits > 0)
-        {
-            // failed hits star
-
-        }
-        else
-        {
-
-        }
-        if (time > timeTarget)
-        {
-            // failed time star
-
-        }
-        else
-        {
-
-        }
         menuUnderlay.gameObject.SetActive(true);
-        menuVictory.gameObject.SetActive(true);
+        menuDefeat.gameObject.SetActive(true);
 
     }
 

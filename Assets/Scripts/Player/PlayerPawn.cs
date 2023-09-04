@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 // takes player input and moves the player pawn depending on input
 // created 18/8/23
-// last modified 1/9/23
+// last modified 4/9/23
 
 public class PlayerPawn : MonoBehaviour
 {
@@ -198,7 +198,7 @@ public class PlayerPawn : MonoBehaviour
                                 {
                                     // defeat!
                                     pawnLoco.pawnAnim.SetTrigger("Die");
-                                    TerrainManager.instance.PlayerDefeat();
+                                    TerrainManager.instance.PlayerDefeat(pawnPurse.coins);
                                 }
                             }
                             else

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 // TerrainManager
 // this class controls the procedural terrain generation and movement to sustain the player's environment
 // created 18/8/23
-// last modified 1/9/23
+// last modified 4/9/23
 
 public class TerrainManager : MonoBehaviour
 {
@@ -277,11 +277,11 @@ private void Start()
     }
 
     // player has been defeated
-    public void PlayerDefeat()
+    public void PlayerDefeat(int coins)
     {
         AudioManager.instance.MusicPlaySting(playerDefeat);
         Time.timeScale = 0f;
-        menuScreens.OpenDefeatMenu();
+        menuScreens.OpenEndingMenu(distanceTravelled, coins);
         paused = true;
         defeat = true;
     }
