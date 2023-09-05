@@ -4,7 +4,7 @@ using UnityEngine;
 
 // base UI class for all UI elements
 // created 23/8/23
-// last modified 1/9/23
+// last modified 5/9/23
 
 public class UIBase : MonoBehaviour
 {
@@ -25,7 +25,7 @@ public class UIBase : MonoBehaviour
     }
 
     // make the UI element shake (normally called when it changes)
-    protected void AddShake(float intensity)
+    public void AddShake(float intensity)
     {
         if (shakeIntensity == 0f)
         {

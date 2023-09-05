@@ -9,27 +9,8 @@ using UnityEngine.PlayerLoop;
 // this class manages the challenges in the game - collectibles, bonuses, and hazards
 // this is procedurally generated with a number of patterns
 // created 19/8/23
-// last modified 1/9/23
+// last modified 5/9/23
 
-/*
- * types of spawn:
- * just some coins
- * just an hazard
- * basically the general pattern is: hazard - coins - hazard - coins - etc
- * however the hazards and coins are both optional, it can start with either and continue repeating and possibly skipping steps with each
- * they form a continuous line (straight or curved)
- * multiple patterns can occur concurrently
- * coins should ALWAYS be collectible, the spacing should always allow collecting every single coin if the player is good enough
- * so if there are multiple tracks, they should be spaced so the player can skip between them
- * in other words - it's only one track, and might skip from one position to another
- * hazards CAN appear in multiple places, as long as there is always a path through
- * 
- * SO the pattern is:
- * possible coins (straight line or diagonal line)
- * possible hazards (possibly one in line with the previous coins/coming coins, possibly one or two more to fill the space)
- * possible coins (straight line or diagonal line, possibly starting from the same or a different position)
- * loop until done
- */
 
 public class TerrainChallenges : MonoBehaviour
 {

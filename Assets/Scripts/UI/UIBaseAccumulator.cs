@@ -32,30 +32,11 @@ public class UIBaseAccumulator : UIBase
         switch (type)
         {
             case AccumulatorType.Coins:
-            {
-                if (valueDisplay > 999999)
-                    counter.text = valueDisplay.ToString("E2");
-                else
-                    counter.text = valueDisplay.ToString("N0");
+                counter.text = GameManager.instance.DisplayCoins(valueDisplay);
                 break;
-            }
             case AccumulatorType.Distance:
-            {
-                if (valueDisplay < 1000)
-                {
-                    counter.text = valueDisplay.ToString("N0") + " m";
-                }
-                else if (valueDisplay < 1000000)
-                {
-                    // you're not going to get here, but just in case
-                    counter.text = (Mathf.Floor(valueDisplay / 10f) / 100f).ToString("N2") + " km";
-                }
-                else
-                {
-                    counter.text = (Mathf.Floor(valueDisplay / 10f) / 100f).ToString("E2") + " km";
-                }
+                counter.text = GameManager.instance.DisplayDistance(valueDisplay);
                 break;
-            }
         }
     }
 

@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // takes player input and moves the player pawn depending on input
 // created 18/8/23
-// last modified 4/9/23
+// last modified 5/9/23
 
 public class PlayerPawn : MonoBehaviour
 {
@@ -34,9 +35,18 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private float streakCoinPitchPerLevel = 0.05f;
     [SerializeField] private float streakCoinPitchForProgress = 0.2f;
     [SerializeField] private float streakSpeedBoostPerLevel = 0.1f;
+    [Header("Effect prefabs")]
+    [SerializeField] private TimedEffect tusslePrefab;
     [Header("Speed lines")]
     [SerializeField] private ParticleSystem speedLines;
     [SerializeField] private float speedLineSpeedPerSpeed = 0.5f;
+    [Header("Tutorial UI elements")]
+    [SerializeField] private GameObject tutorialBlockTop;
+    [SerializeField] private TextMeshProUGUI tutorialBlockTopText;
+    [SerializeField] private GameObject tutorialBlockBottom;
+    [SerializeField] private TextMeshProUGUI tutorialBlockBottomText;
+    [SerializeField] private GameObject tutorialTryAgain; // show when the player gets tutorial step wrong
+    [SerializeField] private GameObject tutorialWellDone; // show when the player successfully completes a tutorial step
     private float pawnTargetX; // the pawn's current X target
     private float speed;
     private bool jumpHeld;
@@ -48,6 +58,7 @@ public class PlayerPawn : MonoBehaviour
     float speedLinesEmissionRateBase;
     ParticleSystem.MainModule speedLinesMain;
     float speedLinesMainSpeedBase;
+    public bool tutorial { get; private set; } = false;
 
     private void Awake()
     {
@@ -184,6 +195,7 @@ public class PlayerPawn : MonoBehaviour
 
                             SetSpeed(0f);
                             speedLines.Stop();
+                            Instantiate(tusslePrefab, hazard.transform.position, hazard.transform.rotation, hazard.transform);
 
                             if (takeDamage > 0)
                             {

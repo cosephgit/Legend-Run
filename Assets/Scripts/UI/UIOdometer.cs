@@ -38,19 +38,8 @@ public class UIOdometer : UIBase
             }
         }
 
-        if (distance < 1000)
-        {
-            distanceText.text = distance.ToString("N0") + " m";
-        }
-        else if (distance < 1000000)
-        {
-            // you're not going to get here, but just in case
-            distanceText.text = (Mathf.Floor(distance / 10f) / 100f).ToString("N2") + " km";
-        }
-        else
-        {
-            distanceText.text = (Mathf.Floor(distance / 10f) / 100f).ToString("E2") + " km";
-        }
+        distanceText.text = GameManager.instance.DisplayDistance(Mathf.FloorToInt(distance));
+
         distanceOld = distance;
     }
 }
