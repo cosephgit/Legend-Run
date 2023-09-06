@@ -9,6 +9,19 @@ using UnityEngine.UI;
 // created 18/8/23
 // last modified 5/9/23
 
+
+/*
+ * so working out the tutorial...
+ * at the start of the level, tell the player how to move (this is an autopass as soon as the player taps)
+ * then spawn some coins and tell the player to move to grab them
+ * then "well done" after they grab some of them (not all)
+ * then spawn a hazard and tell the player to dodge them
+ * then "well done" when they dodge successfully
+ * then spawn a hazard and tell the player to jump it (lock their position into the hazard line)
+ * then "well done" when they jump when the hazard passes
+ */
+
+
 public class PlayerPawn : MonoBehaviour
 {
     public static PlayerPawn instance;
@@ -17,6 +30,8 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private PlayerPawnLoco pawnLoco;
     [SerializeField] private PlayerPawnPurse pawnPurse;
     [SerializeField] private PlayerWeapon pawnWeapon;
+    [field: SerializeField] public PlayerTutorial tutorial { get; private set; }
+    [Header("Key references")]
     [SerializeField] private TerrainManager terrain;
     [SerializeField] private UIStreak streakDisplay;
     [Header("Movement parameters")]
@@ -40,13 +55,6 @@ public class PlayerPawn : MonoBehaviour
     [Header("Speed lines")]
     [SerializeField] private ParticleSystem speedLines;
     [SerializeField] private float speedLineSpeedPerSpeed = 0.5f;
-    [Header("Tutorial UI elements")]
-    [SerializeField] private GameObject tutorialBlockTop;
-    [SerializeField] private TextMeshProUGUI tutorialBlockTopText;
-    [SerializeField] private GameObject tutorialBlockBottom;
-    [SerializeField] private TextMeshProUGUI tutorialBlockBottomText;
-    [SerializeField] private GameObject tutorialTryAgain; // show when the player gets tutorial step wrong
-    [SerializeField] private GameObject tutorialWellDone; // show when the player successfully completes a tutorial step
     private float pawnTargetX; // the pawn's current X target
     private float speed;
     private bool jumpHeld;
@@ -58,7 +66,6 @@ public class PlayerPawn : MonoBehaviour
     float speedLinesEmissionRateBase;
     ParticleSystem.MainModule speedLinesMain;
     float speedLinesMainSpeedBase;
-    public bool tutorial { get; private set; } = false;
 
     private void Awake()
     {
@@ -99,6 +106,8 @@ public class PlayerPawn : MonoBehaviour
         speedLines.Stop();
     }
 
+    // handles touches with obstacles and coins and powerups
+    // TODO maybe rewrite this, it's a bit chonky
     private void OnTriggerEnter(Collider other)
     {
         if (!pawnHealth.IsAlive()) return;
@@ -114,30 +123,36 @@ public class PlayerPawn : MonoBehaviour
                 float pitch = streakCoinPitchBase;
                 bool level = false;
 
-                // have run into a coin, collect it!
-                pawnPurse.AddCoins(coin.coinValue);
-
-                streakCoins += coin.coinValue;
-                if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
+                if (tutorial.state == TutorialState.Finished)
                 {
-                    streakLevel++;
-                    streakCoinsLevel = streakCoinsLevel + streakCoinsLevelNext;
-                    streakCoinsLevelNext += streakCountPerLevel;
+                    // have run into a coin, collect it!
+                    pawnPurse.AddCoins(coin.coinValue);
 
-                    level = true;
-                }
-                if (streakLevel > 0)
-                {
-                    float streakFill = (float)(streakCoins - streakCoinsLevel) / (float)streakCoinsLevelNext;
-                    streakDisplay.StreakUpdate(streakLevel, streakFill);
-                    pitch += streakLevel * streakCoinPitchPerLevel + streakFill * streakCoinPitchForProgress;
-                    if (level)
+                    streakCoins += coin.coinValue;
+                    if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
                     {
-                        AudioManager.instance.SoundPlayCustom(streakLevelSound, Vector2.zero, 1f, pitch);
-                        streakSpeedBonus = 1f + (streakLevel * streakSpeedBoostPerLevel);
-                        pawnLoco.SetSpeedBoost(streakSpeedBonus);
+                        streakLevel++;
+                        streakCoinsLevel = streakCoinsLevel + streakCoinsLevelNext;
+                        streakCoinsLevelNext += streakCountPerLevel;
+
+                        level = true;
+                    }
+                    if (streakLevel > 0)
+                    {
+                        float streakFill = (float)(streakCoins - streakCoinsLevel) / (float)streakCoinsLevelNext;
+                        streakDisplay.StreakUpdate(streakLevel, streakFill);
+                        pitch += streakLevel * streakCoinPitchPerLevel + streakFill * streakCoinPitchForProgress;
+                        if (level)
+                        {
+                            AudioManager.instance.SoundPlayCustom(streakLevelSound, Vector2.zero, 1f, pitch);
+                            streakSpeedBonus = 1f + (streakLevel * streakSpeedBoostPerLevel);
+                            pawnLoco.SetSpeedBoost(streakSpeedBonus);
+                        }
                     }
                 }
+                else // don't do streaks or anything else, just progress the tutorial if appropriate
+                    tutorial.CoinCollected();
+
 
                 coin.CollectedCoin(pitch);
             }
@@ -200,8 +215,14 @@ public class PlayerPawn : MonoBehaviour
                             if (takeDamage > 0)
                             {
                                 hazard.Collided();
-                                pawnHealth.TakeDamage(takeDamage);
-                                StreakEnd();
+                                if (tutorial.state == TutorialState.Finished)
+                                {
+                                    pawnHealth.TakeDamage(takeDamage);
+                                    StreakEnd();
+                                }
+                                else
+                                    tutorial.HazardHit();
+
                                 if (pawnHealth.IsAlive())
                                 {
                                     pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
@@ -257,18 +278,28 @@ public class PlayerPawn : MonoBehaviour
         float touchX = (Mathf.Clamp(touchPos.x / Screen.width, screenActiveXMin, screenActiveXMax) - screenActiveXMin) / (screenActiveXMax - screenActiveXMin);
         float touchY = touchPos.y / Screen.height;
 
+        if (touchY > screenJumpY)
+        {
+            if (tutorial.state == TutorialState.Jump || tutorial.state == TutorialState.Finished)
+            {
+                // jump input received
+                if (!jumpHeld)
+                    jumpHeld = pawnLoco.StartJump();
+            }
+            else return;
+        }
+        else
+        {
+            if (tutorial.state == TutorialState.Init || tutorial.state == TutorialState.Jump) return;
+
+            tutorial.PlayerMoved();
+
+            jumpHeld = false;
+        }
+
         // convert the touch inside the main area to a movement position
         pawnTargetX = TerrainManager.instance.moveMinX + (TerrainManager.instance.moveMaxX - TerrainManager.instance.moveMinX) * touchX;
         pawnLoco.SetMoveTarget(pawnTargetX);
-
-        if (touchY > screenJumpY)
-        {
-            // jump input received
-            if (!jumpHeld)
-                jumpHeld = pawnLoco.StartJump();
-        }
-        else
-            jumpHeld = false;
     }
 
     // sets speed effects for a new speed value
@@ -290,7 +321,7 @@ public class PlayerPawn : MonoBehaviour
     private void Update()
     {
         if (!pawnHealth.IsAlive()) return;
-        
+
         if (speed < speedMax * streakSpeedBonus)
         {
             // constantly increase the player's running speed
@@ -318,6 +349,17 @@ public class PlayerPawn : MonoBehaviour
                 jumpHeld = false;
             }
         }
+    }
+
+    // the player has passed a hazard - do tutorial handling
+    public void HazardPassed()
+    {
+        if (tutorial.state == TutorialState.Finished) return;
+
+        if (pawnLoco.jumping)
+            tutorial.HazardJumped();
+        else
+            tutorial.HazardDodged();
     }
 
     // used during initialisation to work out how much X movement the player can achieve for each Z movement (at full speed)

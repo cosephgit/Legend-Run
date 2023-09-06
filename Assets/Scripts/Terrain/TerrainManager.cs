@@ -230,6 +230,8 @@ private void Start()
     // a pause button has been pressed
     public void PausePressed()
     {
+        if (PlayerPawn.instance.tutorial.state != TutorialState.Finished) return;
+
         if (defeat) return;
         if (paused)
             UnpauseGame();

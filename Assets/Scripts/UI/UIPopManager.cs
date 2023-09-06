@@ -6,21 +6,22 @@ using UnityEngine.UI;
 // UIPopManager
 // shows UI pops and sparkles
 // created 24/8/23
-// last modified 1/9/23
+// last modified 6/9/23
 
 public class UIPopManager : MonoBehaviour
 {
     public static UIPopManager instance;
-    [SerializeField] private List<Image> pops;
+    [SerializeField] private List<UIPop> pops;
     [SerializeField]private int popsCount = 20;
     [SerializeField] private float popSpread = 0.01f; // initial position spread as a fraction of screen width
     [SerializeField] private float popSpeedMin = 0.2f; // as a fraction of screen width
     [SerializeField] private float popSpeedMax = 0.4f;
-    [SerializeField] private float popGravity = -1f;
+    [field: SerializeField] public float popGravity { get; private set; } = -1f;
     [SerializeField] private float popsPerMagnitude = 5f;
-    private float popScreenScale;
-    private List<Image> popsActive;
-    private List<Vector2> popsSpeed;
+    [Header("Fadeout")]
+    [SerializeField] private float fadeTime = 1f; // how long the pops should fade out over
+    public float popScreenScale { get; private set; }
+    private List<UIPop> popsActive;
 
     private void Awake()
     {
@@ -34,8 +35,7 @@ public class UIPopManager : MonoBehaviour
         }
         else instance = this;
 
-        popsActive = new List<Image>();
-        popsSpeed = new List<Vector2>();
+        popsActive = new List<UIPop>();
 
         if (popsCount > pops.Count)
         {
@@ -48,49 +48,13 @@ public class UIPopManager : MonoBehaviour
 
         for (int i = 0; i < pops.Count; i++)
         {
-            pops[i].gameObject.SetActive(false);
+            pops[i].Initialise(this);
         }
     }
 
     private void Start()
     {
         popScreenScale = Screen.width;
-    }
-
-    private void Update()
-    {
-        if (popsActive.Count > 0)
-        {
-            // move pops
-            for (int i = popsActive.Count - 1; i >= 0; i--)
-            {
-                Vector2 pos = popsActive[i].transform.position;
-
-                pos += popsSpeed[i] * Time.unscaledDeltaTime;
-
-                popsActive[i].transform.position = pos;
-
-                if (pos.y < -100f)
-                {
-                    // deactivate when off screen
-                    pops.Add(popsActive[i]);
-                    popsActive[i].gameObject.SetActive(false);
-                    popsActive.RemoveAt(i);
-                    popsSpeed.RemoveAt(i);
-                }
-                else
-                {
-                    // apply gravity
-                    Quaternion rot = popsActive[i].transform.rotation * Quaternion.Euler(0f, 0f, popsSpeed[i].x);
-                    Vector2 vee = popsSpeed[i];
-
-                    vee.y += popGravity * popScreenScale * Time.unscaledDeltaTime;
-
-                    popsSpeed[i] = vee;
-                    popsActive[i].transform.rotation = rot;
-                }
-            }
-        }
     }
 
     // show pops at the requested point
@@ -103,7 +67,7 @@ public class UIPopManager : MonoBehaviour
 
         for (int i = 0; i < popsAdd; i++)
         {
-            Image popNew = pops[0];
+            UIPop popNew = pops[0];
             Vector2 popPos = pos;
             float angle = Random.Range(0f, 2f);
             Vector2 vee = new Vector2(Mathf.Cos(angle * Mathf.PI), Mathf.Sin(angle * Mathf.PI)) * Random.Range(popSpeedMin, popSpeedMax) * popScreenScale;
@@ -114,15 +78,15 @@ public class UIPopManager : MonoBehaviour
             pops.RemoveAt(0);
 
             popsActive.Add(popNew);
-            popsSpeed.Add(vee);
 
-            popNew.transform.rotation = Quaternion.Euler(0f, 0f, angle * 360f); // yes this is intentionally not 180
-            popNew.transform.position = pos;
-            popNew.color = color;
-
-            if (popsActive.Count != popsSpeed.Count) Debug.LogError("ERROR UIPopManager is out of sync!");
-
-            popNew.gameObject.SetActive(true);
+            popNew.Launch(vee, Quaternion.Euler(0f, 0f, angle * 360f), pos, color);
         }
+    }
+
+    // a pop has finished being used and is available for use again
+    public void RestorePop(UIPop popRestore)
+    {
+        popsActive.Remove(popRestore);
+        pops.Add(popRestore);
     }
 }

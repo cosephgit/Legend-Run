@@ -337,6 +337,8 @@ public class TerrainChallenges : MonoBehaviour
             {
                 if (hazardsActive[0].transform.position.z < challengeZRemoval)
                 {
+                    if (hazardsActive[0].awake)
+                        PlayerPawn.instance.HazardPassed();
                     hazardsActive[0].Remove();
                     hazardsActive.RemoveAt(0);
                 }

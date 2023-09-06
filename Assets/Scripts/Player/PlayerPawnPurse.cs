@@ -4,7 +4,7 @@ using UnityEngine;
 
 // player coin manager component
 // created 23/8/23
-// last modified 23/8/23
+// last modified 6/9/23
 
 public class PlayerPawnPurse : MonoBehaviour
 {
@@ -12,9 +12,10 @@ public class PlayerPawnPurse : MonoBehaviour
     [SerializeField] private UICoinBar coinBar;
     public int coins { get; private set; }
 
-    private void Awake()
+    private void Start()
     {
         coins = 0;
+        // don't call this before Start() as it requires the GameManager singleton
         coinBar.SetValue(coins, true);
     }
 
