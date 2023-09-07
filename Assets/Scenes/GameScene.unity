@@ -1146,7 +1146,7 @@ PrefabInstance:
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ButtonQuitConfirm
+      value: ButtonDefeatConfirm
       objectReference: {fileID: 0}
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
@@ -9647,6 +9647,8 @@ MonoBehaviour:
   spawnGroupGapZ: 5
   hazards:
   - {fileID: 754630004767667496, guid: 72b1fd698fad90b4bbf2315bb95846b4, type: 3}
+  - {fileID: 754630004767667496, guid: eeef570d7ab0bfc418a0a72e2a9cb82f, type: 3}
+  - {fileID: 754630004767667496, guid: a54cb6bb54ed68d4aa2bbb114673707b, type: 3}
   hazardPerDistanceBase: 0.05
   hazardPerDistancePerDifficulty: 0.05
   hazardMin: 1
@@ -11172,6 +11174,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1588863918}
   m_CullTransparentMesh: 1
+--- !u!114 &1608018254 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2994394899652238338, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2774247701579848763}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa30a94048c29cb4798875fcdc6f1c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1627678868
 GameObject:
   m_ObjectHideFlags: 0
@@ -13150,6 +13164,11 @@ PrefabInstance:
       propertyPath: <tutorial>k__BackingField
       value: 
       objectReference: {fileID: 1701927604}
+    - target: {fileID: 4159889538133082841, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
+        type: 3}
+      propertyPath: <pawnPurse>k__BackingField
+      value: 
+      objectReference: {fileID: 1608018254}
     - target: {fileID: 5191626444639089536, guid: 381a94cdb4c35fc47a14af973fbfdb9c,
         type: 3}
       propertyPath: healthBar

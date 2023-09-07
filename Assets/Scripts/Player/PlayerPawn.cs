@@ -28,7 +28,7 @@ public class PlayerPawn : MonoBehaviour
     [Header("Components")]
     [SerializeField] private PlayerPawnHealth pawnHealth;
     [SerializeField] private PlayerPawnLoco pawnLoco;
-    [SerializeField] private PlayerPawnPurse pawnPurse;
+    [field: SerializeField] public PlayerPawnPurse pawnPurse { get; private set; }
     [SerializeField] private PlayerWeapon pawnWeapon;
     [field: SerializeField] public PlayerTutorial tutorial { get; private set; }
     [Header("Key references")]
@@ -192,7 +192,7 @@ public class PlayerPawn : MonoBehaviour
                             // have run into a hazard!
                             float takeDamage = 1f;
 
-                            if (pawnWeapon.weapon)
+                            if (pawnWeapon.weapon && hazard.killable)
                             {
                                 float hazardStrength = pawnWeapon.UseWeapon(takeDamage);
 
@@ -231,7 +231,7 @@ public class PlayerPawn : MonoBehaviour
                                 {
                                     // defeat!
                                     pawnLoco.pawnAnim.SetTrigger("Die");
-                                    TerrainManager.instance.PlayerDefeat(pawnPurse.coins);
+                                    TerrainManager.instance.PlayerDefeat();
                                 }
                             }
                             else

@@ -256,10 +256,12 @@ public class TerrainChallenges : MonoBehaviour
         float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
         int hazardSpawn = Mathf.FloorToInt(Mathf.Lerp(hazardMin, hazardMax, spawnStrength / 2f));
         float[] hazardX;
+        HazardBase hazardType = hazards[Random.Range(0, hazards.Length)];
 
         if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge)
         {
             hazardSpawn = 3; // always place maximum to make the player actively evade
+            hazardType = hazards[0];
         }
 
         if (PlayerPawn.instance.tutorial.state == TutorialState.Jump)
@@ -272,6 +274,7 @@ public class TerrainChallenges : MonoBehaviour
             hazardX[1] = -1f;
             hazardX[2] = 1f;
             hazardX[3] = 3f;
+            hazardType = hazards[0];
         }
         else
         {
@@ -291,13 +294,13 @@ public class TerrainChallenges : MonoBehaviour
             }
         }
 
-        hazardAcc -= hazardSpawn;
+        hazardAcc -= hazardSpawn * hazardType.hazardThreat;
 
 
         for (int i = 0; i < hazardSpawn; i++)
         {
             Vector3 pos = transform.position + baseRot * new Vector3(hazardX[i], baseHeight, 0f);
-            HazardBase hazard = Instantiate(hazards[0], pos, baseRot, transform);
+            HazardBase hazard = Instantiate(hazardType, pos, baseRot, transform);
             hazardsActive.Add(hazard);
         }
     }

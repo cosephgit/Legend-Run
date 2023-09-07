@@ -61,7 +61,8 @@ public class UIMenus : UIMainMenu
         menuUnderlay.gameObject.SetActive(false);
         menuPause.gameObject.SetActive(false);
         menuDefeat.gameObject.SetActive(false);
-        GameManager.instance.SaveSettings();
+        if (GameManager.instance)
+            GameManager.instance.SaveSettings();
     }
     // the pause button is available during play as well as when paused, so is a toggle
     public void ButtonPause()
@@ -117,7 +118,12 @@ public class UIMenus : UIMainMenu
     public void ButtonQuitConfirm()
     {
         SoundButton();
-        GameManager.instance.SaveSettings();
+        TerrainManager.instance.PlayerDefeat();
+    }
+
+    public void ButtonDefeatConfirm()
+    {
+        SoundButton();
         TerrainManager.instance.QuitToMenu();
     }
 

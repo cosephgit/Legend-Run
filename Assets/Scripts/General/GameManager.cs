@@ -98,6 +98,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // adjust the current karmic rating by the indicating amount
+    // remember positive is good for the player, negative is bad for the player
+    public void KarmicAdjust(float chanceAdjustment)
+    {
+        diffKarma += chanceAdjustment;
+    }
+
     // standardised strings for displaying certain kinds of values
     public string DisplayCoins(int coins)
     {

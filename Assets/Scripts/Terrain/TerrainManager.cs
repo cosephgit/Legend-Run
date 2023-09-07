@@ -80,7 +80,6 @@ public class TerrainManager : MonoBehaviour
             AddTerrainSegmentCircle();
         //AddTerrainSegment();
         safeCurrentX = Random.Range(moveMinX, moveMaxX);
-        CalcNextSafeX();
         distanceTravelled = 0f;
 
         odometer.gameObject.SetActive(false);
@@ -89,6 +88,7 @@ public class TerrainManager : MonoBehaviour
     private void Start()
     {
         difficulty = difficultyBase;
+        CalcNextSafeX();
         terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainChallengeLead, 0f, 0f));
         terrainChallenges.SetDifficulty(difficulty);
         AudioManager.instance.MusicPlay(music);
@@ -103,6 +103,7 @@ public class TerrainManager : MonoBehaviour
             // angle off
             float shiftRightMaxX = Mathf.Min(safeRoutePlayerMoveFraction * safeNextZ / PlayerPawn.instance.PlayerXPerZ(), moveMaxX - safeCurrentX);
             float shiftLeftMaxX = Mathf.Min(safeRoutePlayerMoveFraction * safeNextZ / PlayerPawn.instance.PlayerXPerZ(), safeCurrentX - moveMinX);
+            float shift;
             bool right;
 
             if (shiftRightMaxX < safeRouteAngledXMin)
@@ -112,8 +113,13 @@ public class TerrainManager : MonoBehaviour
             else
                 right = (Random.Range(-shiftLeftMaxX, shiftRightMaxX) >= 0);
 
-            if (right) safeTargetX = safeCurrentX + Random.Range(safeRouteAngledXMin, shiftRightMaxX);
-            else safeTargetX = safeCurrentX - Random.Range(safeRouteAngledXMin, shiftLeftMaxX);
+            if (right) shift = Random.Range(safeRouteAngledXMin, shiftRightMaxX);
+            else shift = -Random.Range(safeRouteAngledXMin, shiftLeftMaxX);
+
+            // adjust the karmic balance a little - the bigger the angle shift on the next step, the more of a balance fudge in favour of the player
+            GameManager.instance.KarmicAdjust(Mathf.Abs(shift / (moveMaxX - moveMinX) / safeNextZ));
+
+            safeTargetX = safeCurrentX + shift;
         }
         else
         {
@@ -284,11 +290,11 @@ public class TerrainManager : MonoBehaviour
     }
 
     // player has been defeated
-    public void PlayerDefeat(int coins)
+    public void PlayerDefeat()
     {
         AudioManager.instance.MusicPlaySting(playerDefeat);
         Time.timeScale = 0f;
-        menuScreens.OpenEndingMenu(distanceTravelled, coins);
+        menuScreens.OpenEndingMenu(distanceTravelled, PlayerPawn.instance.pawnPurse.coins);
         paused = true;
         defeat = true;
     }
