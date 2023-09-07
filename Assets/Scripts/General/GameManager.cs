@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private const string SAVEVOLUMESFX = "VolSFX";
     private const string SAVECOINS = "Coins";
     private const string SAVEDISTANCE = "Distance";
+    private const string SAVETUTORIAL = "Tutorial";
     [SerializeField] private AudioMixer audioMixer;
     [Header("Karmic balance")]
     [SerializeField] private float diffKarmaBalance = 0.2f;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     public float volSFX { get; private set; }
     public int coinsStash { get; private set; }
     public int distanceBest { get; private set; }
+    public bool tutorialDone { get; private set; }
     // pathing difficulty balancer
     private float diffKarma = 0f;
 
@@ -41,6 +43,7 @@ public class GameManager : MonoBehaviour
         SetVolumeSFX(PlayerPrefs.GetFloat(SAVEVOLUMESFX, 1f), false);
         coinsStash = PlayerPrefs.GetInt(SAVECOINS, 0);
         distanceBest = PlayerPrefs.GetInt(SAVEDISTANCE, 0);
+        tutorialDone = (PlayerPrefs.GetInt(SAVETUTORIAL, 0) == 1);
     }
 
     public void SetVolumeBGM(float volume, bool save = true)
@@ -119,5 +122,11 @@ public class GameManager : MonoBehaviour
         {
             return (Mathf.Floor(distance / 10f) / 100f).ToString("E2") + " km";
         }
+    }
+
+    public void TutorialComplete()
+    {
+        tutorialDone = true;
+        PlayerPrefs.SetInt(SAVETUTORIAL, 1);
     }
 }

@@ -15,8 +15,6 @@ public class PlayerPawnPurse : MonoBehaviour
     private void Start()
     {
         coins = 0;
-        // don't call this before Start() as it requires the GameManager singleton
-        coinBar.SetValue(coins, true);
     }
 
     public void AddCoins(int amount)

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -108,9 +109,22 @@ public class TerrainChallenges : MonoBehaviour
     // called by the TerrainManager in each Update to add the distance travelled for the frame
     public void AddDistance(float dist, float safeCurrentX, bool special)
     {
-        coinsAcc += dist * coinsPerDistanceCurrent * intensityCurrent;
-        hazardAcc += dist * hazardPerDistanceCurrent * intensityCurrent;
-        powerupAcc += dist * powerupPerDistanceCurrent * (2f - intensityCurrent); // powerups work inversely with intensity - appearing in lulls rather than peaks
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+        {
+            // tutorial has finished, normal level behaviour
+            coinsAcc += dist * coinsPerDistanceCurrent * intensityCurrent;
+            hazardAcc += dist * hazardPerDistanceCurrent * intensityCurrent;
+            powerupAcc += dist * powerupPerDistanceCurrent * (2f - intensityCurrent); // powerups work inversely with intensity - appearing in lulls rather than peaks
+        }
+        else
+        {
+            // tutorial-only behaviour
+            if (PlayerPawn.instance.tutorial.state == TutorialState.Collect)
+                coinsAcc += dist * coinsPerDistanceCurrent * 0.5f;
+            else if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge
+                || PlayerPawn.instance.tutorial.state == TutorialState.Jump)
+                hazardAcc += dist * hazardPerDistanceCurrent * 0.5f;
+        }
 
         coinPowerupNextZ -= dist;
         hazardNextZ -= dist;
@@ -134,8 +148,16 @@ public class TerrainChallenges : MonoBehaviour
     // have coins accumulated, set up a coin chain to start spawning them
     private void StartCoinChain()
     {
-        coinsLeft = Mathf.FloorToInt(Mathf.Lerp(coinsMin, coinsMax, intensityCurrent / 2f));
-        coinsWorthLeft = Mathf.CeilToInt(coinsLeft * Mathf.Max(1f, coinsWorthCurrent * intensityCurrent));
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Collect)
+        {
+            coinsLeft = coinsMin;
+            coinsWorthLeft = coinsLeft;
+        }
+        else
+        {
+            coinsLeft = Mathf.FloorToInt(Mathf.Lerp(coinsMin, coinsMax, intensityCurrent / 2f));
+            coinsWorthLeft = Mathf.CeilToInt(coinsLeft * Mathf.Max(1f, coinsWorthCurrent * intensityCurrent));
+        }
 
         coinsAcc -= coinsWorthLeft;
         coinPowerupNextZ = spawnGroupGapZ;
@@ -233,22 +255,44 @@ public class TerrainChallenges : MonoBehaviour
     {
         float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
         int hazardSpawn = Mathf.FloorToInt(Mathf.Lerp(hazardMin, hazardMax, spawnStrength / 2f));
-        float[] hazardX = new float[hazardSpawn];
+        float[] hazardX;
+
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge)
+        {
+            hazardSpawn = 3; // always place maximum to make the player actively evade
+        }
+
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Jump)
+        {
+            hazardSpawn = 4; // block the path - only way past is to jump
+
+            hazardX = new float[hazardSpawn];
+
+            hazardX[0] = -3f;
+            hazardX[1] = -1f;
+            hazardX[2] = 1f;
+            hazardX[3] = 3f;
+        }
+        else
+        {
+            // the first hazard is always adjacent to the safe path
+            hazardX = new float[hazardSpawn];
+
+            hazardX[0] = CalcHazardX(safeCurrentX, safeCurrentX, 0);
+
+            if (hazardSpawn == 2)
+            {
+                hazardX[1] = CalcHazardX(Mathf.Min(safeCurrentX, hazardX[0]), Mathf.Max(safeCurrentX, hazardX[0]), 10f);
+            }
+            if (hazardSpawn == 3)
+            {
+                hazardX[1] = CalcHazardX(Mathf.Min(safeCurrentX, hazardX[0]), Mathf.Max(safeCurrentX, hazardX[0]), 1f);
+                hazardX[2] = CalcHazardX(Mathf.Min(safeCurrentX, hazardX[0], hazardX[1]), Mathf.Max(safeCurrentX, hazardX[0], hazardX[1]), 10f);
+            }
+        }
 
         hazardAcc -= hazardSpawn;
 
-        // the first hazard is always adjacent to the safe path
-        hazardX[0] = CalcHazardX(safeCurrentX, safeCurrentX, 0);
-
-        if (hazardSpawn == 2)
-        {
-            hazardX[1] = CalcHazardX(Mathf.Min(safeCurrentX, hazardX[0]), Mathf.Max(safeCurrentX, hazardX[0]), 10f);
-        }
-        if (hazardSpawn == 3)
-        {
-            hazardX[1] = CalcHazardX(Mathf.Min(safeCurrentX, hazardX[0]), Mathf.Max(safeCurrentX, hazardX[0]), 1f);
-            hazardX[2] = CalcHazardX(Mathf.Min(safeCurrentX, hazardX[0], hazardX[1]), Mathf.Max(safeCurrentX, hazardX[0], hazardX[1]), 10f);
-        }
 
         for (int i = 0; i < hazardSpawn; i++)
         {
@@ -365,5 +409,30 @@ public class TerrainChallenges : MonoBehaviour
                 powerupsActive.RemoveAt(0);
             }
         }
+    }
+
+    // remove all challenges that have been spawned, for the tutorial
+    public void ClearChallenges()
+    {
+        for (int i = powerupsActive.Count - 1; i >= 0; i--)
+        {
+            Destroy(powerupsActive[i].gameObject);
+            powerupsActive.RemoveAt(i);
+        }
+        for (int i = hazardsActive.Count - 1; i >= 0; i--)
+        {
+            Destroy(hazardsActive[i].gameObject);
+            hazardsActive.RemoveAt(i);
+        }
+        for (int i = coinsActive.Count - 1; i >= 0; i--)
+        {
+            Destroy(coinsActive[i].gameObject);
+            coinsActive.RemoveAt(i);
+        }
+        coinsLeft = 0;
+        coinsWorthLeft = 0;
+        coinsAcc = 0f;
+        hazardAcc = -1f;
+        powerupAcc = -1f;
     }
 }

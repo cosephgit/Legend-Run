@@ -38,7 +38,7 @@ public enum TutorialState
 public class PlayerTutorial : MonoBehaviour
 {
     [Header("Tutorial UI parameters")]
-    [SerializeField] private float tutorialResultTime = 1f;
+    [SerializeField] private float tutorialResultTime = 2f;
     [Header("Tutorial UI elements")]
     [SerializeField] private GameObject tutorialBlockTop;
     [SerializeField] private TextMeshProUGUI tutorialBlockTopText;
@@ -57,10 +57,20 @@ public class PlayerTutorial : MonoBehaviour
 
     private void Start()
     {
-        tutorialBlockTop.SetActive(true);
-        tutorialBlockTopText.text = ActionWord() + " Below To Move";
-        tutorialBlockBottom.SetActive(false);
-        state = TutorialState.Move;
+        if (GameManager.instance.tutorialDone)
+        {
+            tutorialBlockTop.SetActive(false);
+            tutorialBlockBottom.SetActive(false);
+            state = TutorialState.Finished;
+            TerrainManager.instance.PlayerTutorialStage();
+        }
+        else
+        {
+            tutorialBlockTop.SetActive(true);
+            tutorialBlockTopText.text = ActionWord() + " Below To Move";
+            tutorialBlockBottom.SetActive(false);
+            state = TutorialState.Move;
+        }
     }
 
     // select the right action word based on controls connected
@@ -165,12 +175,20 @@ public class PlayerTutorial : MonoBehaviour
                 state = TutorialState.Jump;
                 break;
             case TutorialState.JumpDone:
-                state = TutorialState.Finished;
                 tutorialBlockBottom.SetActive(false);
-                StartCoroutine(TutorialComplete());
+                yield return new WaitForSeconds(tutorialResultTime);
+                tutorialAllDone.SetActive(true);
+                UIPopManager.instance.ShowPops(tutorialAllDone.transform.position, successPopIntensity, successPopColor);
+                if (successSound) AudioManager.instance.SoundPlayEven(successSound, Vector2.zero);
+                yield return new WaitForSeconds(tutorialResultTime);
+                tutorialAllDone.SetActive(false);
+                GameManager.instance.TutorialComplete();
+                state = TutorialState.Finished;
                 break;
         }
+        TerrainManager.instance.PlayerTutorialStage();
     }
+
     private IEnumerator TutorialFailed()
     {
         switch (state)
@@ -209,13 +227,7 @@ public class PlayerTutorial : MonoBehaviour
                 state = TutorialState.Jump;
                 break;
         }
-    }
-    private IEnumerator TutorialComplete()
-    {
-        tutorialAllDone.SetActive(true);
-        UIPopManager.instance.ShowPops(tutorialAllDone.transform.position, successPopIntensity, successPopColor);
-        if (successSound) AudioManager.instance.SoundPlayEven(successSound, Vector2.zero);
-        yield return new WaitForSeconds(tutorialResultTime);
-        tutorialAllDone.SetActive(false);
+
+        TerrainManager.instance.PlayerTutorialStage();
     }
 }

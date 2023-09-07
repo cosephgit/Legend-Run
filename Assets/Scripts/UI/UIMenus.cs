@@ -33,6 +33,7 @@ public class UIMenus : UIMainMenu
     {
         defeatHighScore.gameObject.SetActive(false);
         CloseMenu();
+        buttonPause.gameObject.SetActive(false);
     }
 
     public void OpenPauseMenu()
@@ -123,20 +124,22 @@ public class UIMenus : UIMainMenu
     // open the victory menu and show the player how well they've done
     public void OpenEndingMenu(float distance, int coins)
     {
+        int distanceReached = Mathf.FloorToInt(distance);
         SoundButton();
+
+        menuUnderlay.gameObject.SetActive(true);
+        menuDefeat.gameObject.SetActive(true);
         defeatCoins.SetValue(GameManager.instance.coinsStash, true); // count up from the old value
         GameManager.instance.AddCoins(coins);
         defeatCoins.SetValue(GameManager.instance.coinsStash);
-        defeatDistance.SetValue(distance);
+        defeatDistance.SetValue(distanceReached);
         if (distance > GameManager.instance.distanceBest)
         {
             StartCoroutine(NewHighScorePops());
             defeatHighScore.gameObject.SetActive(true);
         }
         buttonPause.interactable = false;
-        menuUnderlay.gameObject.SetActive(true);
-        menuDefeat.gameObject.SetActive(true);
-        GameManager.instance.AddDistance(Mathf.FloorToInt(distance));
+        GameManager.instance.AddDistance(distanceReached);
         GameManager.instance.SaveSettings();
     }
 
@@ -154,5 +157,11 @@ public class UIMenus : UIMainMenu
     public void ButtonNextStage()
     {
         SoundButton();
+    }
+
+    // show the pause button only when the stage starts
+    public void StageStart()
+    {
+        buttonPause.gameObject.SetActive(true);
     }
 }

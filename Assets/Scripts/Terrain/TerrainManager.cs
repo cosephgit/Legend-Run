@@ -82,9 +82,11 @@ public class TerrainManager : MonoBehaviour
         safeCurrentX = Random.Range(moveMinX, moveMaxX);
         CalcNextSafeX();
         distanceTravelled = 0f;
+
+        odometer.gameObject.SetActive(false);
     }
 
-private void Start()
+    private void Start()
     {
         difficulty = difficultyBase;
         terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainChallengeLead, 0f, 0f));
@@ -183,17 +185,20 @@ private void Start()
             bool specialSpawn = false;
             float distanceNew = distanceTravelled + frameDist;
 
-            if (Mathf.Floor(distanceTravelled / checkpointDistance) < Mathf.Floor(distanceNew / checkpointDistance))
+            if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
             {
-                // have passed a difficulty milestone
-                difficulty = difficultyBase + (Mathf.Floor(distanceNew / checkpointDistance) * difficultyPerKM);
-                terrainChallenges.SetDifficulty(difficulty);
-                Debug.Log("new difficulty is " + difficulty);
+                if (Mathf.Floor(distanceTravelled / checkpointDistance) < Mathf.Floor(distanceNew / checkpointDistance))
+                {
+                    // have passed a difficulty milestone
+                    difficulty = difficultyBase + (Mathf.Floor(distanceNew / checkpointDistance) * difficultyPerKM);
+                    terrainChallenges.SetDifficulty(difficulty);
+                    Debug.Log("new difficulty is " + difficulty);
+                }
+
+                distanceTravelled = distanceNew;
+
+                odometer.SetDistance(distanceTravelled);
             }
-
-            distanceTravelled = distanceNew;
-
-            odometer.SetDistance(distanceTravelled);
 
             transform.Rotate(-degreesPerSpeed * frameDist, 0, 0);
 
@@ -286,5 +291,17 @@ private void Start()
         menuScreens.OpenEndingMenu(distanceTravelled, coins);
         paused = true;
         defeat = true;
+    }
+
+    // used to notify the terrain manager that a tutorial stage has been completed and adjust the scene accordingly
+    public void PlayerTutorialStage()
+    {
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+        {
+            // tutorial finished, turn on basic UI elements
+            odometer.gameObject.SetActive(true);
+            menuScreens.StageStart();
+        }
+        terrainChallenges.ClearChallenges();
     }
 }

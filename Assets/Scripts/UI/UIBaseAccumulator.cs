@@ -7,7 +7,7 @@ using UnityEngine;
 // UIBaseAccumulator
 // a base UI class with methods for displaying a number which ticks gradually towards the current value
 // created 18/8/23
-// last modified 4/9/23
+// last modified 7/9/23
 
 public enum AccumulatorType
 {
@@ -27,6 +27,7 @@ public class UIBaseAccumulator : UIBase
     private int valueDisplay;
     private float updateNext;
 
+    // show the current value using the format for the accumulator type
     private void DisplayValue()
     {
         switch (type)
@@ -40,8 +41,11 @@ public class UIBaseAccumulator : UIBase
         }
     }
 
+    // set this display to the new value
+    // force means set the display to the new value immediately rather than ticking towards it
     public void SetValue(float amount, bool force = false)
     {
+        gameObject.SetActive(true);
         valueCurrent = Mathf.FloorToInt(amount);
         if (force)
         {

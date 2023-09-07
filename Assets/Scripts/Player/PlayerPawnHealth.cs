@@ -4,7 +4,7 @@ using UnityEngine;
 
 // player health manager component
 // created 18/8/23
-// last modified 23/8/23
+// last modified 7/9/23
 
 public class PlayerPawnHealth : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class PlayerPawnHealth : MonoBehaviour
     private void Awake()
     {
         health = healthMax;
-        healthBar.SetHealth(health / healthMax, true);
+        healthBar.InitialiseHealth();
     }
 
     public void TakeDamage(float damage, bool pain = true)

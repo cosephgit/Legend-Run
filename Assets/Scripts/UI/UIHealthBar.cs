@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // UIHealthBar
 // updates the player's health bar
 // created 22/8/23
-// last modified 1/9/23
+// last modified 7/9/23
 
 
 public class UIHealthBar : UIBase
@@ -19,9 +19,20 @@ public class UIHealthBar : UIBase
     private float healthActual;
     private float healthFill;
 
+    public void InitialiseHealth()
+    {
+        healthFill = 1;
+        healthFillSlider.value = 1;
+        healthFade = 1;
+        healthFadeSlider.value = 1;
+        healthActual = 1;
+        healthActualSlider.value = 1;
+    }
+
     public void SetHealth(float health, bool forcefill = false)
     {
         if (health == healthActual) return;
+        gameObject.SetActive(true);
 
         if (forcefill || health > healthActual)
         {

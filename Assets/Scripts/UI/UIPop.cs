@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 // UIPop
 // each individual pop in the UI, handles the individual movements and fade outs
-// created 24/8/23
+// created 6/9/23
 // last modified 6/9/23
 
 public class UIPop : MonoBehaviour
@@ -14,6 +14,8 @@ public class UIPop : MonoBehaviour
     private UIPopManager parentManager;
     private Color popColor;
     private Vector2 popVee;
+    private float fadeTimeLeft;
+    private float fadeTimeFull;
 
     public void Initialise(UIPopManager parentManagerNew)
     {
@@ -21,13 +23,16 @@ public class UIPop : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Launch(Vector2 vee, Quaternion rot, Vector2 pos, Color color)
+    public void Launch(Vector2 vee, Quaternion rot, Vector2 pos, Color color, float fadeTime)
     {
         popColor = color;
         popImage.color = color;
         popVee = vee;
         transform.position = pos;
         transform.rotation = rot;
+        if (fadeTime > 0) fadeTimeLeft = fadeTime;
+        else fadeTimeLeft = 0f; // in case a previous usage left a value behind
+        fadeTimeFull = fadeTimeLeft;
         gameObject.SetActive(true);
     }
 
@@ -47,6 +52,21 @@ public class UIPop : MonoBehaviour
         }
         else
         {
+            if (fadeTimeFull > 0)
+            {
+                fadeTimeLeft -= Time.deltaTime;
+                if (fadeTimeLeft <= 0)
+                {
+                    // fade out finished, deactivate
+                    parentManager.RestorePop(this);
+                    gameObject.SetActive(false);
+                    return;
+                }
+                Color colorFaded = popColor;
+                popColor.a *= fadeTimeLeft / fadeTimeFull;
+                popImage.color = popColor;
+            }
+
             // apply gravity
             Quaternion rot = transform.rotation * Quaternion.Euler(0f, 0f, popVee.x);
             Vector2 vee = popVee;
