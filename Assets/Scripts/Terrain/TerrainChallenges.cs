@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 // TerrainChallenges
 // this class manages the challenges in the game - collectibles, bonuses, and hazards

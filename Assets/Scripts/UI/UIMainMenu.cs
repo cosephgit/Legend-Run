@@ -14,11 +14,15 @@ public class UIMainMenu : MonoBehaviour
     [SerializeField] protected UIOptionsMenu menuOptions;
     [SerializeField] private AudioClip audioButton;
     [SerializeField] private AudioClip menuMusic;
+    [SerializeField] private GameObject buttonQuitGame;
     private bool audioReady;
 
     private void Awake()
     {
         ButtonBack();
+#if UNITY_WEBGL
+        buttonQuitGame.SetActive(false);
+#endif
     }
 
     private void Start()
