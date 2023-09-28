@@ -15,6 +15,7 @@ public class UIHealthBar : UIBase
     [SerializeField] private Slider healthActualSlider; // the actual health level
     [SerializeField] private Slider healthFillSlider; // the fill slider to show health gain
     [SerializeField] private float healthFadePerSecond = 1f; // how quickly the health fade moves
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     private float healthFade;
     private float healthActual;
     private float healthFill;
@@ -31,6 +32,8 @@ public class UIHealthBar : UIBase
 
     public void SetHealth(float health, bool forcefill = false)
     {
+        if (DEBUGPRESENTATIONMODE) return;
+
         if (health == healthActual) return;
         gameObject.SetActive(true);
 

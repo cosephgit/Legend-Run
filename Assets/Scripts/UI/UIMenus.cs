@@ -28,6 +28,7 @@ public class UIMenus : UIMainMenu
     [SerializeField] private int defeatPopCount = 4;
     [SerializeField] private float defeatPopMagnitude = 4f;
     [SerializeField] private float defeatPopDelay = 0.5f;
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
 
     private void Awake()
     {
@@ -168,6 +169,7 @@ public class UIMenus : UIMainMenu
     // show the pause button only when the stage starts
     public void StageStart()
     {
+        if (DEBUGPRESENTATIONMODE) return;
         buttonPause.gameObject.SetActive(true);
     }
 }

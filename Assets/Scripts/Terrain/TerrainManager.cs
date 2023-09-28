@@ -81,8 +81,6 @@ public class TerrainManager : MonoBehaviour
         //AddTerrainSegment();
         safeCurrentX = Random.Range(moveMinX, moveMaxX);
         distanceTravelled = 0f;
-
-        odometer.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -305,7 +303,6 @@ public class TerrainManager : MonoBehaviour
         if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
         {
             // tutorial finished, turn on basic UI elements
-            odometer.gameObject.SetActive(true);
             menuScreens.StageStart();
         }
         terrainChallenges.ClearChallenges();

@@ -15,6 +15,7 @@ public class UIOdometer : UIBase
     [Header("Array sizes must match and be in descending distance order")]
     [SerializeField] private float[] pingDistances;
     [SerializeField] private float[] pingMagnitudes;
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     float distanceOld;
     int pingCount;
 
@@ -22,10 +23,15 @@ public class UIOdometer : UIBase
     {
         distanceText.text = "0 m";
         pingCount = Mathf.Min(pingDistances.Length, pingMagnitudes.Length);
+        gameObject.SetActive(false);
     }
 
     public void SetDistance(float distance)
     {
+        if (DEBUGPRESENTATIONMODE) return;
+
+        gameObject.SetActive(true);
+
         // go through the defined ping distances to find how big of a ping we should use for the latest update (if any)
         for (int i = 0; i < pingCount; i++)
         {

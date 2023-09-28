@@ -23,6 +23,7 @@ public class UIBaseAccumulator : UIBase
     [SerializeField] private AudioClip updatePip;
     [SerializeField] private Transform popPos; // if this UI uses pops, they should spawn around this point
     [SerializeField] private AccumulatorType type = AccumulatorType.Coins;
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     private int valueCurrent;
     private int valueDisplay;
     private float updateNext;
@@ -45,6 +46,7 @@ public class UIBaseAccumulator : UIBase
     // force means set the display to the new value immediately rather than ticking towards it
     public void SetValue(float amount, bool force = false)
     {
+        if (DEBUGPRESENTATIONMODE) return;
         gameObject.SetActive(true);
         valueCurrent = Mathf.FloorToInt(amount);
         if (force)

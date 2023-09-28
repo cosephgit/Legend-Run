@@ -25,6 +25,7 @@ public class UIStreak : UIBase
     [SerializeField] private float streakPopTime = 0.5f;
     [SerializeField] private float streakFailScale = 1.5f;
     [SerializeField] private float streakPopScale = 2f;
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     private int streakLevel = 0;
     private float streakFill = 0;
 
@@ -37,6 +38,7 @@ public class UIStreak : UIBase
     // called to update the streak (each time a coin is collected after the first few)
     public void StreakUpdate(int level, float fill)
     {
+        if (DEBUGPRESENTATIONMODE) return;
         if (streakLevel == 0)
         {
             StopAllCoroutines();

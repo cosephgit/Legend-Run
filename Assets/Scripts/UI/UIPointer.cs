@@ -14,6 +14,7 @@ public class UIPointer : MonoBehaviour
     [SerializeField] private Image pointerImage; // the actual pointer object
     [SerializeField] private Color pointerColor;
     [SerializeField] private float pointerFadeDuration = 0.5f; // how long the pointer takes to fade
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     private float pointerFadeTime; // time left before pointer fades out
 
     private void Awake()
@@ -41,6 +42,8 @@ public class UIPointer : MonoBehaviour
 
     public void ShowPointer(Vector2 screenPos)
     {
+        if (DEBUGPRESENTATIONMODE) return;
+
         pointer.position = screenPos;
         pointerImage.color = pointerColor;
         pointerFadeTime = pointerFadeDuration;

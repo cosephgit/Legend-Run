@@ -20,6 +20,7 @@ public class UIPopManager : MonoBehaviour
     [SerializeField] private float popsPerMagnitude = 5f;
     [Header("Fadeout")]
     [SerializeField] private float fadeTime = 2f; // how long the pops should fade out over
+    [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     public float popScreenScale { get; private set; }
     private List<UIPop> popsIdle;
     private List<UIPop> popsActive;
@@ -54,6 +55,8 @@ public class UIPopManager : MonoBehaviour
     // show pops at the requested point
     public void ShowPops(Vector2 pos, float magnitude, Color color)
     {
+        if (DEBUGPRESENTATIONMODE) return;
+
         int popsAdd = Mathf.CeilToInt(magnitude * popsPerMagnitude);
         if (popsAdd > popsIdle.Count) popsAdd = popsIdle.Count;
 
