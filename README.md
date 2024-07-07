@@ -1,4 +1,4 @@
 # Legend-Run
  
-Playable build can be downloaded here:
+Playable in browswer here:
 https://cosephgames.itch.io/legend-run
