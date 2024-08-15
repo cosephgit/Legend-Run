@@ -8,6 +8,13 @@ using UnityEngine.SceneManagement;
 // created 18/8/23
 // last modified 4/9/23
 
+public enum LaneRef
+{
+    Left,
+    Centre,
+    Right
+}
+
 public class TerrainManager : MonoBehaviour
 {
     public static TerrainManager instance;
@@ -18,12 +25,16 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private float circleRadius = 100f; // the radius of the track circle
     [field: SerializeField] public float moveMinX { get; private set; } = -3f;
     [field: SerializeField] public float moveMaxX { get; private set; } = 3f;
+    [field: SerializeField] public float laneWidth { get; private set; } = 2f;
     [Header("Safe route settings")]
+    [SerializeField] private float safeRouteZMinHard = 10f; // HARD minimum distance between safe route direction changes
     [SerializeField] private float safeRouteZMin = 10f; // minimum distance between safe route direction changes
     [SerializeField] private float safeRouteZMax = 20f; // maximum distance between safe route direction changes
+    [SerializeField] private float safeRouteZPerDiff = 0.9f; // min/max distance between safe route direction changes per increase in difficulty (exponential)
     [SerializeField] private float safeRouteChanceAngled = 0.5f; // the proportion of coin chains that will run at an angle
     [SerializeField] private float safeRouteAngledXMin = 2f; // the minimum x offset for an angled run of coins
-    [SerializeField] private float safeRoutePlayerMoveFraction = 0.8f; // the maximum fraction of the player's move speed that an angled route can require
+    [SerializeField] private float safeRoutePlayerMoveFractionMin = 0.6f; // the minimum fraction of the player's move speed that an angled route can require at low difficulty
+    [SerializeField] private float safeRoutePlayerMoveFractionMax = 0.8f; // the maximum fraction of the player's move speed that an angled route can require at high difficulty
     [Header("Challenge settings")]
     [SerializeField] private TerrainChallenges terrainChallenges;
     [SerializeField] private int terrainChallengeLead = 3;
@@ -51,12 +62,18 @@ public class TerrainManager : MonoBehaviour
     public bool victory { get; private set; }
     public bool defeat { get; private set; }
     // safe route values
-    private float safeCurrentX;
-    private float safeTargetX;
+    public float safeCurrentX { get; private set; }
+    public float safeTargetX { get; private set; }
     private float safeNextZ; // Z distance before the next change in safe route direction
     // checkpoint scoring
     private float distanceTravelled;
     private float difficulty;
+    // lane offsets
+    public float laneLeftX { get; private set; } = -2f;
+    public float laneLeftXMax { get; private set; } = -1f;
+    public float laneCentreX { get; private set; } = 0f;
+    public float laneRightX { get; private set; } = 2f;
+    public float laneRightXMin { get; private set; } = 1f;
 
     private void Awake()
     {
@@ -73,13 +90,20 @@ public class TerrainManager : MonoBehaviour
 
         terrain = new List<TerrainSegment>();
 
+        laneCentreX = 0f;
+        laneLeftX = laneCentreX - laneWidth;
+        laneRightX = laneCentreX + laneWidth;
+        laneLeftXMax = (laneCentreX + laneLeftX) * 0.5f;
+        laneRightXMin = (laneCentreX + laneRightX) * 0.5f;
+
         degreesPerSegment = 180f * terrainGap / circleRadius / Mathf.PI;
         degreesPerSpeed = 180f / circleRadius / Mathf.PI;
         rotPerSpeed = Quaternion.Euler(-degreesPerSpeed, 0, 0);
         for (int i = 0; i < terrainMax; i++)
             AddTerrainSegmentCircle();
         //AddTerrainSegment();
-        safeCurrentX = Random.Range(moveMinX, moveMaxX);
+        safeCurrentX = laneCentreX;
+        safeTargetX = laneCentreX;
         distanceTravelled = 0f;
     }
 
@@ -94,11 +118,47 @@ public class TerrainManager : MonoBehaviour
 
     private void CalcNextSafeX()
     {
-        safeNextZ = Random.Range(safeRouteZMin, safeRouteZMax);
+        safeNextZ = Mathf.Max(Random.Range(safeRouteZMin, safeRouteZMax) * Mathf.Pow(safeRouteZPerDiff, difficulty), safeRouteZMinHard);
+        float laneDistanceMax = safeRoutePlayerMoveFractionMin * safeNextZ / PlayerPawn.instance.PlayerXPerZ();
+        bool laneChange = false;
+        if (laneDistanceMax > laneWidth && GameManager.instance.KarmicChance(safeRouteChanceAngled))
+            laneChange = true;
 
-        if (GameManager.instance.KarmicChance(safeRouteChanceAngled))
+
+        if (laneChange)
         {
             // angle off
+            LaneRef laneCurrent = GetLane(safeCurrentX);
+            LaneRef laneNew;
+            bool laneCanDoubleStep = false;
+
+            if (laneDistanceMax > laneWidth * 2f)
+                laneCanDoubleStep = true;
+
+            switch (laneCurrent)
+            {
+                case LaneRef.Right:
+                    if (laneCanDoubleStep && CoSephUtils.RandomBool())
+                        laneNew = LaneRef.Left;
+                    else
+                        laneNew = LaneRef.Centre;
+                    break;
+                case LaneRef.Left:
+                    if (laneCanDoubleStep && CoSephUtils.RandomBool())
+                        laneNew = LaneRef.Right;
+                    else
+                        laneNew = LaneRef.Centre;
+                    break;
+                default:
+                case LaneRef.Centre:
+                    if (CoSephUtils.RandomBool())
+                        laneNew = LaneRef.Right;
+                    else
+                        laneNew = LaneRef.Left;
+                    break;
+            }
+
+            /*
             float shiftRightMaxX = Mathf.Min(safeRoutePlayerMoveFraction * safeNextZ / PlayerPawn.instance.PlayerXPerZ(), moveMaxX - safeCurrentX);
             float shiftLeftMaxX = Mathf.Min(safeRoutePlayerMoveFraction * safeNextZ / PlayerPawn.instance.PlayerXPerZ(), safeCurrentX - moveMinX);
             float shift;
@@ -113,11 +173,30 @@ public class TerrainManager : MonoBehaviour
 
             if (right) shift = Random.Range(safeRouteAngledXMin, shiftRightMaxX);
             else shift = -Random.Range(safeRouteAngledXMin, shiftLeftMaxX);
+            */
+
+            float safeTargetXNew;
+
+            switch (laneNew)
+            {
+                case LaneRef.Left:
+                    safeTargetXNew = laneLeftX;
+                    break;
+                case LaneRef.Right:
+                    safeTargetXNew = laneRightX;
+                    break;
+                case LaneRef.Centre:
+                default:
+                    safeTargetXNew = laneCentreX;
+                    break;
+            }
+
+            float shift = safeTargetXNew - safeTargetX;
 
             // adjust the karmic balance a little - the bigger the angle shift on the next step, the more of a balance fudge in favour of the player
             GameManager.instance.KarmicAdjust(Mathf.Abs(shift / (moveMaxX - moveMinX) / safeNextZ));
 
-            safeTargetX = safeCurrentX + shift;
+            safeTargetX = safeTargetXNew;
         }
         else
         {
@@ -292,9 +371,18 @@ public class TerrainManager : MonoBehaviour
     {
         AudioManager.instance.MusicPlaySting(playerDefeat);
         Time.timeScale = 0f;
-        menuScreens.OpenEndingMenu(distanceTravelled, PlayerPawn.instance.pawnPurse.coins);
+        menuScreens.OpenEndingMenu(distanceTravelled, PlayerPawn.instance.pawnPurse.coins, PlayerPawn.instance.pawnPurse.gems);
         paused = true;
         defeat = true;
+    }
+
+    // player has paid to continue
+    public void PlayerRecover()
+    {
+        defeat = false;
+        PlayerPawn.instance.PlayerRecover();
+        UnpauseGame();
+        AudioManager.instance.MusicPlay(music);
     }
 
     // used to notify the terrain manager that a tutorial stage has been completed and adjust the scene accordingly
@@ -306,5 +394,28 @@ public class TerrainManager : MonoBehaviour
             menuScreens.StageStart();
         }
         terrainChallenges.ClearChallenges();
+    }
+
+    public LaneRef GetLane(float posX)
+    {
+        if (posX <= laneLeftXMax)
+            return LaneRef.Left;
+        if (posX >= laneRightXMin)
+            return LaneRef.Right;
+        return LaneRef.Centre;
+    }
+    public float GetLanePosX(float posX)
+    {
+        LaneRef lane = GetLane(posX);
+        switch (lane)
+        {
+            case LaneRef.Left:
+                return laneLeftX;
+            case LaneRef.Right:
+                return laneRightX;
+            case LaneRef.Centre:
+                return laneCentreX;
+        }
+        return 0;
     }
 }

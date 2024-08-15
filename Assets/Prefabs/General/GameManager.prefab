@@ -45,3 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioMixer: {fileID: 24100000, guid: d6c57297929cfb142a55028155c053b2, type: 2}
+  diffKarmaBalance: 0.2
+  <shopSettings>k__BackingField: {fileID: 11400000, guid: de8bf029dc14cb742af4351d62df2dc1,
+    type: 2}

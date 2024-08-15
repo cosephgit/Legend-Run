@@ -9,17 +9,26 @@ using UnityEngine;
 public class PlayerPawnPurse : MonoBehaviour
 {
     [Header("Coin settings")]
-    [SerializeField] private UICoinBar coinBar;
+    [SerializeField] private UIResourceBar coinBar;
+    [SerializeField] private UIResourceBar gemBar;
     public int coins { get; private set; }
+    public int gems { get; private set; }
 
     private void Start()
     {
-        coins = 0;
+        coins = GameManager.instance.coinsStash;
+        gems = GameManager.instance.gemsStash;
     }
 
     public void AddCoins(int amount)
     {
         coins += amount;
         coinBar.SetValue(coins);
+    }
+
+    public void AddGems(int amount)
+    {
+        gems += amount;
+        gemBar.SetValue(gems);
     }
 }

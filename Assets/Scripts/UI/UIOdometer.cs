@@ -13,8 +13,8 @@ public class UIOdometer : UIBase
 {
     [SerializeField] private TextMeshProUGUI distanceText;
     [Header("Array sizes must match and be in descending distance order")]
-    [SerializeField] private float[] pingDistances;
-    [SerializeField] private float[] pingMagnitudes;
+    [SerializeField] private float[] pingDistances = new float[2] { 1000f, 100f };
+    [SerializeField] private float[] pingMagnitudes = new float[2] { 2f, 0.5f };
     [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     float distanceOld;
     int pingCount;
@@ -44,7 +44,7 @@ public class UIOdometer : UIBase
             }
         }
 
-        distanceText.text = GameManager.instance.DisplayDistance(Mathf.FloorToInt(distance));
+        distanceText.text = GlobalVars.DisplayDistance(Mathf.FloorToInt(distance));
 
         distanceOld = distance;
     }

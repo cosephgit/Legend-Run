@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // UIBaseAccumulator
@@ -12,7 +11,8 @@ using UnityEngine;
 public enum AccumulatorType
 {
     Coins,
-    Distance
+    Distance,
+    Gems
 }
 
 public class UIBaseAccumulator : UIBase
@@ -21,7 +21,8 @@ public class UIBaseAccumulator : UIBase
     [SerializeField] private TextMeshProUGUI counter;
     [SerializeField] private float updateTime = 0.1f; // time between counter updates
     [SerializeField] private AudioClip updatePip;
-    [SerializeField] private Transform popPos; // if this UI uses pops, they should spawn around this point
+    [SerializeField] private AudioClip updatePipDown;
+    [SerializeField] private UIPopMaker popMaker;
     [SerializeField] private AccumulatorType type = AccumulatorType.Coins;
     [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
     private int valueCurrent;
@@ -34,10 +35,13 @@ public class UIBaseAccumulator : UIBase
         switch (type)
         {
             case AccumulatorType.Coins:
-                counter.text = GameManager.instance.DisplayCoins(valueDisplay);
+                counter.text = GlobalVars.DisplayCoins(valueDisplay);
                 break;
             case AccumulatorType.Distance:
-                counter.text = GameManager.instance.DisplayDistance(valueDisplay);
+                counter.text = GlobalVars.DisplayDistance(valueDisplay);
+                break;
+            case AccumulatorType.Gems:
+                counter.text = GlobalVars.DisplayGems(valueDisplay);
                 break;
         }
     }
@@ -83,11 +87,15 @@ public class UIBaseAccumulator : UIBase
 
                 valueDisplay += (loss ? -1 : 1) * change;
 
-                if (change > 0)
-                    UIPopManager.instance.ShowPops(popPos.position, 1 + exponent, Color.yellow);
+                if (popMaker && change > 0)
+                    popMaker.MakePops(exponent);
+                    //UIPopManager.instance.ShowPops(popPos.position, popStrength + exponent, popColor);
 
                 AddShake(0.5f);
-                AudioManager.instance.SoundPlayEven(updatePip, Vector2.zero, 0.3f);
+                if (loss && updatePipDown)
+                    AudioManager.instance.SoundPlayEven(updatePipDown, Vector2.zero, 0.3f);
+                else
+                    AudioManager.instance.SoundPlayEven(updatePip, Vector2.zero, 0.3f);
                 DisplayValue();
 
                 updateNext = updateTime;

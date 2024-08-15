@@ -11,28 +11,20 @@ using TMPro;
 public class UIMenus : UIMainMenu
 {
     [Header("In-game menu views")]
-    [SerializeField] private GameObject menuPauseRestartConfirm;
     [SerializeField] private GameObject menuPauseQuitConfirm;
     [Header("In-game menu general objects")]
     [SerializeField] private GameObject menuUnderlay; // covers the game view while menus are open to make the menu pop more
     [SerializeField] private GameObject menuPause;
-    [SerializeField] private GameObject menuDefeat;
+    [SerializeField] private UIMenuDefeat menuDefeat;
     [Header("Pause references")]
     [SerializeField] private TextMeshProUGUI textPauseDefeatTitle; // text on the title so it can be changed between PAUSED and DEFEAT
     [SerializeField] private Button buttonPause; // the main pause button - so it can be disabled on defeat screen
     [SerializeField] private Button buttonResume; // the menu resume button - so it can be disabled on defeat screen
-    [Header("Defeat references")]
-    [SerializeField] private UIBaseAccumulator defeatCoins;
-    [SerializeField] private UIBaseAccumulator defeatDistance;
-    [SerializeField] private UIBase defeatHighScore;
-    [SerializeField] private int defeatPopCount = 4;
-    [SerializeField] private float defeatPopMagnitude = 4f;
-    [SerializeField] private float defeatPopDelay = 0.5f;
     [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
 
     private void Awake()
     {
-        defeatHighScore.gameObject.SetActive(false);
+        menuDefeat.Initialise();
         CloseMenu();
         buttonPause.gameObject.SetActive(false);
     }
@@ -82,7 +74,6 @@ public class UIMenus : UIMainMenu
         SoundButton();
         menuMain.gameObject.SetActive(true);
         menuOptions.gameObject.SetActive(false);
-        menuPauseRestartConfirm.gameObject.SetActive(false);
         menuPauseQuitConfirm.gameObject.SetActive(false);
         GameManager.instance.SaveSettings();
     }
@@ -91,7 +82,6 @@ public class UIMenus : UIMainMenu
         SoundButton();
         menuMain.gameObject.SetActive(false);
         menuOptions.gameObject.SetActive(true);
-        menuPauseRestartConfirm.gameObject.SetActive(false);
         menuPauseQuitConfirm.gameObject.SetActive(false);
     }
     public void ButtonRestart()
@@ -99,7 +89,6 @@ public class UIMenus : UIMainMenu
         SoundButton();
         menuMain.gameObject.SetActive(false);
         menuOptions.gameObject.SetActive(false);
-        menuPauseRestartConfirm.gameObject.SetActive(true);
         menuPauseQuitConfirm.gameObject.SetActive(false);
     }
     public void ButtonRestartConfirm()
@@ -113,7 +102,6 @@ public class UIMenus : UIMainMenu
         SoundButton();
         menuMain.gameObject.SetActive(false);
         menuOptions.gameObject.SetActive(false);
-        menuPauseRestartConfirm.gameObject.SetActive(false);
         menuPauseQuitConfirm.gameObject.SetActive(true);
     }
     public void ButtonQuitConfirm()
@@ -129,35 +117,15 @@ public class UIMenus : UIMainMenu
     }
 
     // open the victory menu and show the player how well they've done
-    public void OpenEndingMenu(float distance, int coins)
+    public void OpenEndingMenu(float distance, int coins, int gems)
     {
         int distanceReached = Mathf.FloorToInt(distance);
         SoundButton();
 
         menuUnderlay.gameObject.SetActive(true);
-        menuDefeat.gameObject.SetActive(true);
-        defeatCoins.SetValue(GameManager.instance.coinsStash, true); // count up from the old value
-        GameManager.instance.AddCoins(coins);
-        defeatCoins.SetValue(GameManager.instance.coinsStash);
-        defeatDistance.SetValue(distanceReached);
-        if (distance > GameManager.instance.distanceBest)
-        {
-            StartCoroutine(NewHighScorePops());
-            defeatHighScore.gameObject.SetActive(true);
-        }
         buttonPause.interactable = false;
-        GameManager.instance.AddDistance(distanceReached);
-        GameManager.instance.SaveSettings();
-    }
 
-    private IEnumerator NewHighScorePops()
-    {
-        for (int i = 0; i < defeatPopCount; i++)
-        {
-            defeatHighScore.AddShake(defeatPopMagnitude);
-            UIPopManager.instance.ShowPops(defeatHighScore.transform.position, defeatPopMagnitude, Color.magenta);
-            yield return new WaitForSeconds(defeatPopDelay);
-        }
+        menuDefeat.Open(distanceReached, coins, gems);
     }
 
     // button for continuing to the next stage after victory
@@ -172,4 +140,6 @@ public class UIMenus : UIMainMenu
         if (DEBUGPRESENTATIONMODE) return;
         buttonPause.gameObject.SetActive(true);
     }
+
+    protected override bool IsMainMenu() { return false; }
 }

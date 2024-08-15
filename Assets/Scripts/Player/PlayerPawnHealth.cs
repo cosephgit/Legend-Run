@@ -9,31 +9,48 @@ using UnityEngine;
 public class PlayerPawnHealth : MonoBehaviour
 {
     [Header("Health settings")]
-    [SerializeField] private float healthMax = 5f;
-    [SerializeField] private UIHealthBar healthBar;
+    [SerializeField] private int healthMax = 5;
+    //[SerializeField] private UIHealthBar healthBar;
+    [SerializeField] private UIHealthHearts healthHearts;
     [Header("Audio settings")]
     [SerializeField] private AudioClip[] painSounds;
-    private float health;
+    private int health;
 
     private void Awake()
     {
         health = healthMax;
-        healthBar.InitialiseHealth();
     }
 
-    public void TakeDamage(float damage, bool pain = true)
+    private void Start()
     {
-        health = Mathf.Max(0f, health - damage);
-        healthBar.SetHealth(health / healthMax);
+        healthHearts.Initialise();
+        healthHearts.ChangeHealth(health);
+    }
+
+    public void TakeDamage(int damage, bool pain = true)
+    {
+        health = health - damage;
+        healthHearts.ChangeHealth(health);
 
         AudioManager.instance.SoundPlayVaried(painSounds[Random.Range(0, painSounds.Length)], Vector2.zero);
     }
-    public void GainHealth(float heal)
+    public void GainHealth(int heal)
     {
-        health = Mathf.Min(health + heal, healthMax);
-        healthBar.SetHealth(health / healthMax);
+        if (health < healthMax)
+        {
+            health = health + heal;
+            healthHearts.ChangeHealth(health);
+        }
     }
 
+    public void FillHealth()
+    {
+        if (health < healthMax)
+        {
+            health = healthMax;
+            healthHearts.ChangeHealth(health);
+        }
+    }
     public bool IsAlive()
     {
         return (health > 0);

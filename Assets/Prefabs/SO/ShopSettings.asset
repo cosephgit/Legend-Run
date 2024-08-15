@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cbb4529a4d35da4dbbcd0cea2bac087, type: 3}
+  m_Name: ShopSettings
+  m_EditorClassIdentifier: 
+  shopItems:
+  - {fileID: 11400000, guid: ade9e71fa08999048b3f49cfb482d3d6, type: 2}
+  - {fileID: 11400000, guid: 245d4d32aeca658438ae0d5fc1d52b15, type: 2}
+  - {fileID: 11400000, guid: 0fc8ef6f01cd18345bf7a9fb8eec190b, type: 2}
+  - {fileID: 11400000, guid: 7af948a935cec8d4c9f9278372f76343, type: 2}
+  - {fileID: 11400000, guid: cd085a5285584be4f813c27b3e1fda34, type: 2}
+  - {fileID: 11400000, guid: 4b5b690e37f3b1c41a92fd9f7c6130e2, type: 2}
+  - {fileID: 11400000, guid: 95a4b94a2def0c04b897504a72b939d9, type: 2}
+  - {fileID: 11400000, guid: 34d391d9428c37d4a89d8e16790a5b6e, type: 2}
+  - {fileID: 11400000, guid: c695e36e2f0d8c7438dc74d3ab6db713, type: 2}
+  - {fileID: 11400000, guid: 4005012aea34eea41a3f7714677c033a, type: 2}
+  - {fileID: 11400000, guid: d654c5939e5b643489412fcf136a4844, type: 2}
+  - {fileID: 11400000, guid: c1cf7eb10ce0f6a4bbfed9c3670d3fbc, type: 2}
+  - {fileID: 11400000, guid: 72c813ee3b59f0a468bccb461be36f81, type: 2}
+  - {fileID: 11400000, guid: 2af2f8b2c11c2a94f86a02f8fdeb0b46, type: 2}
+  - {fileID: 11400000, guid: c22f308acc867744cae14e8e7d6564a7, type: 2}
+  - {fileID: 11400000, guid: d12ff2444786a43449b513a25a1ce68e, type: 2}
+  - {fileID: 11400000, guid: a9f72f48dddaf1844ad4133ae8f6a01f, type: 2}
+  - {fileID: 11400000, guid: 314531dd28329ee4fa4d3de64cad3023, type: 2}
+  - {fileID: 11400000, guid: 4f158d6805937554d9848dd62220e718, type: 2}
+  - {fileID: 11400000, guid: 8b4ba76392f9b6942a46df09f5a996f2, type: 2}
+  - {fileID: 11400000, guid: 532793bacd0cd044caa3051d2a1f589f, type: 2}
+  - {fileID: 11400000, guid: 0b157d9d4f1f82945897f581ec8c6e41, type: 2}
+  - {fileID: 11400000, guid: 7fc81318047cae74092c49d32e13c00a, type: 2}
+  - {fileID: 11400000, guid: 10f27d598661c2941be02eccc6d12c16, type: 2}
+  - {fileID: 11400000, guid: 8deeace9c8ee2eb47a75ce69d6f8648b, type: 2}
+  - {fileID: 11400000, guid: 3ac7af9ef3556de43bab2480ee8de980, type: 2}
+  - {fileID: 11400000, guid: fb1213bcb661d614a9649fcf7f336efe, type: 2}
+  - {fileID: 11400000, guid: 0a0a021420c09de44927e8b8d9ec28dc, type: 2}
+  - {fileID: 11400000, guid: ad66d3cf9e8f97347a3e7f91a9e86723, type: 2}
+  - {fileID: 11400000, guid: 46c608fa4d450f24792e4615a04e3895, type: 2}
+  - {fileID: 11400000, guid: 71f37078d90196741a09a68fa88f6b59, type: 2}
+  - {fileID: 11400000, guid: b7cd9f1078e0c9044bfcb70e0d0f623a, type: 2}
+  - {fileID: 11400000, guid: 0daa34b1d29c875459867aa9201b90af, type: 2}
+  - {fileID: 11400000, guid: e630de8275b3a584fb71699b24afc07b, type: 2}
+  - {fileID: 11400000, guid: 7690a50c7c72c2543a5f37dca6775812, type: 2}
+  - {fileID: 11400000, guid: 631a411fde8c6744c8c8c713d37c8e08, type: 2}
+  - {fileID: 11400000, guid: c71babf65c2ed6d4683faaa1479eb88c, type: 2}
+  - {fileID: 11400000, guid: 3c0aedf0fdea1914aa036876498dd7e0, type: 2}
+  - {fileID: 11400000, guid: 1d5fbd2aa5e9db34995cc8ea0e78ff58, type: 2}
+  - {fileID: 11400000, guid: afc68668b26a78845a0c26aaeaf25104, type: 2}
+  - {fileID: 11400000, guid: e6f07ccd11c904b40945c6c5ffcd637c, type: 2}
+  - {fileID: 11400000, guid: 329a5e5538fdd754ebf3cc8e8c698767, type: 2}
+  - {fileID: 11400000, guid: da58fa56a46baac43a1fb756ff5ee997, type: 2}
+  - {fileID: 11400000, guid: 246ebbb0aa24fdc4da205fc8d57f4cbb, type: 2}
+  - {fileID: 11400000, guid: 4d34cc34f4632a64086071e084da5213, type: 2}
+  - {fileID: 11400000, guid: 829946371f59a854ba6bd9e70ed4ebc6, type: 2}
+  - {fileID: 11400000, guid: d5e21980faef4f5408d9af9dabbfb235, type: 2}
+  - {fileID: 11400000, guid: 9d2a34c292e55814f990928fcd547a65, type: 2}
+  - {fileID: 11400000, guid: 92d37ed340e1bd841bf1b459164d4c9d, type: 2}
+  shopItemsGems:
+  - {fileID: 11400000, guid: d361b6fbb33f12b44b089d47d76dbdfd, type: 2}
+  - {fileID: 11400000, guid: 9917369bf03cba248a39170b3f1ca757, type: 2}
+  - {fileID: 11400000, guid: de02b39517c152c46a9e74b81e7df382, type: 2}
+  - {fileID: 11400000, guid: 47cae817c21987e478ff52bafbbf4efa, type: 2}
+  - {fileID: 11400000, guid: 8aa05a35b4c0cca489795ef5db9260bb, type: 2}
+  - {fileID: 11400000, guid: 1bef60bcad0668f40863af1c4703663e, type: 2}
+  - {fileID: 11400000, guid: 80d134839b184164c92645f14f2aa8e6, type: 2}
+  spriteCostCoin: {fileID: 21300000, guid: 6b9cbefa9fba1c14b901b5778b53f138, type: 3}
+  spriteCostGem: {fileID: 21300000, guid: 81ffbdc4668560a4195316f7572046cd, type: 3}
+  spriteCostPremium: {fileID: 21300000, guid: 0cb89102e558f3f49b01af4efeb84122, type: 3}
+  spriteStateLocked: {fileID: 0}
+  spriteStateOwned: {fileID: 0}
+  reviveGemCost: 12
+  rushRateBase: 1
+  rushRateBonus: 0.2
+  richesRateBase: 1
+  richesRateBonus: 0.2
+  magnetRateBase: 1
+  magnetRateBonus: 0.2
+  swordRateBase: 1
+  swordRateBonus: 0.2
+  potionRateBase: 1
+  potionRateBonus: 0.2
+  coinRateBase: 1
+  coinRateBonus: 0.05
+  speedBase: 1
+  speedBonus: 0.05
+  healthBase: 1
+  healthBonus: 1
+  boostStartBase: 0
+  boostStartBonus: 1
+  boostGainBase: 1
+  boostGainBonus: 0.05
+  boostShieldBase: 0
+  boostShieldBonus: 1

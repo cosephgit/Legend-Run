@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f449e2f47b45ed241888c348e5bcd782, type: 3}
+  m_Name: Coins4gems
+  m_EditorClassIdentifier: 
+  shopUniqueName: coins4gems
+  shopViewName: Extra Coins
+  shopImage: {fileID: 0}
+  shopDependency:
+  - {fileID: 11400000, guid: 0a0a021420c09de44927e8b8d9ec28dc, type: 2}
+  costType: 1
+  costAmount: 100
+  itemType: 10

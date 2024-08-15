@@ -54,25 +54,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pawnHealth: {fileID: 5191626444639089536}
   pawnLoco: {fileID: 6432021030971637623}
-  pawnPurse: {fileID: 2994394899652238338}
+  <pawnPurse>k__BackingField: {fileID: 2994394899652238338}
   pawnWeapon: {fileID: 7846197909282872248}
+  <tutorial>k__BackingField: {fileID: 0}
   terrain: {fileID: 0}
   streakDisplay: {fileID: 0}
-  minX: -3
-  maxX: 3
   speedMax: 16
-  speedAccel: 4
+  speedAccel: 6
+  swipeSensitivity: 0.01
   screenActiveXMin: 0.2
   screenActiveXMax: 0.8
   screenJumpY: 0.5
   streakCountBase: 5
   streakCountPerLevel: 5
   streakLevelSound: {fileID: 8300000, guid: 17a860f2fa7460340b84c932ed0413af, type: 3}
-  streakFailSound: {fileID: 8300000, guid: cf6987ac0943f604c96b113e4c64a749, type: 3}
+  streakFailSound: {fileID: 8300000, guid: b22053fa839703045a6847e387015368, type: 3}
   streakCoinPitchBase: 1
   streakCoinPitchPerLevel: 0.05
   streakCoinPitchForProgress: 0.2
   streakSpeedBoostPerLevel: 0.05
+  tusslePrefab: {fileID: 3240687288653986360, guid: 26cd092b1448f07449330a914e9aa659,
+    type: 3}
   speedLines: {fileID: 0}
   speedLineSpeedPerSpeed: 0.5
 --- !u!114 &5191626444639089536
@@ -87,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 267036c5840afab458c5e21c6872b3d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthMax: 5
+  healthMax: 3
   healthBar: {fileID: 0}
   painSounds:
   - {fileID: 8300000, guid: 6c59dbffd27b58c49885406956de3c9f, type: 3}
@@ -105,8 +107,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a359cfa577ab6c149899094f1dc7c560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animSpeedBase: 1
+  animSpeedPerSpeed: 0.2
   jumpHeight: 2
-  jumpGravity: -20
+  jumpGravity: -30
+  jumpSounds:
+  - {fileID: 8300000, guid: 04d33fe904f3fee47bf857f37f79d0bf, type: 3}
+  - {fileID: 8300000, guid: 7840e0fe9f0b6a14393a35925839a084, type: 3}
   <pawnAnim>k__BackingField: {fileID: 7938553253504450216}
   <moveRate>k__BackingField: 6
 --- !u!114 &2994394899652238338
@@ -140,7 +147,6 @@ MonoBehaviour:
   attackSounds:
   - {fileID: 8300000, guid: 22347abb186f9294baded3b8184fc048, type: 3}
   - {fileID: 8300000, guid: 6ddc54648a41778498b9f245ec55bd3a, type: 3}
-  - {fileID: 8300000, guid: 7840e0fe9f0b6a14393a35925839a084, type: 3}
 --- !u!136 &586785414972877838
 CapsuleCollider:
   m_ObjectHideFlags: 0

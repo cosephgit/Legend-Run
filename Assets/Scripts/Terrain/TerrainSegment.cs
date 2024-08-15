@@ -10,6 +10,7 @@ using UnityEngine;
 public class TerrainSegment : MonoBehaviour
 {
     [SerializeField] private GameObject[] groundOptions; // sections of terrain that can be used for the ground
+    [SerializeField] private GameObject[] trackOptions; // sections of terrain that can be used for the tracks
     [SerializeField] private float decorZMin = -10f; // all decor positions will be bounded within this Y min and max
     [SerializeField] private float decorZMax = 10f;
     [SerializeField] private GameObject[] scatterOptions; // items that can be scattered around anywhere
@@ -30,6 +31,7 @@ public class TerrainSegment : MonoBehaviour
     [SerializeField] private float wallZSpaceMax = 5f;
     [SerializeField] private float wallXMin = 10f; // the minimum and maximum X values of border objects
     [SerializeField] private float wallXMax = 15f; // (mirrored for left side)
+
     // generate the terrain for this segment - call right after instantiation
     public void Generate()
     {
@@ -38,7 +40,29 @@ public class TerrainSegment : MonoBehaviour
 
         // place ground
         Instantiate(groundOptions[Random.Range(0, groundOptions.Length)], transform.position, transform.rotation, transform);
+        // place tracks
+        // n.b. this is called during Awake()
+        // but it's called BY the TerrainManager
+        // so it's ok that we're referencing a singleton during Awake() IN THIS CASE ONLY
 
+        pos.y = 0.34f; // this should be a serialized variable
+        pos.x = TerrainManager.instance.laneLeftX;
+        decor = Instantiate(trackOptions[Random.Range(0, trackOptions.Length)], pos, transform.rotation, transform);
+        if (CoSephUtils.RandomBool())
+            decor.transform.localRotation = Quaternion.Euler(0f, 180f, 0f); // spin it around to add variety
+        decor.transform.localPosition = pos;
+        pos.x = TerrainManager.instance.laneCentreX;
+        decor = Instantiate(trackOptions[Random.Range(0, trackOptions.Length)], pos, transform.rotation, transform);
+        if (CoSephUtils.RandomBool())
+            decor.transform.localRotation = Quaternion.Euler(0f, 180f, 0f); // spin it around to add variety
+        decor.transform.localPosition = pos;
+        pos.x = TerrainManager.instance.laneRightX;
+        decor = Instantiate(trackOptions[Random.Range(0, trackOptions.Length)], pos, transform.rotation, transform);
+        if (CoSephUtils.RandomBool())
+            decor.transform.localRotation = Quaternion.Euler(0f, 180f, 0f); // spin it around to add variety
+        decor.transform.localPosition = pos;
+
+        pos.x = 0;
         pos.y = scatterY;
 
         // place scatter

@@ -13,9 +13,15 @@ public class PlayerControls : MonoBehaviour
 {
     [SerializeField] private PlayerPawn player;
     [SerializeField] private UIPointer pointer;
+    private Vector3 swipeStart;
+    private Vector3 swipeEnd;
+    private bool swiping;
 
     private void Awake()
     {
+        swipeStart = Vector3.zero;
+        swipeEnd = Vector3.zero;
+        swiping = false;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
     }
@@ -40,6 +46,16 @@ public class PlayerControls : MonoBehaviour
     {
         pointer.ShowPointer(touchPos);
 
+        if (touch)
+        {
+            if (!swiping)
+            {
+                swiping = true;
+                swipeStart = touchPos;
+            }
+            swipeEnd = touchPos;
+        }
+
         if (player && touch)
         {
             List<RaycastResult> objectsUI = GetUIObjects(touchPos);
@@ -54,15 +70,35 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
+    private void SwipeEnd()
+    {
+        if (player)
+        {
+            Vector3 swipeVector = swipeEnd - swipeStart;
+            swipeStart = Vector3.zero;
+            swipeEnd = Vector3.zero;
+            swiping = false;
+            swipeVector /= Screen.width; // scale swipe to screen resolution, so the x value will be from -0.5 to 0.5 and the y value will be approx. -0.3 to 0.3
+
+            player.SetSwipe(swipeVector);
+        }
+    }
+
     private void Update()
     {
+        bool touch = false;
+
         if (Input.touchCount > 0)
         {
-            ShowPointer(Input.touches[0].position, true);
+            touch = true;
+            ShowPointer(Input.touches[0].position, touch);
         }
         else if (Input.mousePresent)
         {
-            ShowPointer(Input.mousePosition, Input.GetMouseButton(0));
+            touch = Input.GetMouseButton(0);
+            ShowPointer(Input.mousePosition, touch);
         }
+        if (swiping && !touch)
+            SwipeEnd();
     }
 }

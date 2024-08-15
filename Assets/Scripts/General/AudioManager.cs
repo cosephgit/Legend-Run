@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 // manages all sounds in the game
 // created 22/8/23
@@ -32,6 +33,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField]private float musicTransitionTime = 1f;
     [SerializeField]private float musicTrackTimeMin = 240f;
     [SerializeField]private float musicTrackTimeMax = 480f;
+    [Header("Generic sounds")]
+    [SerializeField] private AudioClip soundMenuButton;
+    [SerializeField] private AudioClip soundMenuSlider;
     private AudioSource sourceMusicAlt; // the second music clip to allow transitions
     private AudioClip clipMusicQued; // the clip the audiomanager will transition to next after the current transition is resolved - this should be avoided generally
     private bool sourceMusicIsAlt = false; // to track whether the sourceMusicAlt is currently the primary source
@@ -298,6 +302,15 @@ public class AudioManager : MonoBehaviour
 
         sourceSingleNext++;
         sourceSingleNext %= SOURCECOUNT;
+    }
+
+    public void SoundPlayMenuButton()
+    {
+        SoundPlayEven(soundMenuButton, Vector2.zero);
+    }
+    public void SoundPlayMenuSliderPing()
+    {
+        SoundPlayEven(soundMenuSlider, Vector2.zero);
     }
 
     // stops all sound effect sources

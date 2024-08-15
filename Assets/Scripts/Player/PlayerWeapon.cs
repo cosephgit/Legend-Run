@@ -28,7 +28,7 @@ public class PlayerWeapon : MonoBehaviour
 
     // called by the PlayerPawn to use the weapon against an enemy encountere
     // returns the amount of enemy strength remaining after the weapon
-    public float UseWeapon(float strength)
+    public int UseWeapon(int strength)
     {
         if (!weapon) return strength;
 
@@ -44,7 +44,7 @@ public class PlayerWeapon : MonoBehaviour
             if (attackSounds.Length > 0)
                 AudioManager.instance.SoundPlayVaried(attackSounds[Random.Range(0, attackSounds.Length)], Vector2.zero);
 
-            return 0f;
+            return 0;
         }
 
         weaponUses = 0;

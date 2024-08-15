@@ -21,6 +21,13 @@ public class UIBase : MonoBehaviour
 
     protected virtual void Start()
     {
+        // get rid of this???
+        Initialise();
+    }
+
+    // call to update the "home" position
+    public void Initialise()
+    {
         posOriginal = transform.position;
     }
 

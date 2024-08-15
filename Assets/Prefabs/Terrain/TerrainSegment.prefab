@@ -131,6 +131,9 @@ MonoBehaviour:
   groundOptions:
   - {fileID: 1069567032315564, guid: bdf8e7438a7816543998181bd3067573, type: 3}
   - {fileID: 1076262714343606, guid: 68cbfa1438162b243ac02fb9e3e30581, type: 3}
+  trackOptions:
+  - {fileID: 8941664246547626517, guid: d1ed3d941912ae341ba50a3857507016, type: 3}
+  - {fileID: 1516595470825605707, guid: 58266b57eb9dcf8409c765e2340987d3, type: 3}
   decorZMin: -10
   decorZMax: 10
   scatterOptions:

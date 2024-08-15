@@ -283,7 +283,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8638264922787286892}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -315,6 +315,8 @@ MonoBehaviour:
   musicTransitionTime: 1
   musicTrackTimeMin: 240
   musicTrackTimeMax: 480
+  soundMenuButton: {fileID: 8300000, guid: 2906dd015f955444296a511dc293ce89, type: 3}
+  soundMenuSlider: {fileID: 8300000, guid: 610bc04b74b1e514895166e994ca60aa, type: 3}
 --- !u!1 &9068037317661010960
 GameObject:
   m_ObjectHideFlags: 0

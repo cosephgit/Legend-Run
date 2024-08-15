@@ -10,30 +10,31 @@ using TMPro;
 
 public class UIMenuMainScores : MonoBehaviour
 {
-    [SerializeField] private GameObject coinsBox;
-    [SerializeField] private TextMeshProUGUI coinsText;
-    [SerializeField] private GameObject distanceBox;
-    [SerializeField] private TextMeshProUGUI distanceText;
+    [SerializeField] private UIOdometer distanceCounter;
 
-    private void Start()
+    public void Initialise()
     {
-        int coins = GameManager.instance.coinsStash;
         int distance = GameManager.instance.distanceBest;
 
-        if (coins > 0)
+        if (distance > 0 || GameManager.instance.GetFlag(GlobalVars.SAVEFLAGDISTANCE))
         {
-            coinsBox.SetActive(true);
-            coinsText.text = GameManager.instance.DisplayCoins(coins);
+            distanceCounter.gameObject.SetActive(true);
+            distanceCounter.SetDistance(distance);
+            GameManager.instance.SetFlag(GlobalVars.SAVEFLAGDISTANCE);
         }
         else
-            coinsBox.SetActive(false);
+            distanceCounter.gameObject.SetActive(false);
+    }
 
-        if (distance > 0)
+    public void UpdateScores()
+    {
+        int distance = GameManager.instance.distanceBest;
+
+        if (distance > 0 || GameManager.instance.GetFlag(GlobalVars.SAVEFLAGDISTANCE))
         {
-            distanceBox.SetActive(true);
-            distanceText.text = GameManager.instance.DisplayDistance(distance);
+            distanceCounter.gameObject.SetActive(true);
+            distanceCounter.SetDistance(distance);
+            GameManager.instance.SetFlag(GlobalVars.SAVEFLAGDISTANCE);
         }
-        else
-            distanceBox.SetActive(false);
     }
 }

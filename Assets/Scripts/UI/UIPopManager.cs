@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // UIPopManager
 // shows UI pops and sparkles
 // created 24/8/23
-// last modified 6/9/23
+// last modified 24/7/24
 
 public class UIPopManager : MonoBehaviour
 {
@@ -65,10 +65,12 @@ public class UIPopManager : MonoBehaviour
             UIPop popNew = popsIdle[0];
             Vector2 popPos = pos;
             float angle = Random.Range(0f, 2f);
-            Vector2 vee = new Vector2(Mathf.Cos(angle * Mathf.PI), Mathf.Sin(angle * Mathf.PI)) * Random.Range(popSpeedMin, popSpeedMax) * popScreenScale;
-            popPos.x -= Mathf.Cos(angle * Mathf.PI) * popSpread * popScreenScale;
-            popPos.y -= Mathf.Sin(angle * Mathf.PI) * popSpread * popScreenScale;
-
+            float angleRad = angle * Mathf.PI;
+            Vector2 vee = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * Random.Range(popSpeedMin, popSpeedMax);
+            vee.y += popSpeedMin; // always bump upwards vee a little
+            vee = vee * popScreenScale;
+            popPos.x -= Mathf.Cos(angleRad) * popSpread * popScreenScale;
+            popPos.y -= Mathf.Sin(angleRad) * popSpread * popScreenScale;
 
             popsIdle.RemoveAt(0);
 
