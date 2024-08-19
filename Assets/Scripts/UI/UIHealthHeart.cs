@@ -22,11 +22,14 @@ public class UIHealthHeart : MonoBehaviour
         actualHeart.Initialise();
     }
 
-    public void Fill()
+    public void Fill(bool noisy = true)
     {
         heart.sprite = heartFull;
-        popMaker.MakePops();
-        actualHeart.AddShake(1f);
+        if (noisy)
+        {
+            popMaker.MakePops();
+            actualHeart.AddShake(1f);
+        }
     }
     public void Empty()
     {

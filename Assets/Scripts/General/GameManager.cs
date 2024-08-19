@@ -11,10 +11,14 @@ using UnityEngine.Audio;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    [field: SerializeField] public UpgradeManager upgrades { get; private set; }
     [SerializeField] private AudioMixer audioMixer;
     [Header("Karmic balance")]
     [SerializeField] private float diffKarmaBalance = 0.2f;
     [field: SerializeField]public SO_ShopSettings shopSettings { get; private set; }
+#if UNITY_EDITOR
+    [SerializeField] private bool DEBUGWIPESAVEDATA;
+#endif
     public float volBGM { get => settingData.volumeBGM; }
     public float volSFX { get => settingData.volumeSFX; }
     public int coinsStash { get => saveData.coins; }
@@ -42,9 +46,6 @@ public class GameManager : MonoBehaviour
         if (ES3.KeyExists(GlobalVars.SAVEPROGRESS))
         {
             saveData = ES3.Load<SaveData>(GlobalVars.SAVEPROGRESS);
-            Debug.Log("Loaded SaveData from ES3 with coins: " + saveData.coins + " gems: " + saveData.gems);
-            Debug.Log("Flags loaded: " + saveData.flags);
-            Debug.Log("Items owned: " + saveData.owned.Length);
         }
 
         if (saveData == null)
@@ -53,17 +54,22 @@ public class GameManager : MonoBehaviour
             ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
         }
 
-        // TODO: REMEMBER TO REMOVE THIS!!!!
-        saveData.coins = 10000;
-        saveData.gems = 100;
-        saveData.owned = new string[0];
-
-
         if (ES3.KeyExists(GlobalVars.SAVESETTINGS))
         {
             settingData = ES3.Load<SettingData>(GlobalVars.SAVESETTINGS);
             Debug.Log("Loaded SettingData from ES3 with SFX: " + settingData.volumeSFX + " BGM: " + settingData.volumeBGM);
         }
+
+#if UNITY_EDITOR
+        if (DEBUGWIPESAVEDATA)
+        {
+            saveData.coins = 10000;
+            saveData.gems = 1000;
+            saveData.owned = new string[0];
+        }
+#endif
+
+        upgrades.Initialise();
 
         if (settingData == null)
         {
@@ -101,6 +107,24 @@ public class GameManager : MonoBehaviour
     {
         ES3.Save(GlobalVars.SAVESETTINGS, settingData);
         ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
+    }
+
+    // returns list of all SO_ShopItems already owned
+    public List<SO_ShopItem> GetUpgradesOwned()
+    {
+        List<SO_ShopItem> itemsOwned = new List<SO_ShopItem>();
+
+        for (int i = 0; i < saveData.owned.Length; i++)
+        {
+            if (saveData.owned[i] != null)
+            {
+                SO_ShopItem itemAdd = shopSettings.GetShopItem(saveData.owned[i]);
+                if (itemAdd != null && !itemsOwned.Contains(itemAdd))
+                    itemsOwned.Add(itemAdd);
+            }
+        }
+
+        return itemsOwned;
     }
 
     public void SetCoins(int coins)

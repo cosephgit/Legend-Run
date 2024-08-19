@@ -128,7 +128,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3900948343591559470
 RectTransform:
   m_ObjectHideFlags: 0
@@ -525,7 +525,7 @@ PrefabInstance:
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UIMenus, Assembly-CSharp
+      value: UIMainMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
@@ -565,12 +565,12 @@ PrefabInstance:
     - target: {fileID: 5075348735802004460, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 96
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 5075348735802004460, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 96
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 5075348735802004460, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}

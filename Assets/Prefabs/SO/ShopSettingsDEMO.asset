@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cbb4529a4d35da4dbbcd0cea2bac087, type: 3}
+  m_Name: ShopSettingsDEMO
+  m_EditorClassIdentifier: 
+  shopItems:
+  - {fileID: 11400000, guid: d12ff2444786a43449b513a25a1ce68e, type: 2}
+  - {fileID: 11400000, guid: a9f72f48dddaf1844ad4133ae8f6a01f, type: 2}
+  - {fileID: 11400000, guid: 314531dd28329ee4fa4d3de64cad3023, type: 2}
+  - {fileID: 11400000, guid: 4f158d6805937554d9848dd62220e718, type: 2}
+  - {fileID: 11400000, guid: 8b4ba76392f9b6942a46df09f5a996f2, type: 2}
+  - {fileID: 11400000, guid: 532793bacd0cd044caa3051d2a1f589f, type: 2}
+  - {fileID: 11400000, guid: 0b157d9d4f1f82945897f581ec8c6e41, type: 2}
+  - {fileID: 11400000, guid: 7fc81318047cae74092c49d32e13c00a, type: 2}
+  - {fileID: 11400000, guid: 10f27d598661c2941be02eccc6d12c16, type: 2}
+  - {fileID: 11400000, guid: 8deeace9c8ee2eb47a75ce69d6f8648b, type: 2}
+  - {fileID: 11400000, guid: 3ac7af9ef3556de43bab2480ee8de980, type: 2}
+  - {fileID: 11400000, guid: fb1213bcb661d614a9649fcf7f336efe, type: 2}
+  - {fileID: 11400000, guid: 0a0a021420c09de44927e8b8d9ec28dc, type: 2}
+  - {fileID: 11400000, guid: ad66d3cf9e8f97347a3e7f91a9e86723, type: 2}
+  - {fileID: 11400000, guid: 46c608fa4d450f24792e4615a04e3895, type: 2}
+  - {fileID: 11400000, guid: 71f37078d90196741a09a68fa88f6b59, type: 2}
+  - {fileID: 11400000, guid: b7cd9f1078e0c9044bfcb70e0d0f623a, type: 2}
+  - {fileID: 11400000, guid: 0daa34b1d29c875459867aa9201b90af, type: 2}
+  - {fileID: 11400000, guid: e630de8275b3a584fb71699b24afc07b, type: 2}
+  - {fileID: 11400000, guid: 7690a50c7c72c2543a5f37dca6775812, type: 2}
+  - {fileID: 11400000, guid: 631a411fde8c6744c8c8c713d37c8e08, type: 2}
+  - {fileID: 11400000, guid: c71babf65c2ed6d4683faaa1479eb88c, type: 2}
+  - {fileID: 11400000, guid: 3c0aedf0fdea1914aa036876498dd7e0, type: 2}
+  - {fileID: 11400000, guid: 1d5fbd2aa5e9db34995cc8ea0e78ff58, type: 2}
+  - {fileID: 11400000, guid: afc68668b26a78845a0c26aaeaf25104, type: 2}
+  - {fileID: 11400000, guid: e6f07ccd11c904b40945c6c5ffcd637c, type: 2}
+  - {fileID: 11400000, guid: 329a5e5538fdd754ebf3cc8e8c698767, type: 2}
+  - {fileID: 11400000, guid: da58fa56a46baac43a1fb756ff5ee997, type: 2}
+  - {fileID: 11400000, guid: 246ebbb0aa24fdc4da205fc8d57f4cbb, type: 2}
+  - {fileID: 11400000, guid: 4d34cc34f4632a64086071e084da5213, type: 2}
+  shopItemsGems:
+  - {fileID: 11400000, guid: d361b6fbb33f12b44b089d47d76dbdfd, type: 2}
+  - {fileID: 11400000, guid: 9917369bf03cba248a39170b3f1ca757, type: 2}
+  - {fileID: 11400000, guid: de02b39517c152c46a9e74b81e7df382, type: 2}
+  - {fileID: 11400000, guid: 47cae817c21987e478ff52bafbbf4efa, type: 2}
+  - {fileID: 11400000, guid: 8aa05a35b4c0cca489795ef5db9260bb, type: 2}
+  - {fileID: 11400000, guid: 1bef60bcad0668f40863af1c4703663e, type: 2}
+  spriteCostCoin: {fileID: 21300000, guid: 6b9cbefa9fba1c14b901b5778b53f138, type: 3}
+  spriteCostGem: {fileID: 21300000, guid: 81ffbdc4668560a4195316f7572046cd, type: 3}
+  spriteCostPremium: {fileID: 21300000, guid: 0cb89102e558f3f49b01af4efeb84122, type: 3}
+  spriteStateLocked: {fileID: 0}
+  spriteStateOwned: {fileID: 0}
+  reviveGemCost: 12

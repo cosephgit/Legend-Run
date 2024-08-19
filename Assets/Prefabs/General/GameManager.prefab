@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1824446485174424073}
   - component: {fileID: 1456099076218200043}
+  - component: {fileID: 8773073075246026000}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -44,7 +45,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d556701ebc81c07428b5ad110d6e907e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <upgrades>k__BackingField: {fileID: 8773073075246026000}
   audioMixer: {fileID: 24100000, guid: d6c57297929cfb142a55028155c053b2, type: 2}
   diffKarmaBalance: 0.2
   <shopSettings>k__BackingField: {fileID: 11400000, guid: de8bf029dc14cb742af4351d62df2dc1,
     type: 2}
+  DEBUGWIPESAVEDATA: 1
+--- !u!114 &8773073075246026000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5153502425922551631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0aec89a343695b4db2987abf86b535e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rushRateBase: 1
+  rushRateBonus: 0.2
+  richesRateBase: 1
+  richesRateBonus: 0.2
+  magnetRateBase: 1
+  magnetRateBonus: 0.2
+  swordRateBase: 0.5
+  swordRateBonus: 0.1
+  potionRateBase: 1
+  potionRateBonus: 0.2
+  coinRateBase: 1
+  coinRateBonus: 0.05
+  speedBase: 1
+  speedBonus: 0.02
+  healthBase: 1
+  healthBonus: 1
+  boostStartBase: 0
+  boostStartBonus: 1
+  boostGainBase: 1
+  boostGainBonus: 0.1
+  boostShieldBase: 0
+  boostShieldBonus: 1

@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Potion0
   m_EditorClassIdentifier: 
   shopUniqueName: potion0
-  shopViewName: Unlock Potion
-  shopImage: {fileID: 0}
+  shopViewName: Potion
+  shopDescription: Powerup restores health
+  shopImage: {fileID: 21300000, guid: 5826e3ff9fcb24e4ea517d9b1c40fd3c, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency: []
   costType: 1
   costAmount: 10
   itemType: 8
+  itemMagnitude: 1

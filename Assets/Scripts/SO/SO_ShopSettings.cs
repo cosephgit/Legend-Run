@@ -40,37 +40,17 @@ public class SO_ShopSettings : ScriptableObject
     public Sprite spriteStateOwned;
     [Header("Extra life cost")]
     public int reviveGemCost = 12;
-    [Header("Rush powerup")]
-    public float rushRateBase = 1f;
-    public float rushRateBonus = 0.2f;
-    [Header("Riches powerup")]
-    public float richesRateBase = 1f;
-    public float richesRateBonus = 0.2f;
-    [Header("Magnet powerup")]
-    public float magnetRateBase = 1f;
-    public float magnetRateBonus = 0.2f;
-    [Header("Sword powerup")]
-    public float swordRateBase = 1f;
-    public float swordRateBonus = 0.2f;
-    [Header("Potion powerup")]
-    public float potionRateBase = 1f;
-    public float potionRateBonus = 0.2f;
-    [Header("Coin rate bonus")]
-    public float coinRateBase = 1f;
-    public float coinRateBonus = 0.05f;
-    [Header("Speed bonus")]
-    public float speedBase = 1f;
-    public float speedBonus = 0.05f;
-    [Header("Health bonus")]
-    public int healthBase = 1;
-    public int healthBonus = 1;
-    [Header("Boost initial bonus")]
-    public int boostStartBase = 0;
-    public int boostStartBonus = 1;
-    [Header("Boost gain rate bonus")]
-    public float boostGainBase = 1f;
-    public float boostGainBonus = 0.05f;
-    [Header("Boost shield bonus")]
-    public int boostShieldBase = 0;
-    public int boostShieldBonus = 1;
+
+    public SO_ShopItem GetShopItem(string itemName)
+    {
+        SO_ShopItem result = null;
+
+        for (int i = 0; i < shopItems.Length; i++)
+        {
+            if (shopItems[i].shopUniqueName == itemName)
+                return shopItems[i];
+        }
+
+        return result;
+    }
 }

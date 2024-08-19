@@ -42,6 +42,7 @@ public class UIShopPremium : MonoBehaviour
             buyConfirmPops.MakePops(itemView.costAmount);
             AudioManager.instance.SoundPlayVaried(buyConfirmSound, Vector2.zero);
 
+
             shopMaster.BuyPremiumConfirm(itemView);
             gameObject.SetActive(false);
         }

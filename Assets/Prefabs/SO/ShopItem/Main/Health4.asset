@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: Health4
   m_EditorClassIdentifier: 
   shopUniqueName: health4
-  shopViewName: Increase Health
-  shopImage: {fileID: 0}
-  shopDependency: []
+  shopViewName: Health+
+  shopDescription: Extra health heart
+  shopImage: {fileID: 21300000, guid: 8811f67ae11a0ec4aa99e08caadfc214, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
+  shopDependency:
+  - {fileID: 11400000, guid: 631a411fde8c6744c8c8c713d37c8e08, type: 2}
   costType: 1
   costAmount: 10000
   itemType: 12
+  itemMagnitude: 1

@@ -23,8 +23,9 @@ public class PlayerPawnHealth : MonoBehaviour
 
     private void Start()
     {
-        healthHearts.Initialise();
-        healthHearts.ChangeHealth(health);
+        healthMax = GameManager.instance.upgrades.upgradeHealthPoints;
+        health = healthMax;
+        healthHearts.Initialise(healthMax);
     }
 
     public void TakeDamage(int damage, bool pain = true)

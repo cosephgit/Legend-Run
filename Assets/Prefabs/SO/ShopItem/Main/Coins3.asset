@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Coins3
   m_EditorClassIdentifier: 
   shopUniqueName: coins3
-  shopViewName: Extra Coins
-  shopImage: {fileID: 0}
+  shopViewName: Coins+
+  shopDescription: More coins appear
+  shopImage: {fileID: 21300000, guid: 21824c076807aea46875f279a708f7e6, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: fb1213bcb661d614a9649fcf7f336efe, type: 2}
   costType: 0
   costAmount: 1000
   itemType: 10
+  itemMagnitude: 1

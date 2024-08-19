@@ -58,9 +58,12 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private float speedLineSpeedPerSpeed = 0.5f;
     private float pawnTargetX; // the pawn's current X target
     private float speed;
+    // for PC testing
     private bool jumpHeld;
+    private bool rightHeld;
+    private bool leftHeld;
     // streak values
-    private int streakCoins;
+    private float streakCoins;
     private int streakLevel;
     private float streakSpeedBonus;
     ParticleSystem.EmissionModule speedLinesEmission;
@@ -83,7 +86,9 @@ public class PlayerPawn : MonoBehaviour
 
         pawnTargetX = transform.position.x;
         speed = 0;
-        streakSpeedBonus = 1f;
+        streakLevel = GameManager.instance.upgrades.upgradeBoostInitial;
+        streakCoins = StreakCoinsForLevel(streakLevel);
+        StreakSetSpeed();
         speedLines.Stop();
         speedLinesEmission = speedLines.emission;
         speedLinesEmissionRateBase = speedLinesEmission.rateOverTime.constant;
@@ -93,25 +98,33 @@ public class PlayerPawn : MonoBehaviour
 
     public void StreakEnd()
     {
-        if (streakLevel > 0)
+        if (streakLevel > GameManager.instance.upgrades.upgradeBoostInitial)
         {
             streakDisplay.StreakBreak();
             AudioManager.instance.SoundPlayEven(streakFailSound, Vector2.zero);
         }
-        streakLevel = 0;
-        streakCoins = 0;
-        streakSpeedBonus = 1f;
-        pawnLoco.SetSpeedBoost(streakSpeedBonus);
+        streakLevel = GameManager.instance.upgrades.upgradeBoostInitial;
+        streakCoins = StreakCoinsForLevel(streakLevel);
+        StreakSetSpeed();
         if (speed > speedMax)
             SetSpeed(speedMax);
         speedLines.Stop();
     }
 
+    private void StreakSetSpeed()
+    {
+        streakSpeedBonus = 1f + (streakLevel * streakSpeedBoostPerLevel);
+        pawnLoco.SetSpeedBoost(streakSpeedBonus);
+    }
+    private int StreakCoinsForLevel(int level)
+    {
+        return (streakCountBase * level + streakCountPerLevel * (level - 1) * level / 2);
+    }
     private void TouchCoin(CollectibleCoin coin)
     {
         if (coin.unused)
         {
-            int streakCoinsLevel = streakCountBase * streakLevel + streakCountPerLevel * (streakLevel - 1) * (streakLevel) / 2; // number of coins to the start of this level
+            int streakCoinsLevel = StreakCoinsForLevel(streakLevel); // number of coins to the start of this level
             int streakCoinsLevelNext = streakCountBase + streakCountPerLevel * streakLevel; // number of coins from the start of this level to the next level
             float pitch = streakCoinPitchBase;
             bool level = false;
@@ -121,7 +134,7 @@ public class PlayerPawn : MonoBehaviour
                 // have run into a coin, collect it!
                 pawnPurse.AddCoins(coin.coinValue);
 
-                streakCoins += coin.coinValue;
+                streakCoins += coin.coinValue * GameManager.instance.upgrades.upgradeBoostGainRate;
                 if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
                 {
                     streakLevel++;
@@ -138,8 +151,7 @@ public class PlayerPawn : MonoBehaviour
                     if (level)
                     {
                         AudioManager.instance.SoundPlayCustom(streakLevelSound, Vector2.zero, 1f, pitch);
-                        streakSpeedBonus = 1f + (streakLevel * streakSpeedBoostPerLevel);
-                        pawnLoco.SetSpeedBoost(streakSpeedBonus);
+                        StreakSetSpeed();
                     }
                 }
             }
@@ -414,11 +426,32 @@ public class PlayerPawn : MonoBehaviour
         // temp for testing
         if (Input.touchCount == 0 && (!Input.mousePresent || !Input.GetMouseButton(0)))
         {
-            if (Input.GetAxis("Horizontal") != 0)
+            if (rightHeld)
             {
-                pawnTargetX = Mathf.Clamp(transform.position.x + (Input.GetAxis("Horizontal") * pawnLoco.moveRate * Time.deltaTime),
-                    TerrainManager.instance.moveMinX, TerrainManager.instance.moveMaxX);
-                pawnLoco.SetMoveTarget(pawnTargetX);
+                if (Input.GetAxis("Horizontal") <= 0)
+                {
+                    SetSwipe(new Vector3(1, 0f));
+                    rightHeld = false;
+                }
+            }
+            else
+            {
+                if (Input.GetAxis("Horizontal") > 0)
+                    rightHeld = true;
+            }
+
+            if (leftHeld)
+            {
+                if (Input.GetAxis("Horizontal") >= 0)
+                {
+                    SetSwipe(new Vector3(-1, 0f));
+                    leftHeld = false;
+                }
+            }
+            else
+            {
+                if (Input.GetAxis("Horizontal") < 0)
+                    leftHeld = true;
             }
             if (Input.GetButton("Jump"))
             {

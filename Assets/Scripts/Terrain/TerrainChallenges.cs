@@ -39,6 +39,8 @@ public class TerrainChallenges : MonoBehaviour
     [SerializeField] private float hazardStrengthPerDifficulty = 0.1f;
     [Header("powerups")]
     [SerializeField] private CollectibleBase[] powerups;
+    [SerializeField] private CollectibleBase powerPotionPrefab;
+    [SerializeField] private CollectibleBase powerSwordPrefab;
     [SerializeField] private float powerupPerDistanceBase = 0.01f;
     [SerializeField] private float powerupPerDistancePerDifficulty = 0.01f;
     [SerializeField] private float powerupGapX = 4f; // the minimum gap between powerups
@@ -53,7 +55,8 @@ public class TerrainChallenges : MonoBehaviour
     private float powerupPerDistanceCurrent;
     private float coinsAcc; // accumulated coin points
     private float hazardAcc; // accumulated hazard points
-    private float powerupAcc; // accumulated hazard points
+    private float powerSwordAcc; // accumulated powerup points
+    private float powerPotionAcc; // accumulated powerup points
     private float baseHeight;
     private Quaternion baseRot;
     // coin chain variables
@@ -85,7 +88,8 @@ public class TerrainChallenges : MonoBehaviour
         coinsAcc = 0f;
         gemNextZ = gemGap;
         hazardAcc = -1f; // ensure coins always appear first before any hazards
-        powerupAcc = -1f; // or powerups
+        powerPotionAcc = -1f; // or powerups
+        powerSwordAcc = -1f; // or powerups
     }
     // initialise the terrainchallenges with the parameters from the main terrain manager
     // circleheight is the size of the rotating circle track (for positioning) and the rotation of the origin point (the furthest terrain that is out of sight)
@@ -119,9 +123,13 @@ public class TerrainChallenges : MonoBehaviour
         if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
         {
             // tutorial has finished, normal level behaviour
-            coinsAcc += dist * coinsPerDistanceCurrent * intensityCurrent;
+            coinsAcc += dist * coinsPerDistanceCurrent * intensityCurrent * GameManager.instance.upgrades.upgradeCoinRate;
             hazardAcc += dist * hazardPerDistanceCurrent * intensityCurrent;
-            powerupAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent); // powerups work inversely with intensity - appearing most in lulls rather than peaks
+            // powerups work inversely with intensity - appearing most in lulls rather than peaks
+            if (GameManager.instance.upgrades.upgradeSwordRate > 0)
+                powerSwordAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradeSwordRate;
+            if (GameManager.instance.upgrades.upgradePotionRate > 0)
+                powerPotionAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradePotionRate;
         }
         else
         {
@@ -507,15 +515,25 @@ public class TerrainChallenges : MonoBehaviour
         }
     }
 
-    private void PlacePowerup(float safeCurrentX)
+    private void PlacePowerPotion(float safeCurrentX)
     {
         float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
         float laneX = TerrainManager.instance.GetLanePosX(safeCurrentX);
         Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
-        CollectibleBase powerup = Instantiate(powerups[Random.Range(0, powerups.Length)], pos, baseRot, transform);
+        CollectibleBase powerup = Instantiate(powerPotionPrefab, pos, baseRot, transform);
         powerupsActive.Add(powerup);
 
-        powerupAcc -= 1f;
+        powerPotionAcc -= 1f;
+    }
+    private void PlacePowerSword(float safeCurrentX)
+    {
+        float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
+        float laneX = TerrainManager.instance.GetLanePosX(safeCurrentX);
+        Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        CollectibleBase powerup = Instantiate(powerSwordPrefab, pos, baseRot, transform);
+        powerupsActive.Add(powerup);
+
+        powerSwordAcc -= 1f;
     }
 
     // place challenges for the latest distance update
@@ -548,10 +566,16 @@ public class TerrainChallenges : MonoBehaviour
                     // place the next gem
                     PlaceGem(safeCurrentX);
                     gemNextZ += gemGap;
+                    coinPowerupNextZ = spawnGroupGapZ;
                 }
-                else if ((powerupAcc > 0 && special) || (powerupAcc > 2f))
+                else if ((powerPotionAcc > 0 && special) || (powerPotionAcc > 2f))
                 {
-                    PlacePowerup(safeCurrentX);
+                    PlacePowerPotion(safeCurrentX);
+                    coinPowerupNextZ = spawnGroupGapZ;
+                }
+                else if ((powerSwordAcc > 0 && special) || (powerSwordAcc > 2f))
+                {
+                    PlacePowerSword(safeCurrentX);
                     coinPowerupNextZ = spawnGroupGapZ;
                 }
                 else if ((coinsAcc > 0 && special) || (coinsAcc > 2f))
@@ -658,6 +682,7 @@ public class TerrainChallenges : MonoBehaviour
         coinsWorthLeft = 0;
         coinsAcc = 0f;
         hazardAcc = -1f;
-        powerupAcc = -1f;
+        powerPotionAcc = -1f;
+        powerSwordAcc = -1f;
     }
 }

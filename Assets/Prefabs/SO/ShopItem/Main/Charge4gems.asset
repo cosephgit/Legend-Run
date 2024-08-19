@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Charge4gems
   m_EditorClassIdentifier: 
   shopUniqueName: charge4gems
-  shopViewName: Increase Charge
-  shopImage: {fileID: 0}
+  shopViewName: Boost+
+  shopDescription: Gain boost faster
+  shopImage: {fileID: 21300000, guid: 3252de1a617e9484eb501a3d2e4c636d, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: 246ebbb0aa24fdc4da205fc8d57f4cbb, type: 2}
   costType: 1
   costAmount: 100
   itemType: 14
+  itemMagnitude: 1

@@ -264,7 +264,7 @@ public class TerrainManager : MonoBehaviour
         {
             Vector3 pos = transform.position;
             Vector3 rot = transform.eulerAngles;
-            float frameDist = terrainSpeed * Time.deltaTime;
+            float frameDist = terrainSpeed * Time.deltaTime * GameManager.instance.upgrades.upgradeSpeedScale;
             bool specialSpawn = false;
             float distanceNew = distanceTravelled + frameDist;
 

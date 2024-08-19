@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Sword2
   m_EditorClassIdentifier: 
   shopUniqueName: sword2
-  shopViewName: Extra Sword
-  shopImage: {fileID: 0}
+  shopViewName: Sword+
+  shopDescription: More swords appear
+  shopImage: {fileID: 21300000, guid: f690befdc4886dc4f9b5c51cc901113f, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: a9f72f48dddaf1844ad4133ae8f6a01f, type: 2}
   costType: 0
   costAmount: 200
   itemType: 7
+  itemMagnitude: 1

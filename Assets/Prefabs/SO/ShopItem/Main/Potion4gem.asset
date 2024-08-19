@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Potion4gem
   m_EditorClassIdentifier: 
   shopUniqueName: potion4gem
-  shopViewName: Extra Potion
-  shopImage: {fileID: 0}
+  shopViewName: Potion+
+  shopDescription: More potions appear
+  shopImage: {fileID: 21300000, guid: 5826e3ff9fcb24e4ea517d9b1c40fd3c, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: 10f27d598661c2941be02eccc6d12c16, type: 2}
   costType: 1
   costAmount: 50
   itemType: 9
+  itemMagnitude: 1

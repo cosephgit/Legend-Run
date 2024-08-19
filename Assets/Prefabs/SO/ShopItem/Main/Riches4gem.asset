@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Riches4gem
   m_EditorClassIdentifier: 
   shopUniqueName: riches4gem
-  shopViewName: Extra Scout
-  shopImage: {fileID: 0}
+  shopViewName: Spyglass+
+  shopDescription: More spyglasses appear
+  shopImage: {fileID: 21300000, guid: 7a64041a06e067e4c997d6fc2b5f785b, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: c695e36e2f0d8c7438dc74d3ab6db713, type: 2}
   costType: 1
   costAmount: 50
   itemType: 3
+  itemMagnitude: 1

@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Shield1
   m_EditorClassIdentifier: 
   shopUniqueName: shield1
-  shopViewName: Increase Shield
-  shopImage: {fileID: 0}
+  shopViewName: Guard
+  shopDescription: Protect boost against a mistake
+  shopImage: {fileID: 21300000, guid: 3252de1a617e9484eb501a3d2e4c636d, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 21300000, guid: dddf87c6dd0a9cb44833b56735df8936, type: 3}
   shopDependency: []
   costType: 1
   costAmount: 10
   itemType: 15
+  itemMagnitude: 1

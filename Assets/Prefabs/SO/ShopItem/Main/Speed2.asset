@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Speed2
   m_EditorClassIdentifier: 
   shopUniqueName: speed2
-  shopViewName: Increase Speed
-  shopImage: {fileID: 0}
+  shopViewName: Speed+
+  shopDescription: Just run faster!
+  shopImage: {fileID: 21300000, guid: 0714da280f392dd4db130109b91811ee, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: 46c608fa4d450f24792e4615a04e3895, type: 2}
   costType: 0
   costAmount: 500
   itemType: 11
+  itemMagnitude: 1

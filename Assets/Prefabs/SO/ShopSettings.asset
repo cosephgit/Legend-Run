@@ -89,7 +89,7 @@ MonoBehaviour:
   coinRateBase: 1
   coinRateBonus: 0.05
   speedBase: 1
-  speedBonus: 0.05
+  speedBonus: 0.02
   healthBase: 1
   healthBonus: 1
   boostStartBase: 0

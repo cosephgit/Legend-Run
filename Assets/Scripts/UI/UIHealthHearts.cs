@@ -12,19 +12,24 @@ public class UIHealthHearts : MonoBehaviour
 {
     [SerializeField] private RectTransform heartGrid; // needed to force update at times
     [SerializeField] private UIHealthHeart heartBase; // the first health heart and template for all further hearts
-    [SerializeField] private int healthStartMax = 3;
     private List<UIHealthHeart> hearts;
     private int healthCurrent = 1;
     private int healthCurrentMax = 1;
 
-    public void Initialise()
+    public void Initialise(int healthMax)
     {
-        hearts = new List<UIHealthHeart>();
-        hearts.Add(heartBase);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(heartGrid);
-        heartBase.Initialise();
-        heartBase.Fill();
-        ChangeHealth(healthStartMax);
+        hearts = new List<UIHealthHeart>() { heartBase };
+        for (int i = healthCurrentMax; i < healthMax; i++)
+        {
+            UIHealthHeart heartNew = Instantiate(heartBase, heartBase.transform.parent);
+            hearts.Add(heartNew);
+        }
+        for (int i = 0; i < healthMax; i++)
+        {
+            hearts[i].Initialise();
+            hearts[i].Fill(false);
+        }
+        healthCurrentMax = healthMax;
     }
 
     public void ChangeHealthMax(int healthMaxNew)

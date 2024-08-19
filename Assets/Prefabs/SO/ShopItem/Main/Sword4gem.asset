@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Sword4gem
   m_EditorClassIdentifier: 
   shopUniqueName: sword4gem
-  shopViewName: Extra Sword
-  shopImage: {fileID: 0}
+  shopViewName: Sword+
+  shopDescription: More swords appear
+  shopImage: {fileID: 21300000, guid: f690befdc4886dc4f9b5c51cc901113f, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: 4f158d6805937554d9848dd62220e718, type: 2}
   costType: 1
   costAmount: 50
   itemType: 7
+  itemMagnitude: 1

@@ -21,19 +21,23 @@ public class UIShop : MonoBehaviour
     [SerializeField] private RectTransform rect;
     [Header("Main shop items")]
     [SerializeField] private GameObject shopItemBase;
+    [SerializeField] private ScrollRect shopItemScrollRect;
     [SerializeField] private Transform shopItemHolder;
     [SerializeField] private UIShopItem shopItemOriginal;
     [SerializeField] private Scrollbar shopItemScroll;
     [SerializeField] private Button buttonTabItems;
     [Header("Gem shop items")]
     [SerializeField] private GameObject shopItemGemsBase;
+    [SerializeField] private ScrollRect shopGemScrollRect;
     [SerializeField] private Transform shopItemGemsHolder;
     [SerializeField] private UIShopItem shopItemGemsOriginal;
     [SerializeField] private Scrollbar shopGemScroll;
     [SerializeField] private Button buttonTabGems;
     [SerializeField] private UIShopPremium shopPremium;
     private UIShopItem[] shopItems;
+    private bool shopItemsFirstOpen = true;
     private UIShopItem[] shopItemsGems;
+    private bool shopGemsFirstOpen = true;
     private UIMainMenu mainMenu;
 
     public void Initialise(UIMainMenu mainMenu)
@@ -66,9 +70,9 @@ public class UIShop : MonoBehaviour
             for (int i = 0; i < shopItemsGems.Length; i++)
                 shopItemsGems[i].Initialise(GameManager.instance.shopSettings.shopItemsGems[i], this);
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
-            shopItemScroll.value = 0;
-            shopGemScroll.value = 0;
+            //LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+            //shopItemScroll.value = 0;
+            //shopGemScroll.value = 0;
 
             shopItemGemsBase.SetActive(false);
             buttonTabGems.interactable = true;
@@ -88,6 +92,9 @@ public class UIShop : MonoBehaviour
     {
         if (item)
         {
+            if (item.costType == CostType.Premium)
+                return true;
+
             int playerStash;
             if (item.costType == CostType.Coin)
                 playerStash = GameManager.instance.coinsStash;
@@ -105,6 +112,11 @@ public class UIShop : MonoBehaviour
     public static ItemState GetItemState(SO_ShopItem item)
     {
         bool locked = false;
+
+        if (item.costType == CostType.Premium)
+            return ItemState.Available;
+
+
         if (GameManager.instance.HasItem(item))
             return ItemState.Bought;
 
@@ -165,6 +177,7 @@ public class UIShop : MonoBehaviour
         // do lots of pops and flashes and shinies!!!
         if (mainMenu)
             mainMenu.UpdateScores();
+        UpdateShopItems();
     }
     public void BuyPremiumCancel()
     {
@@ -180,7 +193,12 @@ public class UIShop : MonoBehaviour
         shopItemGemsBase.SetActive(false);
         buttonTabGems.interactable = true;
         buttonTabItems.interactable = false;
-        shopItemScroll.value = 0;
+        //shopItemScroll.value = 0;
+        if (shopItemsFirstOpen)
+        {
+            shopItemsFirstOpen = false;
+            StartCoroutine(ScrollToObject(shopItemScrollRect, shopItems[0].rectTransform));
+        }
     }
     public void ButtonTabGems()
     {
@@ -189,10 +207,21 @@ public class UIShop : MonoBehaviour
         shopItemGemsBase.SetActive(true);
         buttonTabGems.interactable = false;
         buttonTabItems.interactable = true;
-        shopGemScroll.value = 0;
+        //shopGemScroll.value = 0;
+        if (shopGemsFirstOpen)
+        {
+            shopGemsFirstOpen = false;
+            StartCoroutine(ScrollToObject(shopGemScrollRect, shopItemsGems[0].rectTransform));
+        }
     }
     public void ButtonCloseShop()
     {
         mainMenu.ButtonBack();
+    }
+
+    private IEnumerator ScrollToObject(ScrollRect scrollRect, RectTransform targetObject)
+    {
+        yield return new WaitForEndOfFrame();
+        scrollRect.content.localPosition = scrollRect.GetSnapToPositionToBringChildIntoView(targetObject);
     }
 }

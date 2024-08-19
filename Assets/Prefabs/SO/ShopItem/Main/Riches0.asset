@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Riches0
   m_EditorClassIdentifier: 
   shopUniqueName: riches0
-  shopViewName: Unlock Scout
-  shopImage: {fileID: 0}
+  shopViewName: Spyglass
+  shopDescription: Powerup reveals extra coins
+  shopImage: {fileID: 21300000, guid: 7a64041a06e067e4c997d6fc2b5f785b, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency: []
   costType: 1
   costAmount: 10
   itemType: 2
+  itemMagnitude: 1

@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Sword0
   m_EditorClassIdentifier: 
   shopUniqueName: sword0
-  shopViewName: Unlock Sword
-  shopImage: {fileID: 0}
+  shopViewName: Sword
+  shopDescription: Powerup defeats one monster
+  shopImage: {fileID: 21300000, guid: f690befdc4886dc4f9b5c51cc901113f, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency: []
   costType: 1
   costAmount: 10
   itemType: 6
+  itemMagnitude: 1

@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Magnet4gem
   m_EditorClassIdentifier: 
   shopUniqueName: magnet4gem
-  shopViewName: Extra Magnet
-  shopImage: {fileID: 0}
+  shopViewName: Magnet+
+  shopDescription: More magnets appear
+  shopImage: {fileID: 21300000, guid: e870dbac482fc9b4fba5651a3e89b8e5, type: 3}
+  shopImagePlus: {fileID: 21300000, guid: 968a9a03519f6da4288f780fc1d561fe, type: 3}
+  shopImageSpec: {fileID: 0}
   shopDependency:
   - {fileID: 11400000, guid: 2af2f8b2c11c2a94f86a02f8fdeb0b46, type: 2}
   costType: 1
   costAmount: 50
   itemType: 5
+  itemMagnitude: 1

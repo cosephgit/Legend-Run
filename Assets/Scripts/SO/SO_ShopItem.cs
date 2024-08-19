@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // SO_ShopItem
 // SciptableObject for each item in the shop, storing icon and effect data
@@ -20,7 +21,10 @@ public class SO_ShopItem : ScriptableObject
     public string shopUniqueName; // used for save data
     [Header("Shop data")]
     public string shopViewName; // just for display, change freely
+    public string shopDescription; // just for display, keep it short!
     public Sprite shopImage;
+    public Sprite shopImagePlus;
+    public Sprite shopImageSpec;
     public SO_ShopItem[] shopDependency; // items which must be bought before this is unlocked
     public CostType costType;
     [Header("Premium costs are in cents/pennies/yen")]

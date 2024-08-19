@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Rush0
   m_EditorClassIdentifier: 
   shopUniqueName: rush0
-  shopViewName: Unlock Rush
-  shopImage: {fileID: 0}
+  shopViewName: Rush
+  shopDescription: Powerup runs 100m
+  shopImage: {fileID: 21300000, guid: 1e3c8752ccd6da14093bf03d5ad69c40, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency: []
   costType: 1
   costAmount: 10
   itemType: 0
+  itemMagnitude: 1

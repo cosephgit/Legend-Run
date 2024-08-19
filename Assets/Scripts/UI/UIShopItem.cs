@@ -12,13 +12,17 @@ using UnityEngine.UI;
 
 public class UIShopItem : MonoBehaviour
 {
+    [field: SerializeField] public RectTransform rectTransform { get; private set; }
     [SerializeField] private TextMeshProUGUI textName;
+    [SerializeField] private TextMeshProUGUI textDesc;
     [SerializeField] private Image imageBackground;
     [SerializeField] private Color imageBackgroundLocked = Color.grey;
     [SerializeField] private Color imageBackgroundBought = Color.green;
     [SerializeField] private Image imageItem;
+    [SerializeField] private Image imageItemPlus;
+    [SerializeField] private Image imageItemSpec;
     [SerializeField] private Image imagePriceType; // coin or gem
-    [FormerlySerializedAs("imageStatus")][SerializeField] private Image imageLock;
+    [SerializeField] private Image imageLock;
     [SerializeField] private Sprite lockCoin;
     [SerializeField] private Sprite lockGem;
     [SerializeField] private TextMeshProUGUI textPrice;
@@ -36,7 +40,22 @@ public class UIShopItem : MonoBehaviour
     {
         shopItem = item;
         textName.text = item.shopViewName;
+        textDesc.text = item.shopDescription;
         imageItem.sprite = item.shopImage;
+        if (item.shopImagePlus)
+        {
+            imageItemPlus.sprite = item.shopImagePlus;
+            imageItemPlus.enabled = true;
+        }
+        else
+            imageItemPlus.enabled = false;
+        if (item.shopImageSpec)
+        {
+            imageItemSpec.sprite = item.shopImageSpec;
+            imageItemSpec.enabled = true;
+        }
+        else
+            imageItemSpec.enabled = false;
         if (item.costType == CostType.Coin)
         {
             imagePriceType.sprite = GameManager.instance.shopSettings.spriteCostCoin;
