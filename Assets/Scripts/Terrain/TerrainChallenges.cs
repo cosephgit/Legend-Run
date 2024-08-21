@@ -34,9 +34,11 @@ public class TerrainChallenges : MonoBehaviour
     [SerializeField] private int hazardMax = 3;
     [SerializeField] private float hazardXGap = 2f; // the minimum gap between hazards
     [SerializeField] private float hazardXBuffer = 0.5f; // maximum amount hazards can go outside the normal play bounds
-    [SerializeField] private float hazardBlockSpawnShadow = 5f; // minimum distance after spawning a full blockage before allowing any powerups
+    [SerializeField] private float hazardBlockSpawnShadow = 10f; // minimum distance after spawning a full blockage before allowing any powerups
     [SerializeField] private float hazardPowerupAvoidSpace = 0.1f; // if the safe route has moved this much out of lane, treat it as already being in the next lane for hazard spawning
     [SerializeField] private float hazardStrengthPerDifficulty = 0.1f;
+    [SerializeField] private BossFlyer boss;
+    [SerializeField] private bool DEBUGNOBOSS;
     [Header("powerups")]
     [SerializeField] private CollectibleBase[] powerups;
     [SerializeField] private CollectibleBase powerPotionPrefab;
@@ -63,7 +65,7 @@ public class TerrainChallenges : MonoBehaviour
     private int coinsLeft; // coins left to spawn in the current chain of coins
     private int coinsWorthLeft; // coins left to spawn in the current chain of coins
     private float coinPowerupNextZ; // the Z distance left before the next coin or powerup is spawned
-    private float coinLastPlaced; // distance since the last coin was placed (certain obstacles require a gap)
+    private float coinPowerupLastPlaced; // distance since the last coin was placed (certain obstacles require a gap)
     private float gemNextZ;
     // hazard spawn variables
     private float hazardNextZ; // the Z distance left before the next hazard can be spawned
@@ -142,7 +144,7 @@ public class TerrainChallenges : MonoBehaviour
         }
 
         coinPowerupNextZ -= dist;
-        coinLastPlaced += dist;
+        coinPowerupLastPlaced += dist;
         hazardNextZ -= dist;
         gemNextZ -= dist;
         if (intensityChangeZ > 0)
@@ -227,7 +229,7 @@ public class TerrainChallenges : MonoBehaviour
             coinsLeft = 0;
         }
 
-        coinLastPlaced = 0;
+        coinPowerupLastPlaced = 0;
         coinsActive.Add(coin);
     }
 
@@ -247,6 +249,7 @@ public class TerrainChallenges : MonoBehaviour
 
         CollectibleGem gem = Instantiate(gemPrefab, pos, baseRot, transform);
 
+        coinPowerupLastPlaced = 0;
         gemsActive.Add(gem);
     }
 
@@ -296,7 +299,6 @@ public class TerrainChallenges : MonoBehaviour
     }
 
     // place the required number of hazards
-    // need to make sure that these are spaced well to allow a gap for the player
     private void PlaceHazard(float safeCurrentX)
     {
         float spawnStrength = (Random.Range(0.0f, 1.0f) + (difficulty * hazardStrengthPerDifficulty)) * intensityCurrent / intensityMax;
@@ -314,7 +316,7 @@ public class TerrainChallenges : MonoBehaviour
             hazardSpawn = 3; // block the path - only way past is to jump
             hazardType = hazards[0];
         }
-        else if (hazardSpawn == 3 && coinLastPlaced < spawnGroupGapZ) // enforce a minimum coin gap before a three-lane blockage
+        else if (hazardSpawn == 3 && coinPowerupLastPlaced < spawnGroupGapZ) // enforce a minimum spawn gap before a three-lane blockage
             hazardSpawn = 2;
 
         // the first hazard is always adjacent to the safe path
@@ -457,7 +459,7 @@ public class TerrainChallenges : MonoBehaviour
                     rightAllowed = CoSephUtils.RandomBool();
                     centreAllowed = !rightAllowed;
                 }
-                else // leftAllowed && centreAllowed
+                else if (leftAllowed && centreAllowed)
                 {
                     centreAllowed = CoSephUtils.RandomBool();
                     leftAllowed = !centreAllowed;
@@ -523,6 +525,7 @@ public class TerrainChallenges : MonoBehaviour
         CollectibleBase powerup = Instantiate(powerPotionPrefab, pos, baseRot, transform);
         powerupsActive.Add(powerup);
 
+        coinPowerupLastPlaced = 0;
         powerPotionAcc -= 1f;
     }
     private void PlacePowerSword(float safeCurrentX)
@@ -533,6 +536,7 @@ public class TerrainChallenges : MonoBehaviour
         CollectibleBase powerup = Instantiate(powerSwordPrefab, pos, baseRot, transform);
         powerupsActive.Add(powerup);
 
+        coinPowerupLastPlaced = 0;
         powerSwordAcc -= 1f;
     }
 
@@ -542,54 +546,66 @@ public class TerrainChallenges : MonoBehaviour
     // final - the stage has nearly finished, just finish off the current coin chain
     private void PlaceChallenges(float safeCurrentX, bool special)
     {
-        // if there are coins left: spawn coins
-        if (coinsLeft > 0)
+        if (DEBUGNOBOSS || boss.state == BossFlyerState.Hidden)
         {
-            if (coinPowerupNextZ <= 0)
+            // if there are coins left: spawn coins
+            if (coinsLeft > 0)
             {
-                // currently in the middle of spawning a coin chain
-                PlaceCoin(safeCurrentX);
+                if (coinPowerupNextZ <= 0)
+                {
+                    // currently in the middle of spawning a coin chain
+                    PlaceCoin(safeCurrentX);
 
-                if (coinsLeft > 0)
-                    coinPowerupNextZ = coinGapZ;
-                else
-                    coinPowerupNextZ = spawnGroupGapZ;
+                    if (coinsLeft > 0)
+                        coinPowerupNextZ = coinGapZ;
+                    else
+                        coinPowerupNextZ = spawnGroupGapZ;
+                }
             }
+            else
+            {
+                // if not, consider placing a gem, powerup, or starting a coin chain
+                if (coinPowerupNextZ < 0)
+                {
+                    if (gemNextZ < 0)
+                    {
+                        // TEMP
+                        if (!DEBUGNOBOSS)
+                            boss.BossBegin(0f);
+
+                        // place the next gem
+                        PlaceGem(safeCurrentX);
+                        gemNextZ += gemGap;
+                        coinPowerupNextZ = spawnGroupGapZ;
+                    }
+                    else if ((powerPotionAcc > 0 && special) || (powerPotionAcc > 2f))
+                    {
+                        PlacePowerPotion(safeCurrentX);
+                        coinPowerupNextZ = spawnGroupGapZ;
+                    }
+                    else if ((powerSwordAcc > 0 && special) || (powerSwordAcc > 2f))
+                    {
+                        PlacePowerSword(safeCurrentX);
+                        coinPowerupNextZ = spawnGroupGapZ;
+                    }
+                    else if ((coinsAcc > 0 && special) || (coinsAcc > 2f))
+                        StartCoinChain();
+                }
+            }
+
+            if (hazardAcc > 0)
+            {
+                if (hazardNextZ <= 0 && !special)
+                {
+                    PlaceHazard(safeCurrentX);
+                    hazardNextZ = spawnGroupGapZ;
+                }
+            }
+
         }
         else
         {
-            // if not, consider placing a gem, powerup, or starting a coin chain
-            if (coinPowerupNextZ < 0)
-            {
-                if (gemNextZ < 0)
-                {
-                    // place the next gem
-                    PlaceGem(safeCurrentX);
-                    gemNextZ += gemGap;
-                    coinPowerupNextZ = spawnGroupGapZ;
-                }
-                else if ((powerPotionAcc > 0 && special) || (powerPotionAcc > 2f))
-                {
-                    PlacePowerPotion(safeCurrentX);
-                    coinPowerupNextZ = spawnGroupGapZ;
-                }
-                else if ((powerSwordAcc > 0 && special) || (powerSwordAcc > 2f))
-                {
-                    PlacePowerSword(safeCurrentX);
-                    coinPowerupNextZ = spawnGroupGapZ;
-                }
-                else if ((coinsAcc > 0 && special) || (coinsAcc > 2f))
-                    StartCoinChain();
-            }
-        }
-
-        if (hazardAcc > 0)
-        {
-            if (hazardNextZ <= 0 && !special)
-            {
-                PlaceHazard(safeCurrentX);
-                hazardNextZ = spawnGroupGapZ;
-            }
+            // boss is active!!!!
         }
 
         // remove items that have are behind the player

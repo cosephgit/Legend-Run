@@ -48,9 +48,11 @@ MonoBehaviour:
   <upgrades>k__BackingField: {fileID: 8773073075246026000}
   audioMixer: {fileID: 24100000, guid: d6c57297929cfb142a55028155c053b2, type: 2}
   diffKarmaBalance: 0.2
-  <shopSettings>k__BackingField: {fileID: 11400000, guid: de8bf029dc14cb742af4351d62df2dc1,
+  <shopSettings>k__BackingField: {fileID: 11400000, guid: 092eb7d8dffe64042a721da5c41fa2e8,
     type: 2}
-  DEBUGWIPESAVEDATA: 1
+  DEBUGWIPESAVEDATA: 0
+  DEBUGCOINSTART: 1000
+  DEBUGGEMSTART: 150
 --- !u!114 &8773073075246026000
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Gems341
   m_EditorClassIdentifier: 
   shopUniqueName: gems341
-  shopViewName: 341 Gems
+  shopViewName: Gems
+  shopDescription: Get 341 gems!
   shopImage: {fileID: 0}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency: []
   costType: 2
   costAmount: 2499

@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     [field: SerializeField]public SO_ShopSettings shopSettings { get; private set; }
 #if UNITY_EDITOR
     [SerializeField] private bool DEBUGWIPESAVEDATA;
+    [SerializeField] private int DEBUGCOINSTART = 10000;
+    [SerializeField] private int DEBUGGEMSTART = 100;
 #endif
     public float volBGM { get => settingData.volumeBGM; }
     public float volSFX { get => settingData.volumeSFX; }
@@ -63,8 +65,8 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (DEBUGWIPESAVEDATA)
         {
-            saveData.coins = 10000;
-            saveData.gems = 1000;
+            saveData.coins = DEBUGCOINSTART;
+            saveData.gems = DEBUGGEMSTART;
             saveData.owned = new string[0];
         }
 #endif

@@ -167,6 +167,21 @@ public class UIShop : MonoBehaviour
         }
     }
 
+    public bool IsBuyAvailable()
+    {
+        for (int i = 0; i < GameManager.instance.shopSettings.shopItems.Length; i++)
+        {
+            if (GameManager.instance.shopSettings.shopItems[i].costType == CostType.Premium)
+                continue;
+            if (GetItemState(GameManager.instance.shopSettings.shopItems[i]) == ItemState.Available)
+            {
+                if (CanAfford(GameManager.instance.shopSettings.shopItems[i]))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public void BuyPremium(SO_ShopItem item)
     {
         AudioManager.instance.SoundPlayMenuButton();

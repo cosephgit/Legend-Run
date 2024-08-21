@@ -31,7 +31,10 @@ public class UIShopItem : MonoBehaviour
     [SerializeField] private Transform popPos;
     [SerializeField] private UIPopMaker popMaker;
     [SerializeField] private AudioClip popSound;
-    [SerializeField] private UIPopMaker popMakerGem;
+    [SerializeField] private float popMultCoin = 2f;
+    [SerializeField] private Color popColorCoin = Color.yellow;
+    [SerializeField] private float popMultGem = 5f;
+    [SerializeField] private Color popColorGem = Color.red;
     [SerializeField] private AudioClip popSoundGem;
     private SO_ShopItem shopItem; // data for the actual item on this entry
     private UIShop ownerShop;
@@ -139,14 +142,17 @@ public class UIShopItem : MonoBehaviour
                     if (ownerShop.BuyItem(shopItem))
                     {
                         Vector3 delta = transform.parent.position + pos - transform.position;
+                        float popMagnitude = Mathf.Log10(shopItem.costAmount);
                         if (shopItem.costType == CostType.Coin)
                         {
-                            popMaker.MakePops(shopItem.costAmount);
+                            popMagnitude *= popMultCoin;
+                            popMaker.MakePops(popColorCoin, popMagnitude);
                             AudioManager.instance.SoundPlayVaried(popSound, popPos.position);
                         }
                         else
                         {
-                            popMakerGem.MakePops(shopItem.costAmount);
+                            popMagnitude *= popMultGem;
+                            popMaker.MakePops(popColorGem, popMagnitude);
                             AudioManager.instance.SoundPlayVaried(popSoundGem, popPos.position);
                         }
                         transform.parent.position = delta;

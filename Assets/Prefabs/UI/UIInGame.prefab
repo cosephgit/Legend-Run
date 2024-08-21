@@ -4315,10 +4315,10 @@ RectTransform:
   - {fileID: 907679767918645740}
   - {fileID: 3861790629194550618}
   - {fileID: 6347938396446676511}
-  - {fileID: 7842232321015111351}
   - {fileID: 230024389262776111}
   - {fileID: 7289864787964787604}
   - {fileID: 3658951201366762416}
+  - {fileID: 7842232321015111351}
   - {fileID: 1649755843368961473}
   - {fileID: 5496935179147649901}
   - {fileID: 64229716528116993}
@@ -4405,6 +4405,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuMain: {fileID: 3202412276695077904}
+  menuPlayRect: {fileID: 0}
+  menuShopRect: {fileID: 0}
   menuOptions: {fileID: 8272496638446153718}
   menuShop: {fileID: 6136327600398175226}
   menuScores: {fileID: 0}

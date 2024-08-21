@@ -16,10 +16,11 @@ public class UIHealthHeart : MonoBehaviour
     [SerializeField] private Sprite heartNew;
     [SerializeField] private UIBase actualHeart; // the actual heart, used for the pops
     [SerializeField] private UIPopMaker popMaker;
+    private bool ready;
 
     public void Initialise()
     {
-        actualHeart.Initialise();
+        StartCoroutine(DelayedInitialise());
     }
 
     public void Fill(bool noisy = true)
@@ -28,18 +29,28 @@ public class UIHealthHeart : MonoBehaviour
         if (noisy)
         {
             popMaker.MakePops();
-            actualHeart.AddShake(1f);
+            if (ready)
+                actualHeart.AddShake(1f);
         }
     }
     public void Empty()
     {
         heart.sprite = heartEmpty;
-        actualHeart.AddShake(2f);
+        if (ready)
+            actualHeart.AddShake(2f);
     }
     public void New()
     {
         heart.sprite = heartNew;
-        popMaker.MakePops(Color.magenta);
-        actualHeart.AddShake(2f);
+        if (ready)
+            actualHeart.AddShake(2f);
+    }
+
+    // need to wait a frame to ensure UI has updated post-instantiation
+    private IEnumerator DelayedInitialise()
+    {
+        yield return new WaitForEndOfFrame();
+        actualHeart.Initialise();
+        ready = true;
     }
 }

@@ -8,9 +8,16 @@ using UnityEngine.UI;
 // created 6/9/23
 // last modified 6/9/23
 
+public enum PopType
+{
+    Pop,
+    Sparkle
+}
+
 public class UIPop : MonoBehaviour
 {
     [SerializeField] private Image popImage;
+    [field: SerializeField] public PopType popType { get; private set; } = PopType.Pop;
     private UIPopManager parentManager;
     private Color popColor;
     private Vector2 popVee;
@@ -68,12 +75,16 @@ public class UIPop : MonoBehaviour
             }
 
             // apply gravity
-            Quaternion rot = transform.rotation * Quaternion.Euler(0f, 0f, popVee.x);
             Vector2 vee = popVee;
 
-            vee.y += parentManager.popGravity * parentManager.popScreenScale * Time.unscaledDeltaTime;
+            if (popType == PopType.Pop)
+                vee.y += parentManager.popGravity * parentManager.popScreenScale * Time.unscaledDeltaTime;
+            else
+                vee.y += parentManager.sparkleGravity * parentManager.popScreenScale * Time.unscaledDeltaTime;
 
             popVee = vee;
+
+            Quaternion rot = transform.rotation * Quaternion.Euler(0f, 0f, popVee.x);
             transform.rotation = rot;
         }
     }

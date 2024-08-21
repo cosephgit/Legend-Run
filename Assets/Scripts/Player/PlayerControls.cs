@@ -54,7 +54,10 @@ public class PlayerControls : MonoBehaviour
                 swipeStart = touchPos;
             }
             swipeEnd = touchPos;
+            UIPopManager.instance.UpdateTouch(touchPos);
         }
+        else
+            UIPopManager.instance.EndTouch();
 
         if (player && touch)
         {
@@ -81,6 +84,8 @@ public class PlayerControls : MonoBehaviour
             swipeVector /= Screen.width; // scale swipe to screen resolution, so the x value will be from -0.5 to 0.5 and the y value will be approx. -0.3 to 0.3
 
             player.SetSwipe(swipeVector);
+
+            UIPopManager.instance.EndTouch();
         }
     }
 

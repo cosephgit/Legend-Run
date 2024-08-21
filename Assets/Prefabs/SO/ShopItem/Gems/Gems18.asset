@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Gems18
   m_EditorClassIdentifier: 
   shopUniqueName: gems18
-  shopViewName: 18 Gems
+  shopViewName: Gems
+  shopDescription: Get 18 gems!
   shopImage: {fileID: 21300000, guid: f7c25b81de6148e4386b97be25a49000, type: 3}
+  shopImagePlus: {fileID: 0}
+  shopImageSpec: {fileID: 0}
   shopDependency: []
   costType: 2
   costAmount: 171

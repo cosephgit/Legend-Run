@@ -29,6 +29,7 @@ public class UIHealthHearts : MonoBehaviour
             hearts[i].Initialise();
             hearts[i].Fill(false);
         }
+        healthCurrent = healthMax;
         healthCurrentMax = healthMax;
     }
 
@@ -40,9 +41,7 @@ public class UIHealthHearts : MonoBehaviour
             {
                 UIHealthHeart heartNew = Instantiate(heartBase, heartBase.transform.parent);
                 hearts.Add(heartNew);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(heartGrid);
                 heartNew.Initialise();
-                heartNew.New();
             }
             healthCurrentMax = healthMaxNew;
         }

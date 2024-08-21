@@ -9750,7 +9750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9919159a0c4da1e4d8b0da5b96e03ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  degreesPerSec: 360
+  degreesPerSec: 720
   pickupSound:
   - {fileID: 8300000, guid: 66528c3875dd52240960fd2cee523990, type: 3}
   - {fileID: 8300000, guid: 540d673bb0e819942a207adcf423a7a9, type: 3}
