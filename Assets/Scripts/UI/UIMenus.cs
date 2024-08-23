@@ -16,6 +16,7 @@ public class UIMenus : UIMainMenu
     [SerializeField] private GameObject menuUnderlay; // covers the game view while menus are open to make the menu pop more
     [SerializeField] private GameObject menuPause;
     [SerializeField] private UIMenuDefeat menuDefeat;
+    [SerializeField] private UIDefeatFirst menuDefeatFirst;
     [Header("Pause references")]
     [SerializeField] private TextMeshProUGUI textPauseDefeatTitle; // text on the title so it can be changed between PAUSED and DEFEAT
     [SerializeField] private Button buttonPause; // the main pause button - so it can be disabled on defeat screen

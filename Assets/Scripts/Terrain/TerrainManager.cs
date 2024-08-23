@@ -37,7 +37,8 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private float safeRoutePlayerMoveFractionMax = 0.8f; // the maximum fraction of the player's move speed that an angled route can require at high difficulty
     [Header("Challenge settings")]
     [SerializeField] private TerrainChallenges terrainChallenges;
-    [SerializeField] private int terrainChallengeLead = 3;
+    [SerializeField] private float terrainChallengeLead = 1f;
+    [SerializeField] private float terrainChallengeLeadTutorial = 0.5f;
     [Header("Pause and menu settings")]
     [SerializeField] private UIMenus menuScreens;
     [SerializeField] private UIOdometer odometer;
@@ -109,10 +110,29 @@ public class TerrainManager : MonoBehaviour
 
     private void Start()
     {
-        difficulty = difficultyBase;
         CalcNextSafeX();
-        terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainChallengeLead, 0f, 0f));
+
+        if (GameManager.instance.GetFlag(GlobalVars.SAVEFLAGTUTORIAL))
+            StartGameplay();
+        else
+            StartTutorial();
+    }
+
+    private void StartTutorial()
+    {
+        difficulty = difficultyBase;
+        terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainChallengeLeadTutorial, 0f, 0f));
+        Debug.Log("init with terrainChallengeLeadTutorial " + terrainChallengeLeadTutorial);
         terrainChallenges.SetDifficulty(difficulty);
+    }
+
+    private void StartGameplay()
+    {
+        difficulty = difficultyBase;
+        terrainChallenges.Initialise(circleRadius, Quaternion.Euler(degreesPerSegment * terrainChallengeLead, 0f, 0f));
+        Debug.Log("init with terrainChallengeLead " + terrainChallengeLead);
+        terrainChallenges.SetDifficulty(difficulty);
+
         AudioManager.instance.MusicPlay(music);
     }
 
@@ -388,12 +408,23 @@ public class TerrainManager : MonoBehaviour
     // used to notify the terrain manager that a tutorial stage has been completed and adjust the scene accordingly
     public void PlayerTutorialStage()
     {
-        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+        terrainChallenges.ClearChallenges();
+        if (PlayerPawn.instance.tutorial.state == TutorialState.JumpOver
+            || PlayerPawn.instance.tutorial.state == TutorialState.Dodge)
+        {
+            terrainChallenges.TutorialHazard();
+        }
+        else if (PlayerPawn.instance.tutorial.state == TutorialState.Collect)
+        {
+            terrainChallenges.TutorialCoins();
+        }
+        else if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
         {
             // tutorial finished, turn on basic UI elements
             menuScreens.StageStart();
+            PlayerPawn.instance.StageStart();
+            StartGameplay();
         }
-        terrainChallenges.ClearChallenges();
     }
 
     public LaneRef GetLane(float posX)

@@ -8,13 +8,13 @@ using UnityEngine;
 public class UIMenuDefeat : MonoBehaviour
 {
     [SerializeField] private UIMenus menuHub;
-    [SerializeField] private UIBaseAccumulator defeatDistance;
-    [SerializeField] private UIBase defeatHighScore;
+    [SerializeField] protected UIBaseAccumulator defeatDistance;
+    [SerializeField] protected UIBase defeatHighScore;
     [SerializeField] private int defeatPopCount = 4;
     [SerializeField] private float defeatPopMagnitude = 4f;
     [SerializeField] private float defeatPopDelay = 0.5f;
-    [SerializeField] private GameObject buttonContinueAd;
-    [SerializeField] private GameObject buttonContinueGem;
+    [SerializeField] protected GameObject buttonContinueAd;
+    [SerializeField] protected GameObject buttonContinueGem;
     [SerializeField] private TextMeshProUGUI defeatGemPrice;
     [SerializeField] private GameObject placeholderAdWall;
     [SerializeField] private AudioClip recoverySound;
@@ -24,7 +24,7 @@ public class UIMenuDefeat : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Open(int distance, int coins, int gems)
+    public virtual void Open(int distance, int coins, int gems)
     {
         int revivecost = GameManager.instance.shopSettings.reviveGemCost;
 
@@ -60,7 +60,7 @@ public class UIMenuDefeat : MonoBehaviour
         GameManager.instance.SaveSettings();
     }
 
-    private IEnumerator NewHighScorePops()
+    protected IEnumerator NewHighScorePops()
     {
         for (int i = 0; i < defeatPopCount; i++)
         {

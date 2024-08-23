@@ -83,7 +83,10 @@ public class PlayerPawn : MonoBehaviour
         }
         else
             instance = this;
+    }
 
+    private void Start()
+    {
         pawnTargetX = transform.position.x;
         speed = 0;
         streakLevel = GameManager.instance.upgrades.upgradeBoostInitial;
@@ -94,6 +97,22 @@ public class PlayerPawn : MonoBehaviour
         speedLinesEmissionRateBase = speedLinesEmission.rateOverTime.constant;
         speedLinesMain = speedLines.main;
         speedLinesMainSpeedBase = speedLinesMain.startSpeed.constant;
+    }
+
+    public void TutorialStart()
+    {
+        streakLevel = GameManager.instance.upgrades.upgradeBoostInitial;
+        streakCoins = StreakCoinsForLevel(streakLevel);
+        pawnHealth.PreTutorial();
+    }
+
+
+    // called at the start of the stage, or at the end of the tutorial
+    public void StageStart()
+    {
+        streakLevel = GameManager.instance.upgrades.upgradeBoostInitial;
+        streakCoins = StreakCoinsForLevel(streakLevel);
+        pawnHealth.Initialise();
     }
 
     public void StreakEnd()
@@ -311,7 +330,7 @@ public class PlayerPawn : MonoBehaviour
     public void SetMove(Vector2 touchPos)
     {
         return;
-
+        /*
         // don't assign moves while in pause menu!
         if (TerrainManager.instance.paused || TerrainManager.instance.defeat || TerrainManager.instance.victory) return;
 
@@ -343,12 +362,13 @@ public class PlayerPawn : MonoBehaviour
         // convert the touch inside the main area to a movement position
         pawnTargetX = TerrainManager.instance.moveMinX + (TerrainManager.instance.moveMaxX - TerrainManager.instance.moveMinX) * touchX;
         pawnLoco.SetMoveTarget(pawnTargetX);
+        */
     }
 
     // receive a swipe instruction
     public void SetSwipe(Vector3 swipe)
     {
-        Debug.Log("Received a swipe! x " + swipe.x + " y " + swipe.y);
+        //Debug.Log("Received a swipe! x " + swipe.x + " y " + swipe.y);
 
         if (pawnHealth.IsAlive() && !TerrainManager.instance.paused)
         {
@@ -356,12 +376,21 @@ public class PlayerPawn : MonoBehaviour
             {
                 if (swipe.y > Mathf.Abs(swipe.x))
                 {
-                    Debug.Log("Swiped up!");
-                    jumpHeld = pawnLoco.StartJump();
+                    //Debug.Log("Swiped up!");
+                    if (tutorial.state == TutorialState.Finished
+                        || tutorial.state == TutorialState.Jump
+                        || tutorial.state == TutorialState.JumpDone
+                        || tutorial.state == TutorialState.JumpOver
+                        || tutorial.state == TutorialState.JumpOverDone)
+                    {
+                        jumpHeld = pawnLoco.StartJump();
+                        if (jumpHeld)
+                            tutorial.PlayerJumped();
+                    }
                 }
                 else if (swipe.x > 0)
                 {
-                    Debug.Log("Swiped right!");
+                    //Debug.Log("Swiped right!");
                     if (tutorial.state == TutorialState.Init || tutorial.state == TutorialState.Jump) return;
 
                     if (pawnTargetX >= TerrainManager.instance.laneRightXMin)
@@ -377,7 +406,7 @@ public class PlayerPawn : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Swiped left!");
+                    //Debug.Log("Swiped left!");
                     if (tutorial.state == TutorialState.Init || tutorial.state == TutorialState.Jump) return;
 
                     if (pawnTargetX <= TerrainManager.instance.laneLeftXMax)
@@ -392,8 +421,8 @@ public class PlayerPawn : MonoBehaviour
                     tutorial.PlayerMoved();
                 }
             }
-            else
-                Debug.Log("Not really, just a tap!");
+            //else
+                //Debug.Log("Not really, just a tap!");
         }
     }
 
@@ -472,10 +501,17 @@ public class PlayerPawn : MonoBehaviour
     {
         if (tutorial.state == TutorialState.Finished) return;
 
-        if (pawnLoco.jumping)
+        if (tutorial.state == TutorialState.JumpOver)
             tutorial.HazardJumped();
         else
             tutorial.HazardDodged();
+    }
+    public void LootMissed()
+    {
+        if (tutorial.state == TutorialState.Finished) return;
+
+        if (tutorial.state == TutorialState.Collect)
+            tutorial.CoinMissed();
     }
 
     // used during initialisation to work out how much X movement the player can achieve for each Z movement (at full speed)

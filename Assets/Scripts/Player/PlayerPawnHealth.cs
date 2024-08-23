@@ -16,15 +16,17 @@ public class PlayerPawnHealth : MonoBehaviour
     [SerializeField] private AudioClip[] painSounds;
     private int health;
 
-    private void Awake()
+    public void PreTutorial()
     {
         health = healthMax;
+        healthHearts.gameObject.SetActive(false);
     }
 
-    private void Start()
+    public void Initialise()
     {
         healthMax = GameManager.instance.upgrades.upgradeHealthPoints;
         health = healthMax;
+        healthHearts.gameObject.SetActive(true);
         healthHearts.Initialise(healthMax);
     }
 

@@ -68,6 +68,8 @@ public class GameManager : MonoBehaviour
             saveData.coins = DEBUGCOINSTART;
             saveData.gems = DEBUGGEMSTART;
             saveData.owned = new string[0];
+            saveData.flags = 0;
+            ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
         }
 #endif
 

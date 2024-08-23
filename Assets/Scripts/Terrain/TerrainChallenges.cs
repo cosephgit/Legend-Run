@@ -93,10 +93,33 @@ public class TerrainChallenges : MonoBehaviour
         powerPotionAcc = -1f; // or powerups
         powerSwordAcc = -1f; // or powerups
     }
+
+    public void TutorialCoins()
+    {
+        coinsAcc = 0f;
+        gemNextZ = gemGap;
+        hazardAcc = -1f; // ensure coins always appear first before any hazards
+        powerPotionAcc = -1f; // or powerups
+        powerSwordAcc = -1f; // or powerups
+    }
+    public void TutorialHazard()
+    {
+        coinsAcc = -1f;
+        gemNextZ = gemGap;
+        hazardAcc = 0f;
+        powerPotionAcc = -1f; // or powerups
+        powerSwordAcc = -1f; // or powerups
+    }
+
     // initialise the terrainchallenges with the parameters from the main terrain manager
     // circleheight is the size of the rotating circle track (for positioning) and the rotation of the origin point (the furthest terrain that is out of sight)
     public void Initialise(float circleheight, Quaternion rot)
     {
+        coinsAcc = 0f;
+        gemNextZ = gemGap;
+        hazardAcc = -1f; // ensure coins always appear first before any hazards
+        powerPotionAcc = -1f; // or powerups
+        powerSwordAcc = -1f; // or powerups
         baseHeight = circleheight;
         baseRot = rot;
         IntensityStart();
@@ -132,21 +155,28 @@ public class TerrainChallenges : MonoBehaviour
                 powerSwordAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradeSwordRate;
             if (GameManager.instance.upgrades.upgradePotionRate > 0)
                 powerPotionAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradePotionRate;
+            gemNextZ -= dist;
+            coinPowerupNextZ -= dist;
+            coinPowerupLastPlaced += dist;
+            hazardNextZ -= dist;
         }
         else
         {
             // tutorial-only behaviour
             if (PlayerPawn.instance.tutorial.state == TutorialState.Collect)
+            {
                 coinsAcc += dist * coinsPerDistanceCurrent * 0.5f;
+                coinPowerupNextZ -= dist;
+                coinPowerupLastPlaced += dist;
+            }
             else if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge
-                || PlayerPawn.instance.tutorial.state == TutorialState.Jump)
+                || PlayerPawn.instance.tutorial.state == TutorialState.JumpOver)
+            {
                 hazardAcc += dist * hazardPerDistanceCurrent * 0.5f;
+                hazardNextZ -= dist;
+            }
         }
 
-        coinPowerupNextZ -= dist;
-        coinPowerupLastPlaced += dist;
-        hazardNextZ -= dist;
-        gemNextZ -= dist;
         if (intensityChangeZ > 0)
         {
             // gradually ramp the intensity up to the maximum value, then drop for another gradual rise
@@ -169,8 +199,19 @@ public class TerrainChallenges : MonoBehaviour
     {
         if (PlayerPawn.instance.tutorial.state == TutorialState.Collect)
         {
-            coinsLeft = coinsMin;
-            coinsWorthLeft = coinsLeft;
+            coinsLeft = 1;
+            coinsWorthLeft = 1;
+
+            if (PlayerPawn.instance.transform.position.x < TerrainManager.instance.laneLeftXMax)
+                PlaceCoin(TerrainManager.instance.laneRightX);
+            else if (PlayerPawn.instance.transform.position.x > TerrainManager.instance.laneRightXMin)
+                PlaceCoin(TerrainManager.instance.laneLeftX);
+            else if (PlayerPawn.instance.transform.position.x < TerrainManager.instance.laneCentreX)
+                PlaceCoin(TerrainManager.instance.laneRightX);
+            else
+                PlaceCoin(TerrainManager.instance.laneLeftX);
+
+            coinsAcc = -10f;
         }
         else
         {
@@ -254,6 +295,7 @@ public class TerrainChallenges : MonoBehaviour
     }
 
     // calculates positions for hazards, mainly for events when 2 or 3 hazards are being spawned in one row
+    /*
     private float CalcHazardX(float leftmost, float rightmost, float maxJump)
     {
         // hazardSpawnSafeX to do
@@ -297,6 +339,7 @@ public class TerrainChallenges : MonoBehaviour
 
         return returnX;
     }
+    */
 
     // place the required number of hazards
     private void PlaceHazard(float safeCurrentX)
@@ -311,7 +354,7 @@ public class TerrainChallenges : MonoBehaviour
             hazardSpawn = 2; // always place maximum to make the player actively evade
             hazardType = hazards[0];
         }
-        else if (PlayerPawn.instance.tutorial.state == TutorialState.Jump)
+        else if (PlayerPawn.instance.tutorial.state == TutorialState.JumpOver)
         {
             hazardSpawn = 3; // block the path - only way past is to jump
             hazardType = hazards[0];
@@ -340,36 +383,43 @@ public class TerrainChallenges : MonoBehaviour
         }
         else
         {
-            /*
-             * situations:
-             * in left lane
-             * * fixed/shifting left
-             * - LEFT LANE CLEAR, OTHER LANES POSSIBLE
-             * * shifting right
-             * - LEFT AND CENTRE LANE CLEAR, RIGHT LANE BLOCK ONLY
-             * 
-             * in centre lane
-             * * fixed
-             * - CENTRE CLEAR, LEFT AND RIGHT BLOCKABLE
-             * * shifting left
-             * - LEFT AND CENTRE CLEAR, RIGHT BLOCK ONLY
-             * * shifting right
-             * - RIGHT AND CENTRE CLEAR, LEFT BLOCK ONLY
-             * 
-             * in right lane
-             ** shifting left
-             * - RIGHT AND CENTRE LANE CLEAR, LEFT LANE BLOCK ONLY
-             ** fixed/shifting right
-             * - RIGHT LANE CLEAR, OTHER LANES POSSIBLE
-             */
-
             bool rightAllowed;
             bool leftAllowed;
             bool centreAllowed;
             int max;
 
+            if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge)
+            {
+                // make sure at least one is in front of the player
+                float playerPos = PlayerPawn.instance.transform.position.x;
 
-            if (safeCurrentX > TerrainManager.instance.laneCentreX + hazardPowerupAvoidSpace)
+                if (playerPos < TerrainManager.instance.laneLeftXMax)
+                {
+                    rightAllowed = true;
+                    centreAllowed = false;
+                    leftAllowed = true;
+                }
+                else if (playerPos > TerrainManager.instance.laneRightXMin)
+                {
+                    rightAllowed = true;
+                    centreAllowed = false;
+                    leftAllowed = true;
+                }
+                else if (playerPos > TerrainManager.instance.laneCentreX)
+                {
+                    rightAllowed = true;
+                    centreAllowed = true;
+                    leftAllowed = false;
+                }
+                else
+                {
+                    rightAllowed = false;
+                    centreAllowed = true;
+                    leftAllowed = true;
+                }
+                max = 2;
+            }
+            else if (safeCurrentX > TerrainManager.instance.laneCentreX + hazardPowerupAvoidSpace)
             {
                 if (safeCurrentX < TerrainManager.instance.laneRightX - hazardPowerupAvoidSpace)
                 {
@@ -615,6 +665,7 @@ public class TerrainChallenges : MonoBehaviour
             {
                 if (coinsActive[0].transform.position.z < challengeZRemoval)
                 {
+                    PlayerPawn.instance.LootMissed();
                     coinsActive[0].Remove();
                     coinsActive.RemoveAt(0);
                     PlayerPawn.instance.StreakEnd();
