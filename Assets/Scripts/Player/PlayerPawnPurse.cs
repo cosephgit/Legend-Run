@@ -20,15 +20,17 @@ public class PlayerPawnPurse : MonoBehaviour
         gems = GameManager.instance.gemsStash;
     }
 
-    public void AddCoins(int amount)
+    public void ChangeBars()
     {
-        coins += amount;
-        coinBar.SetValue(coins);
-    }
-
-    public void AddGems(int amount)
-    {
-        gems += amount;
-        gemBar.SetValue(gems);
+        if (coins != GameManager.instance.coinsStash)
+        {
+            coins = GameManager.instance.coinsStash;
+            coinBar.SetValue(coins);
+        }
+        if (gems != GameManager.instance.gemsStash)
+        {
+            gems = GameManager.instance.gemsStash;
+            gemBar.SetValue(gems);
+        }
     }
 }

@@ -26,7 +26,6 @@ public class UIPointer : MonoBehaviour
     {
         if (pointerFadeTime > 0)
         {
-            // this section is structured this way to ensure that (if updates happen in the wrong order) the pointer doesn't show as part faded constantly
             Color colorFade = pointerColor;
             colorFade.a = pointerFadeTime / pointerFadeDuration;
 

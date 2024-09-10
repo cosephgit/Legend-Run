@@ -32,4 +32,13 @@ public class SaveData
     {
         return ((flags & flag) != 0);
     }
+
+    public void DEBUGWIPE()
+    {
+        coins = 0;
+        gems = 0;
+        distance = 0;
+        owned = new string[0];
+        flags = 0;
+    }
 }

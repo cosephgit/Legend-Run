@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // PlayerTutorial
 // manages the tutorial screens the first time the player plays the game
 // created 6/9/23
-// last modified 6/9/23
+// modified 24/8/24
 
 
 /*
@@ -42,41 +43,46 @@ public class PlayerTutorial : MonoBehaviour
     [Header("Tutorial UI parameters")]
     [SerializeField] private float tutorialResultTime = 2f;
     [Header("Tutorial UI elements")]
-    [SerializeField] private UITutorialTip tipMove;
-    [SerializeField] private TextMeshProUGUI tutorialBlockTopText;
-
-    [SerializeField] private UITutorialTip tipJump;
-    [SerializeField] private TextMeshProUGUI tutorialBlockBottomText;
-
-    [SerializeField] private GameObject tutorialTryAgain; // show when the player gets tutorial step wrong
-    [SerializeField] private GameObject tutorialWellDone; // show when the player successfully completes a tutorial step
-    [SerializeField] private GameObject tutorialAllDone; // show when the player successfully completes a tutorial step
+    [SerializeField] private UICompanion companionControls;
+    [SerializeField] private GameObject tutorialCompanion;
+    [SerializeField] private GameObject tutorialCompanionTipBackground;
+    [SerializeField] private TextMeshProUGUI tutorialCompanionTip;
+    [SerializeField] private UITutorialTip swipeSide;
+    [SerializeField] private UITutorialTip swipeUp;
     [SerializeField] private UITutorialFinger tutorialFinger;
     [Header("Success effects")]
     [SerializeField] private Color successPopColor = Color.green;
     [SerializeField] private float successPopIntensity = 4f;
+    [SerializeField] private Color minorPopColor = Color.yellow;
+    [SerializeField] private float minorPopIntensity = 2f;
     [SerializeField] private AudioClip successSound;
+    [SerializeField] private AudioClip progressSound;
     [Header("Failure effects")]
     [SerializeField] private AudioClip failureSound;
+    [Header("Tutorial Shop params")]
+    [SerializeField] private float tutorialShopDelayMin = 0.5f;
+    [SerializeField] private int tutorialFreeGems = 10;
+    [SerializeField] private float tutorialShopDelay = 3f;
     public TutorialState state { get; private set; } = TutorialState.Init;
+    private float tutorialDelay;
+    private bool tutorialShopWait = true;
 
-    private void Start()
+    public void Initialise()
     {
         tutorialFinger.Hide();
         if (GameManager.instance.tutorialDone)
         {
-            tipMove.gameObject.SetActive(false);
-            tipJump.gameObject.SetActive(false);
+            companionControls.SetInactive();
             state = TutorialState.Finished;
             TerrainManager.instance.PlayerTutorialStage();
         }
         else
         {
-            tipMove.gameObject.SetActive(true);
-            tipJump.gameObject.SetActive(false);
             state = TutorialState.Move;
+            companionControls.ShowCompanion();
+            CompanionText("Swipe to move");
             PlayerPawn.instance.TutorialStart();
-            tutorialFinger.ShowSwipe(tipMove.swipeTipStart, tipMove.swipeTipEnd, tipMove.swipeOscillate);
+            tutorialFinger.ShowSwipe(swipeSide);
         }
     }
 
@@ -165,45 +171,50 @@ public class PlayerTutorial : MonoBehaviour
                 break;
         }
 
-        tutorialWellDone.SetActive(true);
-        UIPopManager.instance.ShowPops(tutorialWellDone.transform.position, successPopIntensity, successPopColor);
-        if (successSound) AudioManager.instance.SoundPlayEven(successSound, Vector2.zero);
+        companionControls.CompanionHappy(tutorialResultTime);
+
+        CompanionText("Well done!", successSound, 2);
         yield return new WaitForSeconds(tutorialResultTime);
-        tutorialWellDone.SetActive(false);
 
         switch (state)
         {
             case TutorialState.MoveDone:
-                tutorialBlockTopText.text = "Collect Coins";
-                tutorialFinger.ShowSwipe(tipMove.swipeTipStart, tipMove.swipeTipEnd, tipMove.swipeOscillate);
+                CompanionText("Collect Coins", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
+                tutorialFinger.ShowSwipe(swipeSide);
                 state = TutorialState.Collect;
                 break;
             case TutorialState.CollectDone:
-                tutorialBlockTopText.text = "Dodge Hazards";
-                tutorialFinger.ShowSwipe(tipMove.swipeTipStart, tipMove.swipeTipEnd, tipMove.swipeOscillate);
+                CompanionText("Dodge Hazards", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
+                tutorialFinger.ShowSwipe(swipeSide);
                 state = TutorialState.Dodge;
                 break;
             case TutorialState.DodgeDone:
-                tipMove.gameObject.SetActive(false);
-                tipJump.gameObject.SetActive(true);
-                tutorialFinger.ShowSwipe(tipJump.swipeTipStart, tipJump.swipeTipEnd, tipJump.swipeOscillate);
+                CompanionText("Swipe up to jump", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
+                tutorialFinger.ShowSwipe(swipeUp);
                 state = TutorialState.Jump;
                 break;
             case TutorialState.JumpDone:
-                tutorialBlockBottomText.text = "Jump hazards";
-                tutorialFinger.ShowSwipe(tipJump.swipeTipStart, tipJump.swipeTipEnd, tipJump.swipeOscillate);
+                CompanionText("Jump hazards", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
+                tutorialFinger.ShowSwipe(swipeUp);
                 state = TutorialState.JumpOver;
                 break;
             case TutorialState.JumpOverDone:
-                tipJump.gameObject.SetActive(false);
+                CompanionText("Great job!", successSound, 2);
+                companionControls.CompanionCheer(tutorialResultTime);
                 yield return new WaitForSeconds(tutorialResultTime);
-                tutorialAllDone.SetActive(true);
-                UIPopManager.instance.ShowPops(tutorialAllDone.transform.position, successPopIntensity, successPopColor);
-                if (successSound) AudioManager.instance.SoundPlayEven(successSound, Vector2.zero);
+                CompanionText("");
                 yield return new WaitForSeconds(tutorialResultTime);
-                tutorialAllDone.SetActive(false);
-                GameManager.instance.TutorialComplete();
+                CompanionText("Get ready!", successSound, 2);
+                companionControls.CompanionTalk(tutorialResultTime);
+                yield return new WaitForSeconds(tutorialResultTime);
+                CompanionText("");
+                companionControls.HideCompanion(tutorialResultTime);
                 state = TutorialState.Finished;
+                GameManager.instance.TutorialComplete();
                 break;
         }
         TerrainManager.instance.PlayerTutorialStage();
@@ -231,32 +242,41 @@ public class PlayerTutorial : MonoBehaviour
                 break;
         }
 
-        tutorialTryAgain.SetActive(true);
-        if (failureSound) AudioManager.instance.SoundPlayEven(failureSound, Vector2.zero);
+        CompanionText("Try again!", failureSound, 1);
+        companionControls.CompanionSad(tutorialResultTime);
         yield return new WaitForSeconds(tutorialResultTime);
-        tutorialTryAgain.SetActive(false);
 
         switch (state)
         {
             case TutorialState.MoveDone:
+                CompanionText("Swipe to move");
+                companionControls.CompanionTalk(tutorialResultTime);
                 state = TutorialState.Move;
-                tutorialFinger.ShowSwipe(tipMove.swipeTipStart, tipMove.swipeTipEnd, tipMove.swipeOscillate);
+                tutorialFinger.ShowSwipe(swipeSide);
                 break;
             case TutorialState.CollectDone:
+                CompanionText("Collect Coins", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
                 state = TutorialState.Collect;
-                tutorialFinger.ShowSwipe(tipMove.swipeTipStart, tipMove.swipeTipEnd, tipMove.swipeOscillate);
+                tutorialFinger.ShowSwipe(swipeSide);
                 break;
             case TutorialState.DodgeDone:
+                CompanionText("Dodge hazards", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
                 state = TutorialState.Dodge;
-                tutorialFinger.ShowSwipe(tipMove.swipeTipStart, tipMove.swipeTipEnd, tipMove.swipeOscillate);
+                tutorialFinger.ShowSwipe(swipeSide);
                 break;
             case TutorialState.JumpDone:
+                CompanionText("Swipe up to jump", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
                 state = TutorialState.Jump;
-                tutorialFinger.ShowSwipe(tipJump.swipeTipStart, tipJump.swipeTipEnd, tipJump.swipeOscillate);
+                tutorialFinger.ShowSwipe(swipeUp);
                 break;
             case TutorialState.JumpOverDone:
+                CompanionText("Jump hazards", progressSound, 1);
+                companionControls.CompanionTalk(tutorialResultTime);
                 state = TutorialState.JumpOver;
-                tutorialFinger.ShowSwipe(tipJump.swipeTipStart, tipJump.swipeTipEnd, tipJump.swipeOscillate);
+                tutorialFinger.ShowSwipe(swipeUp);
                 break;
         }
 
@@ -264,25 +284,127 @@ public class PlayerTutorial : MonoBehaviour
     }
 
 
-
-    /*
-     * so here we need some tutorial steps (maybe call the player tutorial class to start it?)
-     * "oh no you're hurt!"
-     * "don't worry!"
-     * "just pick yourself up and try again!"
-     * "here are some gems, they're rare and powerful!"
-     * "use the gems to buy this health heart!"
-     * "run again, now with two hearts!"
-     */
-    public void TutorialShopStart()
+    private void CompanionText(string text, AudioClip sound = null, int pops = 0)
     {
-        StartCoroutine(TutorialShopSequence());
+        if (text.Length == 0)
+            tutorialCompanionTipBackground.SetActive(false);
+        else
+        {
+            // add sparkles
+            tutorialCompanionTipBackground.SetActive(true);
+            tutorialCompanionTip.text = text;
+            if (pops == 2)
+                UIPopManager.instance.ShowPops(tutorialCompanionTipBackground.transform.position, successPopIntensity, successPopColor);
+            else if (pops == 1)
+                UIPopManager.instance.ShowPops(tutorialCompanionTipBackground.transform.position, minorPopIntensity, minorPopColor);
+            if (sound)
+                AudioManager.instance.SoundPlayEven(sound, Vector2.zero);
+        }
     }
 
-    private IEnumerator TutorialShopSequence()
+    public void TutorialShopStart(UIDefeatFirst uiDefeatFirst)
     {
-        tipMove.gameObject.SetActive(true);
-        tutorialBlockTopText.text = "Dodge Hazards";
-        yield return new WaitForEndOfFrame();
+        StartCoroutine(TutorialShopSequence(uiDefeatFirst));
+    }
+
+    private bool SkippablePause()
+    {
+        tutorialDelay -= Time.unscaledDeltaTime;
+        if (tutorialDelay > 0) return true;
+        return false;
+    }
+
+    private IEnumerator TutorialShopSequence(UIDefeatFirst uiDefeatFirst)
+    {
+        companionControls.ShowCompanion();
+        CompanionText("");
+        yield return new WaitForSecondsRealtime(tutorialShopDelayMin);
+        // TODO deactivate the shop button
+        CompanionText("Oh no! You're hurt!", progressSound, 1);
+        companionControls.CompanionHurt(tutorialShopDelay);
+        yield return new WaitForSecondsRealtime(tutorialShopDelayMin);
+        tutorialDelay = tutorialShopDelay;
+        while (SkippablePause()) yield return new WaitForEndOfFrame();
+
+        CompanionText("It's ok! You can try again!", progressSound, 1);
+        companionControls.CompanionHappy(tutorialShopDelay);
+        yield return new WaitForSecondsRealtime(tutorialShopDelayMin);
+        tutorialDelay = tutorialShopDelay;
+        while (SkippablePause()) yield return new WaitForEndOfFrame();
+
+        CompanionText("Here, take these gems!", null, 2);
+        companionControls.CompanionTalk(tutorialShopDelay);
+        UIPopManager.instance.StartPopTrail(tutorialCompanionTipBackground.transform, UIMenus.instance.menuResources.GetGemsTransform(), tutorialShopDelayMin, Color.red, 100);
+        yield return new WaitForSecondsRealtime(tutorialShopDelayMin);
+
+        GameManager.instance.AddGems(tutorialFreeGems);
+        GameManager.instance.SetFlag(GlobalVars.SAVEFLAGTUTGEMSGIVEN);
+        PlayerPawn.instance.pawnPurse.ChangeBars();
+
+        tutorialDelay = tutorialShopDelay;
+        while (SkippablePause()) yield return new WaitForEndOfFrame();
+
+        CompanionText("Now open the upgrade shop!", progressSound, 1);
+        companionControls.CompanionTalk(tutorialShopDelay);
+
+        yield return new WaitForSecondsRealtime(tutorialShopDelayMin);
+        tutorialShopWait = true;
+        uiDefeatFirst.TutorialReady();
+
+        while (tutorialShopWait)
+            yield return new WaitForEndOfFrame();
+        // reset this immediately - the shop has now been opened so the player could buy an item from this point forward
+        tutorialShopWait = true;
+
+        CompanionText("Buy an extra heart!", progressSound, 1);
+        companionControls.CompanionTalk(tutorialShopDelay);
+        while (tutorialShopWait)
+            yield return new WaitForEndOfFrame();
+
+        GameManager.instance.SetFlag(GlobalVars.SAVEFLAGTUTITEMBOUGHT);
+        GameManager.instance.SetFlag(GlobalVars.SAVEFLAGTUTORIALSHOP); // setting this here as the crucial gem/item part is saved and should not be repeated
+        GameManager.instance.SaveSettings();
+
+        CompanionText("Perfect!", successSound, 2);
+        companionControls.CompanionCheer(tutorialResultTime);
+        yield return new WaitForSecondsRealtime(tutorialShopDelayMin);
+        tutorialDelay = tutorialShopDelay;
+        while (SkippablePause()) yield return new WaitForEndOfFrame();
+
+        // shop complete, go to continue screen
+        CompanionText("Now try to run further!", successSound, 2);
+        uiDefeatFirst.TutorialShopDone();
+        // continue button is now active, which will restart the scene, so we're done here!
+    }
+
+    public void TutorialShopOpened()
+    {
+        tutorialShopWait = false;
+    }
+
+    // any touch/mouse input will call this
+    public void TouchInput()
+    {
+        tutorialDelay = 0;
+    }
+
+    // for now there's just one buy tutorial, so we don't need this to actually know the item right?
+    public void ItemBought()
+    {
+        // only stop the pop rect on the first purchase, not anything the player might be able to afford afterwards
+        UIPopManager.instance.StopPopRect();
+        tutorialShopWait = false;
+    }
+
+    // called by the companion object itself (after being directed to go active by this classs) to establish a single source of control for the companion and their UI components
+    // these should not be called from inside this class
+    public void ShowCompanion()
+    {
+        tutorialCompanion.SetActive(true);
+    }
+    public void HideCompanion()
+    {
+        tutorialCompanion.SetActive(false);
+        CompanionText("");
     }
 }

@@ -18,7 +18,8 @@ MonoBehaviour:
   shopImage: {fileID: 21300000, guid: f690befdc4886dc4f9b5c51cc901113f, type: 3}
   shopImagePlus: {fileID: 0}
   shopImageSpec: {fileID: 0}
-  shopDependency: []
+  shopDependency:
+  - {fileID: 11400000, guid: e630de8275b3a584fb71699b24afc07b, type: 2}
   costType: 1
   costAmount: 10
   itemType: 6

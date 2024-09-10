@@ -27,6 +27,7 @@ public class UIShopItem : MonoBehaviour
     [SerializeField] private Sprite lockGem;
     [SerializeField] private TextMeshProUGUI textPrice;
     [SerializeField] private Button buttonBuy;
+    [SerializeField] private RectTransform buttonBuyRect;
     [Header("Pops")]
     [SerializeField] private Transform popPos;
     [SerializeField] private UIPopMaker popMaker;
@@ -60,22 +61,30 @@ public class UIShopItem : MonoBehaviour
         else
             imageItemSpec.enabled = false;
         if (item.costType == CostType.Coin)
-        {
             imagePriceType.sprite = GameManager.instance.shopSettings.spriteCostCoin;
-            textPrice.text = GlobalVars.DisplayCoins(item.costAmount);
-        }
         else if (item.costType == CostType.Gem)
-        {
             imagePriceType.sprite = GameManager.instance.shopSettings.spriteCostGem;
-            textPrice.text = GlobalVars.DisplayGems(item.costAmount);
+        else
+            imagePriceType.enabled = false;
+        this.ownerShop = ownerShop;
+        UpdateAvailability();
+    }
+
+    private void SetPriceText(bool got)
+    {
+        if (got)
+        {
+            textPrice.text = "Got!";
         }
         else
         {
-            imagePriceType.enabled = false;
-            textPrice.text = GlobalVars.DisplayPremium(item.costAmount);
+            if (shopItem.costType == CostType.Coin)
+                textPrice.text = GlobalVars.DisplayCoins(shopItem.costAmount);
+            else if (shopItem.costType == CostType.Gem)
+                textPrice.text = GlobalVars.DisplayGems(shopItem.costAmount);
+            else
+                textPrice.text = GlobalVars.DisplayPremium(shopItem.costAmount);
         }
-        this.ownerShop = ownerShop;
-        UpdateAvailability();
     }
 
     public void UpdateAvailability()
@@ -93,8 +102,10 @@ public class UIShopItem : MonoBehaviour
                     else
                         buttonBuy.interactable = false;
                     imageBackground.color = Color.white;
+                    Debug.Log("UpdateAvailability - CanAfford returned " + affordable);
                     imageLock.enabled = false;
                     gameObject.SetActive(true);
+                    SetPriceText(false);
                     break;
                 case ItemState.Visible:
                     gameObject.SetActive(true);
@@ -105,6 +116,7 @@ public class UIShopItem : MonoBehaviour
                         imageLock.sprite = lockCoin;
                     else
                         imageLock.sprite = lockGem;
+                    SetPriceText(false);
                     break;
                 case ItemState.Hidden:
                     gameObject.SetActive(false);
@@ -114,6 +126,7 @@ public class UIShopItem : MonoBehaviour
                     buttonBuy.interactable = false;
                     imageBackground.color = imageBackgroundBought;
                     imageLock.enabled = false;
+                    SetPriceText(true);
                     break;
             }
         }
@@ -160,5 +173,11 @@ public class UIShopItem : MonoBehaviour
                 }
             }
         }
+    }
+
+    // make the buy button for this item sparkle
+    public void SparkleButton()
+    {
+        UIPopManager.instance.StartPopRect(buttonBuyRect, Color.white, false);
     }
 }

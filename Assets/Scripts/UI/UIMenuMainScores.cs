@@ -14,16 +14,7 @@ public class UIMenuMainScores : MonoBehaviour
 
     public void Initialise()
     {
-        int distance = GameManager.instance.distanceBest;
-
-        if (distance > 0 || GameManager.instance.GetFlag(GlobalVars.SAVEFLAGDISTANCE))
-        {
-            distanceCounter.gameObject.SetActive(true);
-            distanceCounter.SetDistance(distance);
-            GameManager.instance.SetFlag(GlobalVars.SAVEFLAGDISTANCE);
-        }
-        else
-            distanceCounter.gameObject.SetActive(false);
+        UpdateScores();
     }
 
     public void UpdateScores()
@@ -36,5 +27,7 @@ public class UIMenuMainScores : MonoBehaviour
             distanceCounter.SetDistance(distance);
             GameManager.instance.SetFlag(GlobalVars.SAVEFLAGDISTANCE);
         }
+        else
+            distanceCounter.gameObject.SetActive(false);
     }
 }

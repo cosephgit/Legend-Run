@@ -44,7 +44,9 @@ public class PlayerControls : MonoBehaviour
 
     private void ShowPointer(Vector2 touchPos, bool touch)
     {
+#if UNITY_EDITOR || !UNITY_ANDROID
         pointer.ShowPointer(touchPos);
+#endif
 
         if (touch)
         {
@@ -80,13 +82,13 @@ public class PlayerControls : MonoBehaviour
             Vector3 swipeVector = swipeEnd - swipeStart;
             swipeStart = Vector3.zero;
             swipeEnd = Vector3.zero;
-            swiping = false;
             swipeVector /= Screen.width; // scale swipe to screen resolution, so the x value will be from -0.5 to 0.5 and the y value will be approx. -0.3 to 0.3
 
             player.SetSwipe(swipeVector);
 
-            UIPopManager.instance.EndTouch();
         }
+        swiping = false;
+        UIPopManager.instance.EndTouch();
     }
 
     private void Update()

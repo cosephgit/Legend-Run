@@ -45,6 +45,19 @@ public class UIBaseAccumulator : UIBase
                 break;
         }
     }
+    private float PopMagnitude()
+    {
+        switch (type)
+        {
+            case AccumulatorType.Coins:
+                return 1f;
+            case AccumulatorType.Distance:
+                return 0.5f;
+            case AccumulatorType.Gems:
+                return 2f;
+        }
+        return 1f;
+    }
 
     // set this display to the new value
     // force means set the display to the new value immediately rather than ticking towards it
@@ -91,7 +104,7 @@ public class UIBaseAccumulator : UIBase
                     popMaker.MakePops(exponent);
                     //UIPopManager.instance.ShowPops(popPos.position, popStrength + exponent, popColor);
 
-                AddShake(0.5f);
+                AddShake(0.5f * PopMagnitude() * (1f + exponent));
                 if (loss && updatePipDown)
                     AudioManager.instance.SoundPlayEven(updatePipDown, Vector2.zero, 0.3f);
                 else

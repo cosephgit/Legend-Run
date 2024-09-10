@@ -1061,6 +1061,7 @@ MonoBehaviour:
   lockGem: {fileID: 21300000, guid: e295c62abbc38444d822ff99c069595b, type: 3}
   textPrice: {fileID: 2183099410542178822}
   buttonBuy: {fileID: 546406841011886724}
+  buttonBuyRect: {fileID: 8538202131338351049}
   popPos: {fileID: 3173699336756901207}
   popMaker: {fileID: 2448405532352243377}
   popSound: {fileID: 8300000, guid: bae2436f3ed38df4ba4631bff640d927, type: 3}

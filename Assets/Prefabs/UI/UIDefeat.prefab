@@ -298,7 +298,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 302.00003, y: 3}
-  m_SizeDelta: {x: 360, y: 80}
+  m_SizeDelta: {x: 360, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8049411666637135021
 CanvasRenderer:
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Try Again
+  m_text: "Shop &\n Restart"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 712b13d4201049f4fbfb4c933227510e, type: 2}
   m_sharedMaterial: {fileID: -8359932279802620245, guid: 712b13d4201049f4fbfb4c933227510e,
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42.6
+  m_fontSize: 42.55
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -810,7 +810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6821254866859597356
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1035,7 +1035,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Continue
+  m_text: Get up!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 712b13d4201049f4fbfb4c933227510e, type: 2}
   m_sharedMaterial: {fileID: -8359932279802620245, guid: 712b13d4201049f4fbfb4c933227510e,
@@ -1665,7 +1665,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: ce78f0c925cf0eb4fb0f79a70b6ba168,
+      objectReference: {fileID: 21300000, guid: d12eee3d47ca52e41908fc3de5cd8d2e,
         type: 3}
     - target: {fileID: 2957133700612696442, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
@@ -1676,25 +1676,25 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SpriteState.m_PressedSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0300e7295f7691c46ba0ea8aad39531e,
+      objectReference: {fileID: 21300000, guid: eae741821f0acef4d81422ad57380f85,
         type: 3}
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 75bcc543ea500c94ea5434a4e20fed8a,
+      objectReference: {fileID: 21300000, guid: 98c18d32aa86874468c6c7a2dd276c7d,
         type: 3}
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_SpriteState.m_SelectedSprite
       value: 
-      objectReference: {fileID: 21300000, guid: ce78f0c925cf0eb4fb0f79a70b6ba168,
+      objectReference: {fileID: 21300000, guid: d12eee3d47ca52e41908fc3de5cd8d2e,
         type: 3}
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}
       propertyPath: m_SpriteState.m_HighlightedSprite
       value: 
-      objectReference: {fileID: 21300000, guid: ce78f0c925cf0eb4fb0f79a70b6ba168,
+      objectReference: {fileID: 21300000, guid: d12eee3d47ca52e41908fc3de5cd8d2e,
         type: 3}
     - target: {fileID: 4621907570864858391, guid: b0d7731a545359347a9dcfa1b368f184,
         type: 3}

@@ -10,6 +10,7 @@ using TMPro;
 
 public class UIMenus : UIMainMenu
 {
+    public static UIMenus instance;
     [Header("In-game menu views")]
     [SerializeField] private GameObject menuPauseQuitConfirm;
     [Header("In-game menu general objects")]
@@ -25,7 +26,20 @@ public class UIMenus : UIMainMenu
 
     private void Awake()
     {
+        if (instance)
+        {
+            if (instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+        else
+            instance = this;
+
+
         menuDefeat.Initialise();
+        menuDefeatFirst.Initialise();
         CloseMenu();
         buttonPause.gameObject.SetActive(false);
     }
@@ -55,6 +69,7 @@ public class UIMenus : UIMainMenu
         menuUnderlay.gameObject.SetActive(false);
         menuPause.gameObject.SetActive(false);
         menuDefeat.gameObject.SetActive(false);
+        menuDefeatFirst.gameObject.SetActive(false);
         if (GameManager.instance)
             GameManager.instance.SaveSettings();
     }
@@ -95,7 +110,6 @@ public class UIMenus : UIMainMenu
     public void ButtonRestartConfirm()
     {
         SoundButton();
-        GameManager.instance.SaveSettings();
         TerrainManager.instance.RestartStage();
     }
     public override void ButtonQuit()
@@ -126,7 +140,11 @@ public class UIMenus : UIMainMenu
         menuUnderlay.gameObject.SetActive(true);
         buttonPause.interactable = false;
 
-        menuDefeat.Open(distanceReached, coins, gems);
+        Debug.Log("tutorial shop flag? " + (GameManager.instance.GetFlag(GlobalVars.SAVEFLAGTUTORIALSHOP)));
+        if (GameManager.instance.GetFlag(GlobalVars.SAVEFLAGTUTORIALSHOP))
+            menuDefeat.Open(distanceReached, coins, gems);
+        else
+            menuDefeatFirst.Open(distanceReached, coins, gems);
     }
 
     // button for continuing to the next stage after victory
@@ -135,6 +153,18 @@ public class UIMenus : UIMainMenu
         SoundButton();
     }
 
+    public void ButtonShopCoinInGame()
+    {
+        StopButtonParticles();
+        menuShop.gameObject.SetActive(true);
+        menuShop.ButtonTabItems();
+    }
+    public void ButtonShopGemInGame()
+    {
+        StopButtonParticles();
+        menuShop.gameObject.SetActive(true);
+        menuShop.ButtonTabGems();
+    }
     // show the pause button only when the stage starts
     public void StageStart()
     {

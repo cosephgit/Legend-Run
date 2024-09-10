@@ -97,6 +97,8 @@ public class PlayerPawn : MonoBehaviour
         speedLinesEmissionRateBase = speedLinesEmission.rateOverTime.constant;
         speedLinesMain = speedLines.main;
         speedLinesMainSpeedBase = speedLinesMain.startSpeed.constant;
+
+        tutorial.Initialise();
     }
 
     public void TutorialStart()
@@ -117,7 +119,8 @@ public class PlayerPawn : MonoBehaviour
 
     public void StreakEnd()
     {
-        if (streakLevel > GameManager.instance.upgrades.upgradeBoostInitial)
+        if (streakLevel > GameManager.instance.upgrades.upgradeBoostInitial
+            || (streakLevel > 0 && streakCoins > StreakCoinsForLevel(streakLevel)))
         {
             streakDisplay.StreakBreak();
             AudioManager.instance.SoundPlayEven(streakFailSound, Vector2.zero);
@@ -151,7 +154,8 @@ public class PlayerPawn : MonoBehaviour
             if (tutorial.state == TutorialState.Finished)
             {
                 // have run into a coin, collect it!
-                pawnPurse.AddCoins(coin.coinValue);
+                GameManager.instance.AddCoins(coin.coinValue);
+                pawnPurse.ChangeBars();
 
                 streakCoins += coin.coinValue * GameManager.instance.upgrades.upgradeBoostGainRate;
                 if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
@@ -184,7 +188,8 @@ public class PlayerPawn : MonoBehaviour
     {
         if (gem.unused)
         {
-            pawnPurse.AddGems(1);
+            GameManager.instance.AddGems(1);
+            pawnPurse.ChangeBars();
 
             gem.CollectedGem();
         }
@@ -236,7 +241,7 @@ public class PlayerPawn : MonoBehaviour
                     else
                     {
                         // defeat!
-                        pawnLoco.pawnAnim.SetTrigger("Die");
+                        pawnLoco.pawnAnim.SetBool("Dead", true);
                         TerrainManager.instance.PlayerDefeat();
                     }
                 }
@@ -424,6 +429,8 @@ public class PlayerPawn : MonoBehaviour
             //else
                 //Debug.Log("Not really, just a tap!");
         }
+
+        tutorial.TouchInput();
     }
 
     // sets speed effects for a new speed value
@@ -444,6 +451,14 @@ public class PlayerPawn : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
+        if (Input.GetButtonUp("Jump"))
+            tutorial.TouchInput();
+#elif UNITY_STANDALONE_WIN
+        if (Input.GetButtonUp("Jump"))
+            tutorial.TouchInput();
+#endif
+
         if (!pawnHealth.IsAlive()) return;
 
         if (speed < speedMax * streakSpeedBonus)
@@ -523,6 +538,7 @@ public class PlayerPawn : MonoBehaviour
     // get back up after defeat
     public void PlayerRecover()
     {
+        pawnLoco.pawnAnim.SetBool("Dead", false);
         pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
         pawnHealth.FillHealth();
     }

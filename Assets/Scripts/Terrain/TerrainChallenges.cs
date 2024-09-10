@@ -6,7 +6,7 @@ using UnityEngine;
 // this class manages the challenges in the game - collectibles, bonuses, and hazards
 // this is procedurally generated with a number of patterns
 // created 19/8/23
-// last modified 16/7/24
+// last modified 26/8/24
 
 
 public class TerrainChallenges : MonoBehaviour
@@ -35,6 +35,7 @@ public class TerrainChallenges : MonoBehaviour
     [SerializeField] private float hazardXGap = 2f; // the minimum gap between hazards
     [SerializeField] private float hazardXBuffer = 0.5f; // maximum amount hazards can go outside the normal play bounds
     [SerializeField] private float hazardBlockSpawnShadow = 10f; // minimum distance after spawning a full blockage before allowing any powerups
+    [SerializeField] private float hazardBlockSpawnShadowBlock = 20f; // minimum distance after spawning a full blockage before allowing additional full blocks
     [SerializeField] private float hazardPowerupAvoidSpace = 0.1f; // if the safe route has moved this much out of lane, treat it as already being in the next lane for hazard spawning
     [SerializeField] private float hazardStrengthPerDifficulty = 0.1f;
     [SerializeField] private BossFlyer boss;
@@ -66,6 +67,7 @@ public class TerrainChallenges : MonoBehaviour
     private int coinsWorthLeft; // coins left to spawn in the current chain of coins
     private float coinPowerupNextZ; // the Z distance left before the next coin or powerup is spawned
     private float coinPowerupLastPlaced; // distance since the last coin was placed (certain obstacles require a gap)
+    private float hazardFullLastPlaced; // distance since hte last full blockage was placed (ensure no repeats)
     private float gemNextZ;
     // hazard spawn variables
     private float hazardNextZ; // the Z distance left before the next hazard can be spawned
@@ -88,6 +90,7 @@ public class TerrainChallenges : MonoBehaviour
         hazardsActive = new List<HazardBase>();
         powerupsActive = new List<CollectibleBase>();
         coinsAcc = 0f;
+        hazardFullLastPlaced = hazardBlockSpawnShadowBlock;
         gemNextZ = gemGap;
         hazardAcc = -1f; // ensure coins always appear first before any hazards
         powerPotionAcc = -1f; // or powerups
@@ -97,6 +100,7 @@ public class TerrainChallenges : MonoBehaviour
     public void TutorialCoins()
     {
         coinsAcc = 0f;
+        hazardFullLastPlaced = hazardBlockSpawnShadowBlock;
         gemNextZ = gemGap;
         hazardAcc = -1f; // ensure coins always appear first before any hazards
         powerPotionAcc = -1f; // or powerups
@@ -116,6 +120,7 @@ public class TerrainChallenges : MonoBehaviour
     public void Initialise(float circleheight, Quaternion rot)
     {
         coinsAcc = 0f;
+        hazardFullLastPlaced = hazardBlockSpawnShadowBlock;
         gemNextZ = gemGap;
         hazardAcc = -1f; // ensure coins always appear first before any hazards
         powerPotionAcc = -1f; // or powerups
@@ -158,6 +163,7 @@ public class TerrainChallenges : MonoBehaviour
             gemNextZ -= dist;
             coinPowerupNextZ -= dist;
             coinPowerupLastPlaced += dist;
+            hazardFullLastPlaced += dist;
             hazardNextZ -= dist;
         }
         else
@@ -200,7 +206,7 @@ public class TerrainChallenges : MonoBehaviour
         if (PlayerPawn.instance.tutorial.state == TutorialState.Collect)
         {
             coinsLeft = 1;
-            coinsWorthLeft = 1;
+            coinsWorthLeft = 10;
 
             if (PlayerPawn.instance.transform.position.x < TerrainManager.instance.laneLeftXMax)
                 PlaceCoin(TerrainManager.instance.laneRightX);
@@ -344,10 +350,12 @@ public class TerrainChallenges : MonoBehaviour
     // place the required number of hazards
     private void PlaceHazard(float safeCurrentX)
     {
-        float spawnStrength = (Random.Range(0.0f, 1.0f) + (difficulty * hazardStrengthPerDifficulty)) * intensityCurrent / intensityMax;
+        float spawnStrength = (GameManager.instance.KarmicRandom() + (difficulty * hazardStrengthPerDifficulty)) * intensityCurrent / intensityMax;
         int hazardSpawn = Mathf.Clamp(Mathf.FloorToInt(Mathf.Lerp(hazardMin, hazardMax, spawnStrength)), 1, 3);
         float[] hazardX;
         HazardBase hazardType = hazards[Random.Range(0, hazards.Length)];
+
+        hazardNextZ = spawnGroupGapZ;
 
         if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge)
         {
@@ -359,8 +367,13 @@ public class TerrainChallenges : MonoBehaviour
             hazardSpawn = 3; // block the path - only way past is to jump
             hazardType = hazards[0];
         }
-        else if (hazardSpawn == 3 && coinPowerupLastPlaced < spawnGroupGapZ) // enforce a minimum spawn gap before a three-lane blockage
-            hazardSpawn = 2;
+        else if (hazardSpawn == 3)
+        {
+            // enforce a minimum spawn gap before another three-lane blockage, and don't place them during coin chains
+            if (hazardFullLastPlaced < hazardBlockSpawnShadowBlock
+                || coinsLeft > 0)
+                hazardSpawn = 2;
+        }
 
         // the first hazard is always adjacent to the safe path
         hazardX = new float[hazardSpawn];
@@ -378,6 +391,7 @@ public class TerrainChallenges : MonoBehaviour
             hazardX[1] = TerrainManager.instance.laneCentreX;
             hazardX[2] = TerrainManager.instance.laneRightX;
             // make sure coins/powerups don't spawn right behind a full block to give player time to land after jumping
+            hazardFullLastPlaced = 0f;
             if (coinPowerupNextZ < hazardBlockSpawnShadow)
                 coinPowerupNextZ = hazardBlockSpawnShadow;
         }
@@ -390,7 +404,7 @@ public class TerrainChallenges : MonoBehaviour
 
             if (PlayerPawn.instance.tutorial.state == TutorialState.Dodge)
             {
-                // make sure at least one is in front of the player
+                // make sure at least one is in front of the player always during the tutorial
                 float playerPos = PlayerPawn.instance.transform.position.x;
 
                 if (playerPos < TerrainManager.instance.laneLeftXMax)
@@ -473,6 +487,8 @@ public class TerrainChallenges : MonoBehaviour
 
             if (max == 2 && hazardSpawn == 1)
             {
+                bool pickLane = true;
+
                 // always favour the current target X as the blockage lane, if not the current X
                 if (TerrainManager.instance.safeTargetX <= TerrainManager.instance.laneLeftXMax)
                 {
@@ -480,6 +496,7 @@ public class TerrainChallenges : MonoBehaviour
                     {
                         rightAllowed = false;
                         centreAllowed = false;
+                        pickLane = false;
                     }
                 }
                 else if (TerrainManager.instance.safeTargetX >= TerrainManager.instance.laneRightXMin)
@@ -488,6 +505,7 @@ public class TerrainChallenges : MonoBehaviour
                     {
                         leftAllowed = false;
                         centreAllowed = false;
+                        pickLane = false;
                     }
                 }
                 else
@@ -496,23 +514,58 @@ public class TerrainChallenges : MonoBehaviour
                     {
                         leftAllowed = false;
                         rightAllowed = false;
+                        pickLane = false;
+                    }
+                }
+                // if not available to block the target safe X, always pick the player's lane instead if possible
+                if (pickLane)
+                {
+                    if (PlayerPawn.instance.transform.position.x <= TerrainManager.instance.laneLeftXMax)
+                    {
+                        if (leftAllowed)
+                        {
+                            rightAllowed = false;
+                            centreAllowed = false;
+                            pickLane = false;
+                        }
+                    }
+                    else if (PlayerPawn.instance.transform.position.x >= TerrainManager.instance.laneRightXMin)
+                    {
+                        if (rightAllowed)
+                        {
+                            leftAllowed = false;
+                            centreAllowed = false;
+                            pickLane = false;
+                        }
+                    }
+                    else
+                    {
+                        if (centreAllowed)
+                        {
+                            leftAllowed = false;
+                            rightAllowed = false;
+                            pickLane = false;
+                        }
                     }
                 }
                 // else just pick randomly
-                if (rightAllowed && leftAllowed)
+                if (pickLane)
                 {
-                    rightAllowed = CoSephUtils.RandomBool();
-                    leftAllowed = !rightAllowed;
-                }
-                else if (rightAllowed && centreAllowed)
-                {
-                    rightAllowed = CoSephUtils.RandomBool();
-                    centreAllowed = !rightAllowed;
-                }
-                else if (leftAllowed && centreAllowed)
-                {
-                    centreAllowed = CoSephUtils.RandomBool();
-                    leftAllowed = !centreAllowed;
+                    if (rightAllowed && leftAllowed)
+                    {
+                        rightAllowed = CoSephUtils.RandomBool();
+                        leftAllowed = !rightAllowed;
+                    }
+                    else if (rightAllowed && centreAllowed)
+                    {
+                        rightAllowed = CoSephUtils.RandomBool();
+                        centreAllowed = !rightAllowed;
+                    }
+                    else if (leftAllowed && centreAllowed)
+                    {
+                        centreAllowed = CoSephUtils.RandomBool();
+                        leftAllowed = !centreAllowed;
+                    }
                 }
             }
 
@@ -615,7 +668,7 @@ public class TerrainChallenges : MonoBehaviour
             else
             {
                 // if not, consider placing a gem, powerup, or starting a coin chain
-                if (coinPowerupNextZ < 0)
+                if (coinPowerupNextZ < 0) 
                 {
                     if (gemNextZ < 0)
                     {
@@ -648,7 +701,6 @@ public class TerrainChallenges : MonoBehaviour
                 if (hazardNextZ <= 0 && !special)
                 {
                     PlaceHazard(safeCurrentX);
-                    hazardNextZ = spawnGroupGapZ;
                 }
             }
 

@@ -19,6 +19,9 @@ public enum ItemState
 public class UIShop : MonoBehaviour
 {
     [SerializeField] private RectTransform rect;
+    [SerializeField] private Button buttonBack;
+    [SerializeField] private Button buttonPlay;
+    [SerializeField] private RectTransform buttonPlayRect;
     [Header("Main shop items")]
     [SerializeField] private GameObject shopItemBase;
     [SerializeField] private ScrollRect shopItemScrollRect;
@@ -85,6 +88,11 @@ public class UIShop : MonoBehaviour
             shopItemGemsBase.SetActive(false);
         }
 
+        if (GameManager.PlayModeElseMenu())
+        {
+            buttonBack.gameObject.SetActive(false);
+        }
+
         shopPremium.Initialise(this);
     }
 
@@ -100,6 +108,9 @@ public class UIShop : MonoBehaviour
                 playerStash = GameManager.instance.coinsStash;
             else
                 playerStash = GameManager.instance.gemsStash;
+
+
+            Debug.Log("CanAfford with item " + item.shopViewName + " type " + item.costType + " player has " + playerStash + " of the right type against cost of " + item.costAmount);
 
             if (playerStash < item.costAmount)
                 return false;
@@ -123,22 +134,23 @@ public class UIShop : MonoBehaviour
         for (int i = 0; i < item.shopDependency.Length; i++)
         {
             if (!GameManager.instance.HasItem(item.shopDependency[i]))
+            {
+                if (item.shopDependency[i].tutorialBlackout)
+                    return ItemState.Hidden;
+
                 locked = true;
+            }
         }
         if (locked)
         {
-            bool hidden = false;
             // this item is locked, but if all of it's dependencies are at least available (if not owned) then this item will be visible
             for (int i = 0; i < item.shopDependency.Length; i++)
             {
                 ItemState dependencyState = GetItemState(item.shopDependency[i]);
                 if (dependencyState == ItemState.Visible || dependencyState == ItemState.Hidden)
-                    hidden = true;
+                    return ItemState.Hidden;
             }
-            if (hidden)
-                return ItemState.Hidden;
-            else
-                return ItemState.Visible;
+            return ItemState.Visible;
         }
         else
         {
@@ -152,8 +164,10 @@ public class UIShop : MonoBehaviour
         {
             AudioManager.instance.SoundPlayMenuButton();
             UpdateShopItems();
-            if (mainMenu)
+            if (mainMenu && !GameManager.PlayModeElseMenu())
                 mainMenu.UpdateScores();
+            else
+                PlayerPawn.instance.pawnPurse.ChangeBars();
             return true;
         }
         return false;
@@ -190,8 +204,10 @@ public class UIShop : MonoBehaviour
     public void BuyPremiumConfirm(SO_ShopItem item)
     {
         // do lots of pops and flashes and shinies!!!
-        if (mainMenu)
+        if (mainMenu && !GameManager.PlayModeElseMenu())
             mainMenu.UpdateScores();
+        else
+            PlayerPawn.instance.pawnPurse.ChangeBars();
         UpdateShopItems();
     }
     public void BuyPremiumCancel()
@@ -203,17 +219,27 @@ public class UIShop : MonoBehaviour
     // ui button hooks
     public void ButtonTabItems()
     {
+        //Debug.Log("Line 222");
         mainMenu.SoundButton();
+        //Debug.Log("Line 224");
         shopItemBase.SetActive(true);
+        //Debug.Log("Line 226");
         shopItemGemsBase.SetActive(false);
+        //Debug.Log("Line 228");
         buttonTabGems.interactable = true;
+        //Debug.Log("Line 230");
         buttonTabItems.interactable = false;
+        //Debug.Log("Line 232");
         //shopItemScroll.value = 0;
         if (shopItemsFirstOpen)
         {
             shopItemsFirstOpen = false;
             StartCoroutine(ScrollToObject(shopItemScrollRect, shopItems[0].rectTransform));
+            //Debug.Log("Line 238");
         }
+        //Debug.Log("Line 240");
+        UpdateShopItems();
+        //Debug.Log("Line 242");
     }
     public void ButtonTabGems()
     {
@@ -232,6 +258,52 @@ public class UIShop : MonoBehaviour
     public void ButtonCloseShop()
     {
         mainMenu.ButtonBack();
+    }
+
+    public void ButtonPlayShop()
+    {
+        if (GameManager.PlayModeElseMenu())
+        {
+            // play mode, trigger a new run
+            GameManager.instance.SaveSettings();
+            TerrainManager.instance.RestartStage();
+        }
+        else
+        {
+            // menu mode, go to play mode
+            mainMenu.ButtonPlay();
+        }
+    }
+
+    public void OpenShopTutorial()
+    {
+        buttonBack.interactable = false;
+        buttonPlay.interactable = false;
+        buttonTabItems.gameObject.SetActive(false);
+        buttonTabGems.gameObject.SetActive(false);
+        // TODO make the available item sparkle
+        for (int i = 0; i < GameManager.instance.shopSettings.shopItems.Length; i++)
+        {
+            // there should only be one item available at this time, so take the first one found
+            if (GetItemState(GameManager.instance.shopSettings.shopItems[i]) == ItemState.Available)
+            {
+                shopItems[i].SparkleButton();
+                break;
+            }
+        }
+    }
+    public void ShopTutorialPrompt()
+    {
+        buttonPlay.interactable = true;
+        UIPopManager.instance.StartPopRect(buttonPlayRect, Color.white, true);
+    }
+    public void ShopTutorialFinished()
+    {
+        buttonBack.interactable = true;
+        buttonPlay.interactable = true;
+        UIPopManager.instance.StopPopRect();
+        buttonTabItems.gameObject.SetActive(true);
+        buttonTabGems.gameObject.SetActive(true);
     }
 
     private IEnumerator ScrollToObject(ScrollRect scrollRect, RectTransform targetObject)

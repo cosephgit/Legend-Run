@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class UIMenuDefeat : MonoBehaviour
 {
-    [SerializeField] private UIMenus menuHub;
+    [SerializeField] protected UIMenus menuHub;
     [SerializeField] protected UIBaseAccumulator defeatDistance;
     [SerializeField] protected UIBase defeatHighScore;
     [SerializeField] private int defeatPopCount = 4;
@@ -83,7 +83,8 @@ public class UIMenuDefeat : MonoBehaviour
         }
         else
         {
-            PlayerPawn.instance.pawnPurse.AddGems(-GameManager.instance.shopSettings.reviveGemCost);
+            GameManager.instance.AddGems(-GameManager.instance.shopSettings.reviveGemCost);
+            PlayerPawn.instance.pawnPurse.ChangeBars();
 
             AudioManager.instance.SoundPlayEven(recoverySound, Vector2.zero);
             Continue();
@@ -100,9 +101,16 @@ public class UIMenuDefeat : MonoBehaviour
         Debug.Log("EXTRA LIFE! GO!");
         TerrainManager.instance.PlayerRecover();
     }
+    public void ButtonRestartShop()
+    {
+        menuHub.ButtonShopCoinInGame();
+        gameObject.SetActive(false);
+    }
+    // restart button - send them to the shop first!
     public void ButtonRestart()
     {
-        menuHub.ButtonRestartConfirm();
+        ButtonRestartShop();
+        //menuHub.ButtonRestartConfirm();
     }
     public void ButtonQuit()
     {

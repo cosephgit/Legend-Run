@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool DEBUGWIPESAVEDATA;
     [SerializeField] private int DEBUGCOINSTART = 10000;
     [SerializeField] private int DEBUGGEMSTART = 100;
+    [SerializeField] private bool DEBUGSKIPTUTCONTROLS;
 #endif
     public float volBGM { get => settingData.volumeBGM; }
     public float volSFX { get => settingData.volumeSFX; }
@@ -64,14 +65,25 @@ public class GameManager : MonoBehaviour
 
 #if UNITY_EDITOR
         if (DEBUGWIPESAVEDATA)
-        {
-            saveData.coins = DEBUGCOINSTART;
-            saveData.gems = DEBUGGEMSTART;
-            saveData.owned = new string[0];
-            saveData.flags = 0;
-            ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
-        }
+            DEBUGWIPEDATA(true);
 #endif
+
+        if (GetFlag(GlobalVars.SAVEFLAGTUTGEMSGIVEN))
+        {
+            // have received tutorial free gems, make sure the item has been bought!
+            if (!GetFlag(GlobalVars.SAVEFLAGTUTITEMBOUGHT))
+            {
+                // game crashed/cheat attempt/whatever - just remove the bonus gems and clear the gems flag
+                SetFlag(GlobalVars.SAVEFLAGTUTGEMSGIVEN, false);
+
+                int gems = gemsStash;
+                if (gems < shopSettings.reviveGemCost)
+                    Debug.LogError("Gem flag set, item flag not, but not enough gems?!");
+                else
+                    gems = shopSettings.reviveGemCost;
+                AddGems(-gems);
+            }
+        }
 
         upgrades.Initialise();
 
@@ -83,6 +95,22 @@ public class GameManager : MonoBehaviour
 
         SetVolumeBGM(settingData.volumeBGM, false);
         SetVolumeSFX(settingData.volumeSFX, false);
+    }
+
+    // DO NOT SHIP
+    public void DEBUGWIPEDATA(bool refill)
+    {
+        saveData.DEBUGWIPE();
+#if UNITY_EDITOR
+        if (refill)
+        {
+            saveData.coins = DEBUGCOINSTART;
+            saveData.gems = DEBUGGEMSTART;
+            if (DEBUGSKIPTUTCONTROLS)
+                saveData.SetFlag(GlobalVars.SAVEFLAGTUTORIAL);
+        }
+#endif
+        ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
     }
 
     public void SetVolumeBGM(float volume, bool save = true)
@@ -111,6 +139,7 @@ public class GameManager : MonoBehaviour
     {
         ES3.Save(GlobalVars.SAVESETTINGS, settingData);
         ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
+        Debug.Log("settings saved?");
     }
 
     // returns list of all SO_ShopItems already owned
@@ -164,20 +193,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool KarmicChance(float chanceBase = 0.5f)
+    // binary karmic check - assumes "true" is bad
+    public bool KarmicChance(float chanceBase = 0.5f, bool good = false)
     {
         float chance = chanceBase + diffKarma;
+        float scale = (good ? -1f : 1f) * diffKarmaBalance;
 
         if (Random.Range(0f, 1f) < chance)
         {
-            diffKarma -= (1f - chanceBase) * diffKarmaBalance;
+            diffKarma -= (1f - chanceBase) * scale;
             return true;
         }
         else
         {
-            diffKarma += chanceBase * diffKarmaBalance;
+            diffKarma += chanceBase * scale;
             return false;
         }
+    }
+
+    // any miscellaneous karmic check - assumes high numbers are bad
+    public float KarmicRandom(bool good = false)
+    {
+        float result;
+
+        if (diffKarma > diffKarmaBalance) // too lucky, make life harder
+            result = 1f - (Random.Range(0.0f, 1.0f) * Random.Range(0.0f, 1.0f));
+        else if (diffKarma < -diffKarmaBalance) // too unlucky, make life easier
+            result = Random.Range(0.0f, 1.0f) * Random.Range(0.0f, 1.0f);
+        else
+            result = Random.Range(0.0f, 1.0f);
+
+        diffKarma -= (result - 0.5f) * (good ? -1f : 1f) * diffKarmaBalance;
+
+        return result;
     }
 
     // adjust the current karmic rating by the indicating amount
@@ -205,12 +253,12 @@ public class GameManager : MonoBehaviour
     {
         return saveData.GetFlag(flag);
     }
-    public void SetFlag(int flag, bool clear = false)
+    public void SetFlag(int flag, bool on = true)
     {
-        if (clear)
-            saveData.ClearFlag(flag);
-        else
+        if (on)
             saveData.SetFlag(flag);
+        else
+            saveData.ClearFlag(flag);
     }
 
     public bool GetItem(SO_ShopItem itemCheck)
@@ -227,6 +275,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 // pay
+
                 saveData.coins -= itemCheck.costAmount;
                 paid = true;
             }
@@ -252,6 +301,12 @@ public class GameManager : MonoBehaviour
             saveData.owned = ownedNew.ToArray();
             Debug.Log("Successfully bought " + itemCheck.shopUniqueName);
 
+            // if in the live scene with a player pawn, trigger a tutorial ping
+            if (PlayerPawn.instance)
+            {
+                PlayerPawn.instance.tutorial.ItemBought();
+            }
+
             ES3.Save(GlobalVars.SAVEPROGRESS, saveData);
 
             return true;
@@ -275,6 +330,13 @@ public class GameManager : MonoBehaviour
             return true;
         }
 
+        return false;
+    }
+
+    // centralise the method of checking if in play mode or not
+    public static bool PlayModeElseMenu()
+    {
+        if (PlayerPawn.instance) return true;
         return false;
     }
 }

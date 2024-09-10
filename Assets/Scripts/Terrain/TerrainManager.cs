@@ -367,14 +367,15 @@ public class TerrainManager : MonoBehaviour
 
     public void RestartStage()
     {
+        GameManager.instance.SaveSettings();
         Time.timeScale = 1f;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(GlobalVars.SCENEPLAY);
     }
 
     public void QuitToMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(GlobalVars.SCENEMENU);
     }
 
     public void PlayerVictory()

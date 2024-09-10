@@ -15,6 +15,11 @@ public class UIResourceBars : MonoBehaviour
 
     public void Initialise()
     {
+        UpdateResources();
+    }
+
+    public void UpdateResources()
+    {
         int coins = GameManager.instance.coinsStash;
         int gems = GameManager.instance.gemsStash;
 
@@ -39,23 +44,6 @@ public class UIResourceBars : MonoBehaviour
             barGems.gameObject.SetActive(false);
     }
 
-    public void UpdateResources()
-    {
-        int coins = GameManager.instance.coinsStash;
-        int gems = GameManager.instance.gemsStash;
-
-        if (coins > 0 || GameManager.instance.GetFlag(GlobalVars.SAVEFLAGCOINS))
-        {
-            barCoins.gameObject.SetActive(true);
-            barCoins.SetValue(coins);
-            GameManager.instance.SetFlag(GlobalVars.SAVEFLAGCOINS);
-        }
-
-        if (gems > 0 || GameManager.instance.GetFlag(GlobalVars.SAVEFLAGGEMS))
-        {
-            barGems.gameObject.SetActive(true);
-            barGems.SetValue(gems);
-            GameManager.instance.SetFlag(GlobalVars.SAVEFLAGGEMS);
-        }
-    }
+    public Transform GetCoinsTransform() { return barCoins.transform; }
+    public Transform GetGemsTransform() { return barGems.transform; }
 }

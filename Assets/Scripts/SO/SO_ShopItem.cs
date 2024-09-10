@@ -27,6 +27,7 @@ public class SO_ShopItem : ScriptableObject
     public Sprite shopImageSpec;
     public SO_ShopItem[] shopDependency; // items which must be bought before this is unlocked
     public CostType costType;
+    public bool tutorialBlackout; // should items which require this item be hidden entirely?
     [Header("Premium costs are in cents/pennies/yen")]
     public int costAmount;
     [Header("Gameplay effects")]

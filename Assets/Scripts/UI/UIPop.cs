@@ -61,7 +61,7 @@ public class UIPop : MonoBehaviour
         {
             if (fadeTimeFull > 0)
             {
-                fadeTimeLeft -= Time.deltaTime;
+                fadeTimeLeft -= Time.unscaledDeltaTime;
                 if (fadeTimeLeft <= 0)
                 {
                     // fade out finished, deactivate

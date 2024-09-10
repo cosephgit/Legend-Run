@@ -27,13 +27,13 @@ public class UITutorialFinger : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void ShowSwipe(Transform start, Transform end, bool oscillate)
+    public void ShowSwipe(UITutorialTip tip)
     {
         StopAllCoroutines();
         UIPopManager.instance.StopPopRect();
         finger.color = Color.white;
         gameObject.SetActive(true);
-        StartCoroutine(SwipeSequence(start, end, oscillate));
+        StartCoroutine(SwipeSequence(tip.swipeTipStart, tip.swipeTipEnd, tip.swipeOscillate));
     }
 
     private IEnumerator SwipeSequence(Transform start, Transform end, bool oscillate)

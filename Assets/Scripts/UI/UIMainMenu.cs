@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 // general methods used by all menus
 // created 31/8/23
@@ -22,9 +24,9 @@ public class UIMainMenu : MonoBehaviour
     [SerializeField] private RectTransform menuShopRect;
     [Header("General menu references")]
     [SerializeField] protected UIOptionsMenu menuOptions;
-    [SerializeField] protected UIShop menuShop;
+    [field: SerializeField] public UIShop menuShop { get; private set; }
     [SerializeField] protected UIMenuMainScores menuScores;
-    [SerializeField] protected UIResourceBars menuResources;
+    [field: FormerlySerializedAs("menuResources")][field: SerializeField] public UIResourceBars menuResources { get; private set; }
     [SerializeField] private AudioClip menuMusic;
     [SerializeField] private GameObject buttonQuitGame;
     private bool audioReady;
@@ -32,10 +34,6 @@ public class UIMainMenu : MonoBehaviour
 
     private void Awake()
     {
-        ButtonBack();
-#if UNITY_WEBGL
-        buttonQuitGame.SetActive(false);
-#endif
     }
 
     private void Start()
@@ -46,12 +44,18 @@ public class UIMainMenu : MonoBehaviour
         menuShop.Initialise(this);
         menuOptions.gameObject.SetActive(false);
         menuShop.gameObject.SetActive(false);
+        Debug.Log("UIMainMenu Start() running - about to initialise resource bars");
         menuResources.Initialise();
+        Debug.Log("UIMainMenu Start() running - just initialised resource bars");
         if (IsMainMenu())
         {
             menuScores.Initialise();
             UpdateButtonParticles(menuShop.IsBuyAvailable());
         }
+        ButtonBack();
+#if UNITY_WEBGL
+        buttonQuitGame.SetActive(false);
+#endif
         audioReady = true;
     }
 
@@ -66,7 +70,7 @@ public class UIMainMenu : MonoBehaviour
     public void ButtonPlay()
     {
         SoundButton();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(GlobalVars.SCENEPLAY);
     }
     public virtual void ButtonOptions()
     {
@@ -107,6 +111,14 @@ public class UIMainMenu : MonoBehaviour
         menuMain.SetActive(true);
         menuOptions.gameObject.SetActive(false);
         menuShop.gameObject.SetActive(false);
+    }
+
+    // DO NOT SHIP
+    public void ButtonDEBUGWIPE()
+    {
+        GameManager.instance.DEBUGWIPEDATA(false);
+        UpdateScores();
+        UpdateButtonParticles(menuShop.IsBuyAvailable());
     }
 
     public void UpdateScores()

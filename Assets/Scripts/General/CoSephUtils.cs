@@ -88,6 +88,35 @@ public static class CoSephUtils
         }
     }
 
+    // convert the 0...1 progress value into an s-shaped progress curve
+    public static float CalcSCurve(float value)
+    {
+        float curve = value - 0.5f; // -0.5...0.5
+        curve = curve / Mathf.Sqrt(1 + (curve * curve)); // -(0.5/sqrt(1.25))...(0.5/sqrt(1.25))
+        curve *= Mathf.Sqrt(1.25f); // -0.5...0.5
+        curve += 0.5f; // 0...1
+        return curve;
+    }
+
+    public static float ClampAngle(float angleBase)
+    {
+        float angleClamped = angleBase;
+
+        while (angleClamped > 180f) angleClamped -= 360f;
+        while (angleClamped < -180f) angleClamped += 360f;
+
+        return angleClamped;
+    }
+    public static Vector3 ClampAngleAll(Vector3 eulers)
+    {
+        Vector3 eulersClamped = eulers;
+        eulersClamped.x = ClampAngle(eulersClamped.x);
+        eulersClamped.y = ClampAngle(eulersClamped.y);
+        eulersClamped.z = ClampAngle(eulersClamped.z);
+        return eulersClamped;
+    }
+
+
 #if UNITY_EDITOR
     // call this during OnDrawGizmos to show the bounds of a rect
     public static void DrawRectGizmo(Color rectColor, Rect rectangle)

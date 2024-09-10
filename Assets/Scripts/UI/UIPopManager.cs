@@ -37,7 +37,10 @@ public class UIPopManager : MonoBehaviour
     private List<UIPop> popsActive;
     private List<UIPop> sparkleIdle;
     private List<UIPop> sparkleActive;
+    // special effect coroutines
     private Coroutine popRect;
+    private Coroutine popTrail;
+    // touch sparkles
     private Vector2 touchSparklePos;
     private bool touchSparkle;
     private float touchSparkleNext;
@@ -122,11 +125,11 @@ public class UIPopManager : MonoBehaviour
         }
 
         Vector2 popPos = pos;
-        Vector2 vee = new Vector2(-Mathf.Cos(angle), Mathf.Sin(angle));
+        Vector2 vee = new Vector2(-Mathf.Sin(angle), Mathf.Cos(angle));
         if (spread > 0)
         {
-            popPos.x += Mathf.Cos(angle) * spread * popScreenScale;
-            popPos.y -= Mathf.Sin(angle) * spread * popScreenScale;
+            popPos.x += Random.value * spread * popScreenScale;
+            popPos.y -= Random.value * spread * popScreenScale;
         }
 
         if (popType == PopType.Pop)
@@ -186,6 +189,7 @@ public class UIPopManager : MonoBehaviour
     private IEnumerator PopRect(RectTransform rectFill, Color rectColor, bool rectCircle)
     {
         float popDelay = 1f / popRectRate;
+
         if (rectCircle) popDelay *= 2f;
         while (true)
         {
@@ -194,7 +198,7 @@ public class UIPopManager : MonoBehaviour
             if (rectCircle)
             {
                 angle = Random.Range(0, 2f * Mathf.PI);
-                pos = new Vector2(-Mathf.Cos(angle), Mathf.Sin(angle)) * Random.Range(0f, rectFill.rect.width) * 0.25f;
+                pos = new Vector2(-Mathf.Sin(angle), Mathf.Cos(angle)) * Random.Range(0f, rectFill.rect.width) * 0.25f;
             }
             else
             {
@@ -203,7 +207,39 @@ public class UIPopManager : MonoBehaviour
             }
             pos += (Vector2)rectFill.transform.position;
             Pop(pos, rectColor, PopType.Sparkle, angle, 0f, 1f);
-            yield return new WaitForSeconds(popDelay);
+            yield return new WaitForSecondsRealtime(popDelay);
+        }
+    }
+
+    public void StartPopTrail(Transform start, Transform end, float duration, Color popColor, int popRate)
+    {
+        if (popTrail != null)
+            StopCoroutine(popTrail);
+
+        popTrail = StartCoroutine(PopTrail(start, end, duration, popColor, popRate));
+    }
+    public void StopPopTrail()
+    {
+        if (popTrail != null)
+        {
+            StopCoroutine(popTrail);
+            popTrail = null;
+        }
+    }
+
+    private IEnumerator PopTrail(Transform start, Transform end, float duration, Color popColor, float popRate)
+    {
+        int popCount = Mathf.CeilToInt(popRate / 20f);
+        float timeLeft = duration;
+        float popDelay = popCount / popRate;
+
+        while (timeLeft > 0)
+        {
+            Vector2 pos = Vector2.Lerp(end.position, start.position, timeLeft / duration);
+            timeLeft -= popDelay;
+            for (int i = 0; i < popCount; i++)
+                PopRandom(pos, popColor, PopType.Pop, 1f);
+            yield return new WaitForSecondsRealtime(popDelay);
         }
     }
 
@@ -224,7 +260,11 @@ public class UIPopManager : MonoBehaviour
     public void UpdateTouch(Vector2 pos)
     {
         touchSparklePos = pos;
-        touchSparkle = true;
+        if (!touchSparkle)
+        {
+            touchSparkle = true;
+            touchSparkleNext = 0f;
+        }
     }
     public void EndTouch()
     {

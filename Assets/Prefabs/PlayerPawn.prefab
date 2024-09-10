@@ -61,7 +61,7 @@ MonoBehaviour:
   streakDisplay: {fileID: 0}
   speedMax: 16
   speedAccel: 6
-  swipeSensitivity: 0.01
+  swipeSensitivity: 0.05
   screenActiveXMin: 0.2
   screenActiveXMax: 0.8
   screenJumpY: 0.5
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthMax: 3
-  healthBar: {fileID: 0}
+  healthHearts: {fileID: 0}
   painSounds:
   - {fileID: 8300000, guid: 6c59dbffd27b58c49885406956de3c9f, type: 3}
   - {fileID: 8300000, guid: 9272b4fc0cf39f24f9d83d0d82049fd9, type: 3}
@@ -115,7 +115,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 04d33fe904f3fee47bf857f37f79d0bf, type: 3}
   - {fileID: 8300000, guid: 7840e0fe9f0b6a14393a35925839a084, type: 3}
   <pawnAnim>k__BackingField: {fileID: 7938553253504450216}
-  <moveRate>k__BackingField: 6
+  <moveRate>k__BackingField: 16
 --- !u!114 &2994394899652238338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinBar: {fileID: 0}
+  gemBar: {fileID: 0}
 --- !u!114 &7846197909282872248
 MonoBehaviour:
   m_ObjectHideFlags: 0
