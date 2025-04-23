@@ -37,11 +37,11 @@ public class PlayerPawn : MonoBehaviour
     [Header("Movement parameters")]
     [SerializeField] private float speedMax = 16f;
     [SerializeField] private float speedAccel = 6f;
-    [SerializeField] private float swipeSensitivity = 0.05f;
-    [Header("Input parameters")]
-    [SerializeField] private float screenActiveXMin = 0.2f; // left side main zone of screen
-    [SerializeField] private float screenActiveXMax = 0.8f; // right side main zone of screen
-    [SerializeField] private float screenJumpY = 0.5f; // minimum screen height to jump
+    //[SerializeField] private float swipeSensitivity = 0.05f;
+    //[Header("Input parameters")]
+    //[SerializeField] private float screenActiveXMin = 0.2f; // left side main zone of screen
+    //[SerializeField] private float screenActiveXMax = 0.8f; // right side main zone of screen
+    //[SerializeField] private float screenJumpY = 0.5f; // minimum screen height to jump
     [Header("Streak params")]
     [SerializeField] private int streakCountBase = 5;
     [SerializeField] private int streakCountPerLevel = 5;
@@ -377,6 +377,53 @@ public class PlayerPawn : MonoBehaviour
 
         if (pawnHealth.IsAlive() && !TerrainManager.instance.paused)
         {
+            if (swipe.y > 0f)
+            {
+                //Debug.Log("Swiped up!");
+                if (tutorial.state == TutorialState.Finished
+                    || tutorial.state == TutorialState.Jump
+                    || tutorial.state == TutorialState.JumpDone
+                    || tutorial.state == TutorialState.JumpOver
+                    || tutorial.state == TutorialState.JumpOverDone)
+                {
+                    jumpHeld = pawnLoco.StartJump();
+                    if (jumpHeld)
+                        tutorial.PlayerJumped();
+                }
+            }
+            else if (swipe.x > 0)
+            {
+                //Debug.Log("Swiped right!");
+                if (tutorial.state == TutorialState.Init || tutorial.state == TutorialState.Jump) return;
+
+                if (pawnTargetX >= TerrainManager.instance.laneRightXMin)
+                    return;
+
+                if (pawnTargetX > TerrainManager.instance.laneLeftXMax)
+                    pawnTargetX = TerrainManager.instance.laneRightX;
+                else
+                    pawnTargetX = TerrainManager.instance.laneCentreX;
+
+                pawnLoco.SetMoveTarget(pawnTargetX);
+                tutorial.PlayerMoved();
+            }
+            else if (swipe.x < 0)
+            {
+                //Debug.Log("Swiped left!");
+                if (tutorial.state == TutorialState.Init || tutorial.state == TutorialState.Jump) return;
+
+                if (pawnTargetX <= TerrainManager.instance.laneLeftXMax)
+                    return;
+
+                if (pawnTargetX < TerrainManager.instance.laneRightXMin)
+                    pawnTargetX = TerrainManager.instance.laneLeftX;
+                else
+                    pawnTargetX = TerrainManager.instance.laneCentreX;
+
+                pawnLoco.SetMoveTarget(pawnTargetX);
+                tutorial.PlayerMoved();
+            }
+            /*
             if (swipe.sqrMagnitude > swipeSensitivity * swipeSensitivity)
             {
                 if (swipe.y > Mathf.Abs(swipe.x))
@@ -426,11 +473,17 @@ public class PlayerPawn : MonoBehaviour
                     tutorial.PlayerMoved();
                 }
             }
+            */
             //else
-                //Debug.Log("Not really, just a tap!");
+            //Debug.Log("Not really, just a tap!");
         }
 
         tutorial.TouchInput();
+    }
+    // called when a swipe is finished
+    public void SwipeEnd(Vector3 swipe)
+    {
+        // doesn't do anything yet!
     }
 
     // sets speed effects for a new speed value

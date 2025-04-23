@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 // takes player input, shows the pointer and passes the controls on if required
 // created 31/8/23
@@ -12,16 +10,25 @@ using UnityEngine.UI;
 public class PlayerControls : MonoBehaviour
 {
     [SerializeField] private PlayerPawn player;
+    [SerializeField] private float swipeSensitivitySide = 0.5f;
+    [SerializeField] private float swipeSensitivityUp = 1f;
+    [SerializeField] private float swipeHoldCooldown = 0.5f;
+    [SerializeField] private float swipeSensitivityMin = 0.1f; // min per second to count as swiping
     [SerializeField] private UIPointer pointer;
-    private Vector3 swipeStart;
-    private Vector3 swipeEnd;
+    private Vector2 swipeStart;
+    private Vector2 swipeLast;
+    private Vector2 swipeEnd;
     private bool swiping;
+    private bool swipePrep;
+    private float swipeCooling;
 
     private void Awake()
     {
         swipeStart = Vector3.zero;
         swipeEnd = Vector3.zero;
         swiping = false;
+        swipePrep = false;
+        swipeCooling = 0f;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
     }
@@ -50,17 +57,38 @@ public class PlayerControls : MonoBehaviour
 
         if (touch)
         {
+            bool moving = ((touchPos - swipeLast).magnitude > swipeSensitivityMin);
+
+            swipeLast = touchPos;
+            swipeEnd = touchPos;
+            UIPopManager.instance.UpdateTouch(touchPos);
+
             if (!swiping)
             {
                 swiping = true;
+                swipePrep = true;
+                swipeCooling = swipeHoldCooldown;
                 swipeStart = touchPos;
             }
-            swipeEnd = touchPos;
-            UIPopManager.instance.UpdateTouch(touchPos);
+            else if (swipePrep) // check each frame if we should send the swipe to the player
+                SwipeNew();
+
+            if (!moving || !swipePrep)
+            {
+                swipeCooling -= Time.deltaTime;
+                if (swipeCooling < 0)
+                {
+                    swiping = false;
+                    swipeStart = Vector3.zero;
+                    swipeEnd = Vector3.zero;
+                    UIPopManager.instance.EndTouch();
+                }
+            }
         }
         else
             UIPopManager.instance.EndTouch();
 
+        /*
         if (player && touch)
         {
             List<RaycastResult> objectsUI = GetUIObjects(touchPos);
@@ -73,6 +101,58 @@ public class PlayerControls : MonoBehaviour
 
             player.SetMove(touchPos);
         }
+        */
+    }
+
+    private void SwipeNew()
+    {
+        if (player)
+        {
+            Vector3 swipeVector = swipeEnd - swipeStart;
+
+            if (Mathf.Abs(swipeVector.x) > swipeVector.y)
+                swipeVector.y = 0f;
+            else
+                swipeVector.x = 0f;
+
+            if (swipeVector.y > swipeSensitivityUp)
+            {
+                swipeStart = Vector3.zero;
+                swipeEnd = Vector3.zero;
+                player.SetSwipe(Vector3.up);
+                swipePrep = false;
+            }
+            else if (swipeVector.x > swipeSensitivitySide)
+            {
+                swipeStart = Vector3.zero;
+                swipeEnd = Vector3.zero;
+                player.SetSwipe(Vector3.right);
+                swipePrep = false;
+            }
+            else if (swipeVector.x < -swipeSensitivitySide)
+            {
+                swipeStart = Vector3.zero;
+                swipeEnd = Vector3.zero;
+                player.SetSwipe(Vector3.left);
+                swipePrep = false;
+            }
+            /*
+            if (swipeVector.x > swipeSensitivitySide
+                || swipeVector.y > swipeSensitivityUp)
+            {
+                swipeStart = Vector3.zero;
+                swipeEnd = Vector3.zero;
+                swipeVector /= Screen.width; // scale swipe to screen resolution, so the x value will be from -0.5 to 0.5 and the y value will be approx. -1 to 1
+
+                player.SetSwipe(swipeVector);
+
+                swipePrep = false;
+                // trying this for now - so it will immediately pick up a new swipe on the next frame
+                swiping = false;
+                UIPopManager.instance.EndTouch();
+            }
+            */
+        }
     }
 
     private void SwipeEnd()
@@ -84,7 +164,8 @@ public class PlayerControls : MonoBehaviour
             swipeEnd = Vector3.zero;
             swipeVector /= Screen.width; // scale swipe to screen resolution, so the x value will be from -0.5 to 0.5 and the y value will be approx. -0.3 to 0.3
 
-            player.SetSwipe(swipeVector);
+            //player.SetSwipe(swipeVector);
+            player.SwipeEnd(swipeVector);
 
         }
         swiping = false;

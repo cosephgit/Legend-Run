@@ -77,9 +77,9 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 540}
+  m_ReferenceResolution: {x: 640, y: 1280}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 1
+  m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -118,9 +118,9 @@ MonoBehaviour:
     type: 3}
   popsCount: 100
   popSpread: 0.05
-  popSpeedMin: 0.3
-  popSpeedMax: 0.6
-  <popGravity>k__BackingField: -1
+  popSpeedMin: 0.5
+  popSpeedMax: 1
+  <popGravity>k__BackingField: -2
   popsPerMagnitude: 5
   popFadeTime: 3
   sparklePrefab: {fileID: 8345871073732216741, guid: 5793d7f0a4770d44ea0bf7c779636190,

@@ -45,6 +45,7 @@ public class UIOptionsMenu : MonoBehaviour
     public void SliderBGM(System.Single volume)
     {
         GameManager.instance.SetVolumeBGM(volume);
+        SoundSlider();
     }
 
     private void Update()

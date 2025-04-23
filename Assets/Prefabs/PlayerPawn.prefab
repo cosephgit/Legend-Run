@@ -59,12 +59,8 @@ MonoBehaviour:
   <tutorial>k__BackingField: {fileID: 0}
   terrain: {fileID: 0}
   streakDisplay: {fileID: 0}
-  speedMax: 16
+  speedMax: 12
   speedAccel: 6
-  swipeSensitivity: 0.05
-  screenActiveXMin: 0.2
-  screenActiveXMax: 0.8
-  screenJumpY: 0.5
   streakCountBase: 5
   streakCountPerLevel: 5
   streakLevelSound: {fileID: 8300000, guid: 17a860f2fa7460340b84c932ed0413af, type: 3}
@@ -211,6 +207,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 4159889538133082841}
+  swipeSensitivitySide: 0.5
+  swipeSensitivityUp: 1
   pointer: {fileID: 0}
 --- !u!1001 &4027587021186304417
 PrefabInstance:

@@ -4750,6 +4750,9 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4788,13 +4791,15 @@ ParticleSystemRenderer:
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 0
   m_ApplyActiveColorSpace: 0
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
+  m_UseCustomVertexStreams: 0
   m_VertexStreams: 0001030405
+  m_UseCustomTrailVertexStreams: 0
+  m_TrailVertexStreams: 00010304
   m_Mesh: {fileID: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -9554,6 +9559,9 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -9592,13 +9600,15 @@ ParticleSystemRenderer:
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 0
   m_ApplyActiveColorSpace: 0
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
+  m_UseCustomVertexStreams: 0
   m_VertexStreams: 0001030405
+  m_UseCustomTrailVertexStreams: 0
+  m_TrailVertexStreams: 00010304
   m_Mesh: {fileID: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -9673,27 +9683,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2205523457048140323, guid: af85708e890cc24418e4049817d57c21,
         type: 3}
-      propertyPath: pickupSound.Array.data[0]
+      propertyPath: 'pickupSound.Array.data[0]'
       value: 
       objectReference: {fileID: 8300000, guid: e66c05008dfd54b65a39750fb4ca35be, type: 3}
     - target: {fileID: 2205523457048140323, guid: af85708e890cc24418e4049817d57c21,
         type: 3}
-      propertyPath: pickupSound.Array.data[1]
+      propertyPath: 'pickupSound.Array.data[1]'
       value: 
       objectReference: {fileID: 8300000, guid: 3cd33786ea8c04c65a99918066a87684, type: 3}
     - target: {fileID: 2205523457048140323, guid: af85708e890cc24418e4049817d57c21,
         type: 3}
-      propertyPath: pickupSound.Array.data[2]
+      propertyPath: 'pickupSound.Array.data[2]'
       value: 
       objectReference: {fileID: 8300000, guid: 7b34a1c3f2d86478f8ece94c4c46c8dd, type: 3}
     - target: {fileID: 2205523457048140323, guid: af85708e890cc24418e4049817d57c21,
         type: 3}
-      propertyPath: pickupSound.Array.data[3]
+      propertyPath: 'pickupSound.Array.data[3]'
       value: 
       objectReference: {fileID: 8300000, guid: a6b96b8ff0a354589a034b674322e457, type: 3}
     - target: {fileID: 2205523457048140323, guid: af85708e890cc24418e4049817d57c21,
         type: 3}
-      propertyPath: pickupSound.Array.data[4]
+      propertyPath: 'pickupSound.Array.data[4]'
       value: 
       objectReference: {fileID: 8300000, guid: 6663bacc2a6d846cda16feed5740b544, type: 3}
     - target: {fileID: 2287453409369591613, guid: af85708e890cc24418e4049817d57c21,
@@ -9833,9 +9843,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 23427727207255438, guid: 6cf803f17924190419a094e8c931bfef,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b06095be00f99c04bb0aa12975ce76e0, type: 2}
+      objectReference: {fileID: 2100000, guid: 18b990ada69320241851d6392bb4e215, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
