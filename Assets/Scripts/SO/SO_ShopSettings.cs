@@ -32,6 +32,7 @@ public enum ItemType
 public class SO_ShopSettings : ScriptableObject
 {
     public SO_ShopItem[] shopItems;
+    public SO_ShopItem[] shopPowerups;
     public SO_ShopItem[] shopItemsGems;
     public Sprite spriteCostCoin;
     public Sprite spriteCostGem;
@@ -49,6 +50,12 @@ public class SO_ShopSettings : ScriptableObject
         {
             if (shopItems[i].shopUniqueName == itemName)
                 return shopItems[i];
+        }
+
+        for (int i = 0; i < shopPowerups.Length; i++)
+        {
+            if (shopPowerups[i].shopUniqueName == itemName)
+                return shopPowerups[i];
         }
 
         return result;

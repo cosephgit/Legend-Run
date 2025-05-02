@@ -11,6 +11,8 @@ public class CollectibleBase : MonoBehaviour
 {
     [Header("Collectible")]
     [SerializeField] private float degreesPerSec = 360f; // how quickly the coin rotates
+    [SerializeField] private float bobAmplitude = 1f;
+    [SerializeField] private float bobRate = 1f;
     [SerializeField] protected AudioClip[] pickupSound;
     public bool unused { get; protected set; } = true;
 
@@ -18,8 +20,13 @@ public class CollectibleBase : MonoBehaviour
     {
         unused = false;
 
-        Destroy(gameObject);
+        CollectSound();
 
+        Destroy(gameObject);
+    }
+
+    public virtual void CollectSound()
+    {
         if (pickupSound.Length > 0)
             AudioManager.instance.SoundPlayVaried(pickupSound[Random.Range(0, pickupSound.Length)], transform.position);
     }
@@ -31,6 +38,7 @@ public class CollectibleBase : MonoBehaviour
 
     public virtual void Remove()
     {
+        unused = false;
         Destroy(gameObject);
     }
 }

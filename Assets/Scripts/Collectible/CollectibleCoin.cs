@@ -15,8 +15,13 @@ public class CollectibleCoin : CollectibleBase
     {
         unused = false;
 
-        Destroy(gameObject);
+        CollectSoundCoin(pitch);
 
+        Destroy(gameObject);
+    }
+
+    public void CollectSoundCoin(float pitch)
+    {
         if (pickupSound.Length > 0)
             AudioManager.instance.SoundPlayCustom(pickupSound[Random.Range(0, pickupSound.Length)], transform.position, 1f, pitch);
     }

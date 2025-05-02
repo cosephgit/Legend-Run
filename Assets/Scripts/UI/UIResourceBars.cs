@@ -12,6 +12,7 @@ public class UIResourceBars : MonoBehaviour
 {
     [SerializeField] private UIResourceBar barCoins;
     [SerializeField] private UIResourceBar barGems;
+    [field: SerializeField] public UIHealthHearts healthHearts { get; private set; }
 
     public void Initialise()
     {

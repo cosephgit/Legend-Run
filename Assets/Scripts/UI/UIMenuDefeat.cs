@@ -77,14 +77,15 @@ public class UIMenuDefeat : MonoBehaviour
     }
     public void ButtonContinueGems()
     {
-        if (GameManager.instance.shopSettings.reviveGemCost > PlayerPawn.instance.pawnPurse.gems)
+        if (GameManager.instance.shopSettings.reviveGemCost > GameManager.instance.gemsStash)
         {
             ButtonContinueAd();
         }
         else
         {
             GameManager.instance.AddGems(-GameManager.instance.shopSettings.reviveGemCost);
-            PlayerPawn.instance.pawnPurse.ChangeBars();
+            //PlayerPawn.instance.pawnPurse.ChangeBars();
+            UIMenus.instance.menuResources.UpdateResources();
 
             AudioManager.instance.SoundPlayEven(recoverySound, Vector2.zero);
             Continue();
@@ -105,6 +106,8 @@ public class UIMenuDefeat : MonoBehaviour
     {
         menuHub.ButtonShopCoinInGame();
         gameObject.SetActive(false);
+        if (menuHub.menuResources.healthHearts)
+            menuHub.menuResources.healthHearts.gameObject.SetActive(false);
     }
     // restart button - send them to the shop first!
     public void ButtonRestart()

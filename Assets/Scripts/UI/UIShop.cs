@@ -29,6 +29,13 @@ public class UIShop : MonoBehaviour
     [SerializeField] private UIShopItem shopItemOriginal;
     [SerializeField] private Scrollbar shopItemScroll;
     [SerializeField] private Button buttonTabItems;
+    [Header("Powerup shop items")]
+    [SerializeField] private GameObject shopPowerupBase;
+    [SerializeField] private ScrollRect shopPowerupScrollRect;
+    [SerializeField] private Transform shopPowerupHolder;
+    [SerializeField] private UIShopItem shopPowerupOriginal;
+    [SerializeField] private Scrollbar shopPowerupScroll;
+    [SerializeField] private Button buttonTabPowerups;
     [Header("Gem shop items")]
     [SerializeField] private GameObject shopItemGemsBase;
     [SerializeField] private ScrollRect shopGemScrollRect;
@@ -39,6 +46,8 @@ public class UIShop : MonoBehaviour
     [SerializeField] private UIShopPremium shopPremium;
     private UIShopItem[] shopItems;
     private bool shopItemsFirstOpen = true;
+    private UIShopItem[] shopPowerups;
+    private bool shopPoweupsFirstOpen = true;
     private UIShopItem[] shopItemsGems;
     private bool shopGemsFirstOpen = true;
     private UIMainMenu mainMenu;
@@ -61,6 +70,18 @@ public class UIShop : MonoBehaviour
             for (int i = 0; i < shopItems.Length; i++)
                 shopItems[i].Initialise(GameManager.instance.shopSettings.shopItems[i], this);
 
+            // set up powerups shop
+            shopPowerups = new UIShopItem[GameManager.instance.shopSettings.shopPowerups.Length];
+            for (int i = 0; i < shopPowerups.Length; i++)
+            {
+                if (i > 0)
+                    shopPowerups[i] = Instantiate(shopPowerupOriginal, shopPowerupHolder);
+                else
+                    shopPowerups[i] = shopPowerupOriginal;
+            }
+            for (int i = 0; i < shopPowerups.Length; i++)
+                shopPowerups[i].Initialise(GameManager.instance.shopSettings.shopPowerups[i], this);
+
             // set up gems shop
             shopItemsGems = new UIShopItem[GameManager.instance.shopSettings.shopItemsGems.Length];
             for (int i = 0; i < shopItemsGems.Length; i++)
@@ -77,9 +98,11 @@ public class UIShop : MonoBehaviour
             //shopItemScroll.value = 0;
             //shopGemScroll.value = 0;
 
+            shopPowerupBase.SetActive(false);
             shopItemGemsBase.SetActive(false);
-            buttonTabGems.interactable = true;
             buttonTabItems.interactable = false;
+            buttonTabPowerups.interactable = true;
+            buttonTabGems.interactable = true;
         }
         else
         {
@@ -167,7 +190,8 @@ public class UIShop : MonoBehaviour
             if (mainMenu && !GameManager.PlayModeElseMenu())
                 mainMenu.UpdateScores();
             else
-                PlayerPawn.instance.pawnPurse.ChangeBars();
+                UIMenus.instance.menuResources.UpdateResources();
+                //PlayerPawn.instance.pawnPurse.ChangeBars();
             return true;
         }
         return false;
@@ -178,6 +202,10 @@ public class UIShop : MonoBehaviour
         for (int i = 0; i < shopItems.Length; i++)
         {
             shopItems[i].UpdateAvailability();
+        }
+        for (int i = 0; i < shopPowerups.Length; i++)
+        {
+            shopPowerups[i].UpdateAvailability();
         }
     }
 
@@ -207,47 +235,60 @@ public class UIShop : MonoBehaviour
         if (mainMenu && !GameManager.PlayModeElseMenu())
             mainMenu.UpdateScores();
         else
-            PlayerPawn.instance.pawnPurse.ChangeBars();
+            UIMenus.instance.menuResources.UpdateResources();
+        //PlayerPawn.instance.pawnPurse.ChangeBars();
         UpdateShopItems();
     }
     public void BuyPremiumCancel()
     {
-        // juse close :(((
+        // just close :(((
         AudioManager.instance.SoundPlayMenuButton();
     }
 
     // ui button hooks
     public void ButtonTabItems()
     {
-        //Debug.Log("Line 222");
         mainMenu.SoundButton();
-        //Debug.Log("Line 224");
         shopItemBase.SetActive(true);
-        //Debug.Log("Line 226");
+        shopPowerupBase.SetActive(false);
         shopItemGemsBase.SetActive(false);
-        //Debug.Log("Line 228");
-        buttonTabGems.interactable = true;
-        //Debug.Log("Line 230");
         buttonTabItems.interactable = false;
-        //Debug.Log("Line 232");
-        //shopItemScroll.value = 0;
+        buttonTabPowerups.interactable = true;
+        buttonTabGems.interactable = true;
         if (shopItemsFirstOpen)
         {
             shopItemsFirstOpen = false;
             StartCoroutine(ScrollToObject(shopItemScrollRect, shopItems[0].rectTransform));
             //Debug.Log("Line 238");
         }
-        //Debug.Log("Line 240");
         UpdateShopItems();
-        //Debug.Log("Line 242");
+    }
+    public void ButtonTabPpwerups()
+    {
+        mainMenu.SoundButton();
+        shopItemBase.SetActive(false);
+        shopPowerupBase.SetActive(true);
+        shopItemGemsBase.SetActive(false);
+        buttonTabItems.interactable = true;
+        buttonTabPowerups.interactable = false;
+        buttonTabGems.interactable = true;
+        if (shopPoweupsFirstOpen)
+        {
+            shopPoweupsFirstOpen = false;
+            StartCoroutine(ScrollToObject(shopPowerupScrollRect, shopPowerups[0].rectTransform));
+            //Debug.Log("Line 238");
+        }
+        UpdateShopItems();
     }
     public void ButtonTabGems()
     {
         mainMenu.SoundButton();
         shopItemBase.SetActive(false);
+        shopPowerupBase.SetActive(false);
         shopItemGemsBase.SetActive(true);
-        buttonTabGems.interactable = false;
         buttonTabItems.interactable = true;
+        buttonTabPowerups.interactable = true;
+        buttonTabGems.interactable = false;
         //shopGemScroll.value = 0;
         if (shopGemsFirstOpen)
         {
@@ -280,6 +321,7 @@ public class UIShop : MonoBehaviour
         buttonBack.interactable = false;
         buttonPlay.interactable = false;
         buttonTabItems.gameObject.SetActive(false);
+        buttonTabPowerups.gameObject.SetActive(false);
         buttonTabGems.gameObject.SetActive(false);
         // TODO make the available item sparkle
         for (int i = 0; i < GameManager.instance.shopSettings.shopItems.Length; i++)
@@ -303,6 +345,7 @@ public class UIShop : MonoBehaviour
         buttonPlay.interactable = true;
         UIPopManager.instance.StopPopRect();
         buttonTabItems.gameObject.SetActive(true);
+        buttonTabPowerups.gameObject.SetActive(true);
         buttonTabGems.gameObject.SetActive(true);
     }
 

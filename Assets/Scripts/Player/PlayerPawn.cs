@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -24,11 +25,13 @@ using UnityEngine.UI;
 
 public class PlayerPawn : MonoBehaviour
 {
+    private const int SWORDVALUE = 5;
+    private const int POTIONVALUE = 10;
     public static PlayerPawn instance;
     [Header("Components")]
     [SerializeField] private PlayerPawnHealth pawnHealth;
     [SerializeField] private PlayerPawnLoco pawnLoco;
-    [field: SerializeField] public PlayerPawnPurse pawnPurse { get; private set; }
+    //[field: SerializeField] public PlayerPawnPurse pawnPurse { get; private set; }
     [SerializeField] private PlayerWeapon pawnWeapon;
     [field: SerializeField] public PlayerTutorial tutorial { get; private set; }
     [Header("Key references")]
@@ -142,44 +145,54 @@ public class PlayerPawn : MonoBehaviour
     {
         return (streakCountBase * level + streakCountPerLevel * (level - 1) * level / 2);
     }
+    private float GainCoins(int coinValue)
+    {
+        int streakCoinsLevel = StreakCoinsForLevel(streakLevel); // number of coins to the start of this level
+        int streakCoinsLevelNext = streakCountBase + streakCountPerLevel * streakLevel; // number of coins from the start of this level to the next level
+        bool level = false;
+        float pitch = streakCoinPitchBase;
+
+        GameManager.instance.AddCoins(coinValue);
+        UIMenus.instance.menuResources.UpdateResources();
+
+        if (tutorial.state == TutorialState.Finished)
+        {
+            //pawnPurse.ChangeBars();
+
+            streakCoins += coinValue * GameManager.instance.upgrades.upgradeBoostGainRate;
+            if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
+            {
+                streakLevel++;
+                streakCoinsLevel = streakCoinsLevel + streakCoinsLevelNext;
+                streakCoinsLevelNext += streakCountPerLevel;
+
+                level = true;
+            }
+            if (streakLevel > 0)
+            {
+                float streakFill = (float)(streakCoins - streakCoinsLevel) / (float)streakCoinsLevelNext;
+                streakDisplay.StreakUpdate(streakLevel, streakFill);
+                pitch += streakLevel * streakCoinPitchPerLevel + streakFill * streakCoinPitchForProgress;
+                if (level)
+                {
+                    AudioManager.instance.SoundPlayCustom(streakLevelSound, Vector2.zero, 1f, pitch);
+                    StreakSetSpeed();
+                }
+            }
+        }
+        else // don't do streaks or anything else, just progress the tutorial if appropriate
+        {
+            tutorial.CoinCollected();
+        }
+
+        return pitch;
+    }
     private void TouchCoin(CollectibleCoin coin)
     {
         if (coin.unused)
         {
-            int streakCoinsLevel = StreakCoinsForLevel(streakLevel); // number of coins to the start of this level
-            int streakCoinsLevelNext = streakCountBase + streakCountPerLevel * streakLevel; // number of coins from the start of this level to the next level
-            float pitch = streakCoinPitchBase;
-            bool level = false;
-
-            if (tutorial.state == TutorialState.Finished)
-            {
-                // have run into a coin, collect it!
-                GameManager.instance.AddCoins(coin.coinValue);
-                pawnPurse.ChangeBars();
-
-                streakCoins += coin.coinValue * GameManager.instance.upgrades.upgradeBoostGainRate;
-                if (streakCoins >= streakCoinsLevel + streakCoinsLevelNext)
-                {
-                    streakLevel++;
-                    streakCoinsLevel = streakCoinsLevel + streakCoinsLevelNext;
-                    streakCoinsLevelNext += streakCountPerLevel;
-
-                    level = true;
-                }
-                if (streakLevel > 0)
-                {
-                    float streakFill = (float)(streakCoins - streakCoinsLevel) / (float)streakCoinsLevelNext;
-                    streakDisplay.StreakUpdate(streakLevel, streakFill);
-                    pitch += streakLevel * streakCoinPitchPerLevel + streakFill * streakCoinPitchForProgress;
-                    if (level)
-                    {
-                        AudioManager.instance.SoundPlayCustom(streakLevelSound, Vector2.zero, 1f, pitch);
-                        StreakSetSpeed();
-                    }
-                }
-            }
-            else // don't do streaks or anything else, just progress the tutorial if appropriate
-                tutorial.CoinCollected();
+            // have run into a coin, collect it!
+            float pitch = GainCoins(coin.coinValue);
 
             coin.CollectedCoin(pitch);
         }
@@ -189,7 +202,8 @@ public class PlayerPawn : MonoBehaviour
         if (gem.unused)
         {
             GameManager.instance.AddGems(1);
-            pawnPurse.ChangeBars();
+            UIMenus.instance.menuResources.UpdateResources();
+            //pawnPurse.ChangeBars();
 
             gem.CollectedGem();
         }
@@ -277,16 +291,44 @@ public class PlayerPawn : MonoBehaviour
     {
         if (weapon.unused)
         {
-            pawnWeapon.GetWeapon(weapon);
-            weapon.Collected();
+            if (pawnWeapon.HasWeapon())
+            {
+                // get the right kind of coin for this value so we can play the sound
+                CollectibleCoin coinPrefab = TerrainManager.instance.GetCoin(SWORDVALUE);
+                float pitch = GainCoins(SWORDVALUE);
+
+                if (coinPrefab)
+                    coinPrefab.CollectSoundCoin(pitch);
+                
+                weapon.Remove();
+            }
+            else
+            {
+                pawnWeapon.GetWeapon(weapon);
+                weapon.Collected();
+            }
         }
     }
     private void TouchPotion(CollectiblePotion potion)
     {
         if (potion.unused)
         {
-            pawnHealth.GainHealth(1);
-            potion.Collected();
+            if (pawnHealth.IsHealthMax())
+            {
+                // get the right kind of coin for this value so we can play the sound
+                CollectibleCoin coinPrefab = TerrainManager.instance.GetCoin(POTIONVALUE);
+                float pitch = GainCoins(POTIONVALUE);
+
+                if (coinPrefab)
+                    coinPrefab.CollectSoundCoin(pitch);
+
+                potion.Remove();
+            }
+            else
+            {
+                pawnHealth.GainHealth(1);
+                potion.Collected();
+            }
         }
     }
 

@@ -32,6 +32,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private float safeRouteZMax = 20f; // maximum distance between safe route direction changes
     [SerializeField] private float safeRouteZPerDiff = 0.9f; // min/max distance between safe route direction changes per increase in difficulty (exponential)
     [SerializeField] private float safeRouteChanceAngled = 0.5f; // the proportion of coin chains that will run at an angle
+    [SerializeField] private float safeRouteChanceAngledEasy = 0.25f; // the proportion of coin chains that will run at an angle
     [SerializeField] private float safeRouteAngledXMin = 2f; // the minimum x offset for an angled run of coins
     [SerializeField] private float safeRoutePlayerMoveFractionMin = 0.6f; // the minimum fraction of the player's move speed that an angled route can require at low difficulty
     [SerializeField] private float safeRoutePlayerMoveFractionMax = 0.8f; // the maximum fraction of the player's move speed that an angled route can require at high difficulty
@@ -50,8 +51,10 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private AudioClip playerAchievement;
     [SerializeField] private AudioClip playerDefeat;
     [Header("Difficulty")]
+    [SerializeField] private float checkpointDistanceMinor = 100f;
     [SerializeField] private float checkpointDistance = 1000f;
     [SerializeField] private float difficultyBase = 0;
+    [SerializeField] private float difficultyPerHyaku = 0.1f;
     [SerializeField] private float difficultyPerKM = 0.5f;
     private List<TerrainSegment> terrain; // a list of all existing terrain, from furthest back (lowest index) to furthest forward (highest index)
     private float terrainSpeed;
@@ -141,9 +144,10 @@ public class TerrainManager : MonoBehaviour
         safeNextZ = Mathf.Max(Random.Range(safeRouteZMin, safeRouteZMax) * Mathf.Pow(safeRouteZPerDiff, difficulty), safeRouteZMinHard);
         float laneDistanceMax = safeRoutePlayerMoveFractionMin * safeNextZ / PlayerPawn.instance.PlayerXPerZ();
         bool laneChange = false;
-        if (laneDistanceMax > laneWidth && GameManager.instance.KarmicChance(safeRouteChanceAngled))
+        float laneChangeChance = Mathf.Lerp(safeRouteChanceAngledEasy, safeRouteChanceAngled, terrainChallenges.intensity);
+        //if (laneDistanceMax > laneWidth && GameManager.instance.KarmicChance(safeRouteChanceAngled))
+        if (GameManager.instance.KarmicChance(laneChangeChance))
             laneChange = true;
-
 
         if (laneChange)
         {
@@ -152,7 +156,8 @@ public class TerrainManager : MonoBehaviour
             LaneRef laneNew;
             bool laneCanDoubleStep = false;
 
-            if (laneDistanceMax > laneWidth * 2f)
+            //if (laneDistanceMax > laneWidth * 2f)
+            if (GameManager.instance.KarmicChance(laneChangeChance))
                 laneCanDoubleStep = true;
 
             switch (laneCurrent)
@@ -290,10 +295,10 @@ public class TerrainManager : MonoBehaviour
 
             if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
             {
-                if (Mathf.Floor(distanceTravelled / checkpointDistance) < Mathf.Floor(distanceNew / checkpointDistance))
+                if (Mathf.Floor(distanceTravelled / checkpointDistanceMinor) < Mathf.Floor(distanceNew / checkpointDistanceMinor))
                 {
                     // have passed a difficulty milestone
-                    difficulty = difficultyBase + (Mathf.Floor(distanceNew / checkpointDistance) * difficultyPerKM);
+                    difficulty = difficultyBase + (Mathf.Floor(distanceNew / checkpointDistanceMinor) * difficultyPerHyaku) + (Mathf.Floor(distanceNew / checkpointDistance) * difficultyPerKM);
                     terrainChallenges.SetDifficulty(difficulty);
                     Debug.Log("new difficulty is " + difficulty);
                 }
@@ -307,6 +312,7 @@ public class TerrainManager : MonoBehaviour
 
             if (!Mathf.Approximately(safeCurrentX, safeTargetX))
                 safeCurrentX += (safeTargetX - safeCurrentX) * Mathf.Min(frameDist / safeNextZ, 1f);
+
             safeNextZ -= frameDist;
             if (safeNextZ <= 0)
             {
@@ -392,7 +398,8 @@ public class TerrainManager : MonoBehaviour
     {
         AudioManager.instance.MusicPlaySting(playerDefeat);
         Time.timeScale = 0f;
-        menuScreens.OpenEndingMenu(distanceTravelled, PlayerPawn.instance.pawnPurse.coins, PlayerPawn.instance.pawnPurse.gems);
+        //menuScreens.OpenEndingMenu(distanceTravelled, PlayerPawn.instance.pawnPurse.coins, PlayerPawn.instance.pawnPurse.gems);
+        menuScreens.OpenEndingMenu(distanceTravelled, GameManager.instance.coinsStash, GameManager.instance.gemsStash);
         paused = true;
         defeat = true;
     }
@@ -449,5 +456,10 @@ public class TerrainManager : MonoBehaviour
                 return laneCentreX;
         }
         return 0;
+    }
+
+    public CollectibleCoin GetCoin(int value)
+    {
+        return terrainChallenges.GetCoin(value);
     }
 }

@@ -630,15 +630,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400140, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 400140, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 400140, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 400140, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -646,7 +646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400140, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 400140, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -697,7 +697,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &7268536193791717064
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -711,6 +711,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -797,17 +798,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
         type: 3}
-      propertyPath: hazardSound.Array.data[0]
+      propertyPath: 'hazardSound.Array.data[0]'
       value: 
       objectReference: {fileID: 8300000, guid: 1206d2739c11e374e86c70dc18a2ba4e, type: 3}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
         type: 3}
-      propertyPath: hazardSound.Array.data[1]
+      propertyPath: 'hazardSound.Array.data[1]'
       value: 
       objectReference: {fileID: 8300000, guid: 08f64512c677e3a48b4a2c81212c8ac6, type: 3}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
         type: 3}
-      propertyPath: hazardSound.Array.data[2]
+      propertyPath: 'hazardSound.Array.data[2]'
       value: 
       objectReference: {fileID: 8300000, guid: 4a1616db1b6b90f4ba4b038d602fdea1, type: 3}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
@@ -817,17 +818,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
         type: 3}
-      propertyPath: hazardSoundDefeat.Array.data[0]
+      propertyPath: 'hazardSoundDefeat.Array.data[0]'
       value: 
       objectReference: {fileID: 8300000, guid: bc7cdf82af82ec64d90bfb2e65195a3d, type: 3}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
         type: 3}
-      propertyPath: hazardSoundDefeat.Array.data[1]
+      propertyPath: 'hazardSoundDefeat.Array.data[1]'
       value: 
       objectReference: {fileID: 8300000, guid: 39325aeb1108df3459c07997c6e5ec48, type: 3}
     - target: {fileID: 7234381906847814295, guid: afbdceb4d7d72f948a07098143f6769e,
         type: 3}
-      propertyPath: hazardSoundDefeat.Array.data[2]
+      propertyPath: 'hazardSoundDefeat.Array.data[2]'
       value: 
       objectReference: {fileID: 8300000, guid: b743925dd0cb3ca4cb98fa7ab21c7aed, type: 3}
     m_RemovedComponents: []

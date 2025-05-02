@@ -339,7 +339,8 @@ public class PlayerTutorial : MonoBehaviour
 
         GameManager.instance.AddGems(tutorialFreeGems);
         GameManager.instance.SetFlag(GlobalVars.SAVEFLAGTUTGEMSGIVEN);
-        PlayerPawn.instance.pawnPurse.ChangeBars();
+        UIMenus.instance.menuResources.UpdateResources();
+        //PlayerPawn.instance.pawnPurse.ChangeBars();
 
         tutorialDelay = tutorialShopDelay;
         while (SkippablePause()) yield return new WaitForEndOfFrame();

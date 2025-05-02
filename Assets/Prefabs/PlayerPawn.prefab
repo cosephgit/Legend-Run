@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4159889538133082841}
   - component: {fileID: 5191626444639089536}
   - component: {fileID: 6432021030971637623}
-  - component: {fileID: 2994394899652238338}
   - component: {fileID: 7846197909282872248}
   - component: {fileID: 586785414972877838}
   - component: {fileID: 1935911330034546034}
@@ -34,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.4, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8029473914142650928}
@@ -54,7 +53,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pawnHealth: {fileID: 5191626444639089536}
   pawnLoco: {fileID: 6432021030971637623}
-  <pawnPurse>k__BackingField: {fileID: 2994394899652238338}
   pawnWeapon: {fileID: 7846197909282872248}
   <tutorial>k__BackingField: {fileID: 0}
   terrain: {fileID: 0}
@@ -112,20 +110,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7840e0fe9f0b6a14393a35925839a084, type: 3}
   <pawnAnim>k__BackingField: {fileID: 7938553253504450216}
   <moveRate>k__BackingField: 16
---- !u!114 &2994394899652238338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 693126819496428363}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa30a94048c29cb4798875fcdc6f1c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  coinBar: {fileID: 0}
-  gemBar: {fileID: 0}
 --- !u!114 &7846197909282872248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,8 +191,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 4159889538133082841}
-  swipeSensitivitySide: 0.5
-  swipeSensitivityUp: 1
+  swipeSensitivitySide: 10
+  swipeSensitivityUp: 20
+  swipeHoldCooldown: 0.5
+  swipeSensitivityMin: 5
   pointer: {fileID: 0}
 --- !u!1001 &4027587021186304417
 PrefabInstance:

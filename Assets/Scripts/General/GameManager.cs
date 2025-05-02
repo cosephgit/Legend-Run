@@ -301,6 +301,8 @@ public class GameManager : MonoBehaviour
             saveData.owned = ownedNew.ToArray();
             Debug.Log("Successfully bought " + itemCheck.shopUniqueName);
 
+            upgrades.ApplyPurchaseUpgrade(itemCheck);
+
             // if in the live scene with a player pawn, trigger a tutorial ping
             if (PlayerPawn.instance)
             {

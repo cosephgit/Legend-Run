@@ -11,7 +11,7 @@ public class PlayerPawnHealth : MonoBehaviour
     [Header("Health settings")]
     [SerializeField] private int healthMax = 5;
     //[SerializeField] private UIHealthBar healthBar;
-    [SerializeField] private UIHealthHearts healthHearts;
+    //[SerializeField] private UIHealthHearts healthHearts;
     [Header("Audio settings")]
     [SerializeField] private AudioClip[] painSounds;
     private int health;
@@ -19,21 +19,23 @@ public class PlayerPawnHealth : MonoBehaviour
     public void PreTutorial()
     {
         health = healthMax;
-        healthHearts.gameObject.SetActive(false);
+        UIMenus.instance.menuResources.healthHearts.gameObject.SetActive(false);
     }
 
     public void Initialise()
     {
         healthMax = GameManager.instance.upgrades.upgradeHealthPoints;
         health = healthMax;
-        healthHearts.gameObject.SetActive(true);
-        healthHearts.Initialise(healthMax);
+        //healthHearts.gameObject.SetActive(true);
+        UIMenus.instance.menuResources.healthHearts.gameObject.SetActive(true);
+        //healthHearts.Initialise(healthMax);
+        UIMenus.instance.menuResources.healthHearts.Initialise(healthMax);
     }
 
     public void TakeDamage(int damage, bool pain = true)
     {
         health = health - damage;
-        healthHearts.ChangeHealth(health);
+        UIMenus.instance.menuResources.healthHearts.ChangeHealth(health);
 
         AudioManager.instance.SoundPlayVaried(painSounds[Random.Range(0, painSounds.Length)], Vector2.zero);
     }
@@ -42,16 +44,21 @@ public class PlayerPawnHealth : MonoBehaviour
         if (health < healthMax)
         {
             health = health + heal;
-            healthHearts.ChangeHealth(health);
+            UIMenus.instance.menuResources.healthHearts.ChangeHealth(health);
         }
+    }
+
+    public bool IsHealthMax()
+    {
+        return (health >= healthMax);
     }
 
     public void FillHealth()
     {
-        if (health < healthMax)
+        if (!IsHealthMax())
         {
             health = healthMax;
-            healthHearts.ChangeHealth(health);
+            UIMenus.instance.menuResources.healthHearts.ChangeHealth(health);
         }
     }
     public bool IsAlive()

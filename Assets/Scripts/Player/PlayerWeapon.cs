@@ -59,6 +59,11 @@ public class PlayerWeapon : MonoBehaviour
         if (weaponUses == 0) DiscardWeapon();
     }
 
+    public bool HasWeapon()
+    {
+        return (weapon != null);
+    }
+
     // ways to handle the weapon model placement? 
     // just grab it from the pickup and duplicate it?
     public void GetWeapon(CollectibleWeapon weaponNew)

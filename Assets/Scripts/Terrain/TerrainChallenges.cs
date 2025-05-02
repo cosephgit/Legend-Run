@@ -12,6 +12,7 @@ using UnityEngine;
 public class TerrainChallenges : MonoBehaviour
 {
     [Header("Spawning bounds")]
+    [SerializeField] private float challengeAngleStart = 30f;
     [SerializeField] private float challengeZRemoval = -1f;
     [Header("Coins")]
     [SerializeField] private CollectibleCoin[] coins; // coins to spawn - TODO make a custom class with value by coin type
@@ -62,6 +63,7 @@ public class TerrainChallenges : MonoBehaviour
     private float powerPotionAcc; // accumulated powerup points
     private float baseHeight;
     private Quaternion baseRot;
+    private Quaternion challengeRot;
     // coin chain variables
     private int coinsLeft; // coins left to spawn in the current chain of coins
     private int coinsWorthLeft; // coins left to spawn in the current chain of coins
@@ -80,6 +82,7 @@ public class TerrainChallenges : MonoBehaviour
     private List<CollectibleGem> gemsActive;
     private List<HazardBase> hazardsActive;
     private List<CollectibleBase> powerupsActive;
+    public float intensity { get; private set; }
 
     private void Awake()
     {
@@ -127,6 +130,7 @@ public class TerrainChallenges : MonoBehaviour
         powerSwordAcc = -1f; // or powerups
         baseHeight = circleheight;
         baseRot = rot;
+        challengeRot = baseRot * Quaternion.Euler(challengeAngleStart, 0f, 0f);
         IntensityStart();
     }
     // updates with the current difficulty level
@@ -160,6 +164,7 @@ public class TerrainChallenges : MonoBehaviour
                 powerSwordAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradeSwordRate;
             if (GameManager.instance.upgrades.upgradePotionRate > 0)
                 powerPotionAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradePotionRate;
+            Debug.Log("adding powerups increment .upgradeSwordRate " + GameManager.instance.upgrades.upgradeSwordRate + " and .upgradePotionRate " + GameManager.instance.upgrades.upgradePotionRate);
             gemNextZ -= dist;
             coinPowerupNextZ -= dist;
             coinPowerupLastPlaced += dist;
@@ -233,6 +238,11 @@ public class TerrainChallenges : MonoBehaviour
     private void PlaceCoin(float safeCurrentX)
     {
         float laneX;
+        Quaternion placeRot;
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+            placeRot = challengeRot;
+        else
+            placeRot = baseRot;
 
         if (safeCurrentX <= TerrainManager.instance.laneLeftXMax)
             laneX = TerrainManager.instance.laneLeftX;
@@ -241,7 +251,8 @@ public class TerrainChallenges : MonoBehaviour
         else
             laneX = TerrainManager.instance.laneCentreX;
 
-        Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        Vector3 pos = transform.position + placeRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        //Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
         int coinIndex = 0;
         int coinsWorthExcess = coinsWorthLeft - coinsLeft;
 
@@ -265,7 +276,8 @@ public class TerrainChallenges : MonoBehaviour
             }
         }
 
-        CollectibleCoin coin = Instantiate(coins[coinIndex], pos, baseRot, transform);
+        //CollectibleCoin coin = Instantiate(coins[coinIndex], pos, baseRot, transform);
+        CollectibleCoin coin = Instantiate(coins[coinIndex], pos, placeRot, transform);
 
         coinsWorthLeft -= coin.coinValue;
         if (coinsWorthLeft > 0)
@@ -284,6 +296,12 @@ public class TerrainChallenges : MonoBehaviour
     private void PlaceGem(float safeCurrentX)
     {
         float laneX;
+        Quaternion placeRot;
+
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+            placeRot = challengeRot;
+        else
+            placeRot = baseRot;
 
         if (safeCurrentX <= TerrainManager.instance.laneLeftXMax)
             laneX = TerrainManager.instance.laneLeftX;
@@ -292,9 +310,11 @@ public class TerrainChallenges : MonoBehaviour
         else
             laneX = TerrainManager.instance.laneCentreX;
 
-        Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        //Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        Vector3 pos = transform.position + placeRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
 
-        CollectibleGem gem = Instantiate(gemPrefab, pos, baseRot, transform);
+        //CollectibleGem gem = Instantiate(gemPrefab, pos, baseRot, transform);
+        CollectibleGem gem = Instantiate(gemPrefab, pos, placeRot, transform);
 
         coinPowerupLastPlaced = 0;
         gemsActive.Add(gem);
@@ -612,10 +632,18 @@ public class TerrainChallenges : MonoBehaviour
 
         hazardAcc -= hazardSpawn * hazardType.hazardThreat;
 
+        Quaternion placeRot;
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+            placeRot = challengeRot;
+        else
+            placeRot = baseRot;
+
         for (int i = 0; i < hazardSpawn; i++)
         {
-            Vector3 pos = transform.position + baseRot * new Vector3(hazardX[i], baseHeight, 0f);
-            HazardBase hazard = Instantiate(hazardType, pos, baseRot, transform);
+            //Vector3 pos = transform.position + baseRot * new Vector3(hazardX[i], baseHeight, 0f);
+            Vector3 pos = transform.position + placeRot * new Vector3(hazardX[i], baseHeight, 0f);
+            //HazardBase hazard = Instantiate(hazardType, pos, baseRot, transform);
+            HazardBase hazard = Instantiate(hazardType, pos, placeRot, transform);
             hazardsActive.Add(hazard);
         }
     }
@@ -624,8 +652,15 @@ public class TerrainChallenges : MonoBehaviour
     {
         float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
         float laneX = TerrainManager.instance.GetLanePosX(safeCurrentX);
-        Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
-        CollectibleBase powerup = Instantiate(powerPotionPrefab, pos, baseRot, transform);
+        Quaternion placeRot;
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+            placeRot = challengeRot;
+        else
+            placeRot = baseRot;
+        //Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        Vector3 pos = transform.position + placeRot* new Vector3(laneX, baseHeight + coinHeight, 0f);
+        //CollectibleBase powerup = Instantiate(powerPotionPrefab, pos, baseRot, transform);
+        CollectibleBase powerup = Instantiate(powerPotionPrefab, pos, placeRot, transform);
         powerupsActive.Add(powerup);
 
         coinPowerupLastPlaced = 0;
@@ -635,8 +670,15 @@ public class TerrainChallenges : MonoBehaviour
     {
         float spawnStrength = intensityCurrent * Random.Range(0.5f, 1.5f);
         float laneX = TerrainManager.instance.GetLanePosX(safeCurrentX);
-        Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
-        CollectibleBase powerup = Instantiate(powerSwordPrefab, pos, baseRot, transform);
+        Quaternion placeRot;
+        if (PlayerPawn.instance.tutorial.state == TutorialState.Finished)
+            placeRot = challengeRot;
+        else
+            placeRot = baseRot;
+        //Vector3 pos = transform.position + baseRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        Vector3 pos = transform.position + placeRot * new Vector3(laneX, baseHeight + coinHeight, 0f);
+        //CollectibleBase powerup = Instantiate(powerSwordPrefab, pos, baseRot, transform);
+        CollectibleBase powerup = Instantiate(powerSwordPrefab, pos, placeRot, transform);
         powerupsActive.Add(powerup);
 
         coinPowerupLastPlaced = 0;
@@ -803,5 +845,15 @@ public class TerrainChallenges : MonoBehaviour
         hazardAcc = -1f;
         powerPotionAcc = -1f;
         powerSwordAcc = -1f;
+    }
+
+    public CollectibleCoin GetCoin(int value)
+    {
+        for (int i = coins.Length - 1; i >= 0; i--)
+        {
+            if (value >= coins[i].coinValue)
+                return coins[i];
+        }
+        return null;
     }
 }
