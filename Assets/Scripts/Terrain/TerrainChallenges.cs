@@ -164,7 +164,7 @@ public class TerrainChallenges : MonoBehaviour
                 powerSwordAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradeSwordRate;
             if (GameManager.instance.upgrades.upgradePotionRate > 0)
                 powerPotionAcc += dist * powerupPerDistanceCurrent * (intensityMax - intensityCurrent) * GameManager.instance.upgrades.upgradePotionRate;
-            Debug.Log("adding powerups increment .upgradeSwordRate " + GameManager.instance.upgrades.upgradeSwordRate + " and .upgradePotionRate " + GameManager.instance.upgrades.upgradePotionRate);
+            //Debug.Log("adding powerups increment .upgradeSwordRate " + GameManager.instance.upgrades.upgradeSwordRate + " and .upgradePotionRate " + GameManager.instance.upgrades.upgradePotionRate);
             gemNextZ -= dist;
             coinPowerupNextZ -= dist;
             coinPowerupLastPlaced += dist;

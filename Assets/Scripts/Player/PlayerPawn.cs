@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 // takes player input and moves the player pawn depending on input
 // created 18/8/23
@@ -27,6 +24,7 @@ public class PlayerPawn : MonoBehaviour
 {
     private const int SWORDVALUE = 5;
     private const int POTIONVALUE = 10;
+    private const int HAZARDDEFEATVALUE = 10;
     public static PlayerPawn instance;
     [Header("Components")]
     [SerializeField] private PlayerPawnHealth pawnHealth;
@@ -59,6 +57,9 @@ public class PlayerPawn : MonoBehaviour
     [Header("Speed lines")]
     [SerializeField] private ParticleSystem speedLines;
     [SerializeField] private float speedLineSpeedPerSpeed = 0.5f;
+    [Header("Animation params")]
+    [SerializeField] private float damageFlashDuration = 2f;
+    [SerializeField] private float damageFlashPer = 0.2f;
     private float pawnTargetX; // the pawn's current X target
     private float speed;
     // for PC testing
@@ -73,6 +74,8 @@ public class PlayerPawn : MonoBehaviour
     float speedLinesEmissionRateBase;
     ParticleSystem.MainModule speedLinesMain;
     float speedLinesMainSpeedBase;
+    private Coroutine hitCoroutine;
+    private bool invulnerable;
 
     private void Awake()
     {
@@ -240,23 +243,27 @@ public class PlayerPawn : MonoBehaviour
                 if (takeDamage > 0)
                 {
                     hazard.Collided();
-                    if (tutorial.state == TutorialState.Finished)
-                    {
-                        pawnHealth.TakeDamage(takeDamage);
-                        StreakEnd();
-                    }
-                    else
-                        tutorial.HazardHit();
 
-                    if (pawnHealth.IsAlive())
+                    if (hitCoroutine == null)
                     {
-                        pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
-                    }
-                    else
-                    {
-                        // defeat!
-                        pawnLoco.pawnAnim.SetBool("Dead", true);
-                        TerrainManager.instance.PlayerDefeat();
+                        if (tutorial.state == TutorialState.Finished)
+                        {
+                            pawnHealth.TakeDamage(takeDamage);
+                            StreakEnd();
+                        }
+                        else
+                            tutorial.HazardHit();
+
+                        if (pawnHealth.IsAlive())
+                        {
+                            hitCoroutine = StartCoroutine(TakeHit());
+                        }
+                        else
+                        {
+                            // defeat!
+                            pawnLoco.pawnAnim.SetBool("Dead", true);
+                            TerrainManager.instance.PlayerDefeat();
+                        }
                     }
                 }
                 else
@@ -282,11 +289,36 @@ public class PlayerPawn : MonoBehaviour
                             }
                     }
 
+                    CollectibleCoin coinPrefab = TerrainManager.instance.GetCoin(HAZARDDEFEATVALUE);
+                    float pitch = GainCoins(HAZARDDEFEATVALUE);
+
+                    if (coinPrefab)
+                        coinPrefab.CollectSoundCoin(pitch);
+
                     hazard.Defeated();
                 }
             }
         }
     }
+
+    private IEnumerator TakeHit()
+    {
+        float timeLeft = damageFlashDuration;
+
+        invulnerable = true;
+        pawnLoco.pawnAnim.SetTrigger("DamageHeavy");
+
+        while (timeLeft > 0)
+        {
+            pawnLoco.FlashPawn();
+            timeLeft -= damageFlashPer;
+            yield return new WaitForSeconds(damageFlashPer);
+        }
+
+        hitCoroutine = null;
+        invulnerable = false;
+    }
+
     private void TouchWeapon(CollectibleWeapon weapon)
     {
         if (weapon.unused)

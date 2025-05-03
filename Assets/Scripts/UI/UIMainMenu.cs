@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,7 +29,11 @@ public class UIMainMenu : MonoBehaviour
     [SerializeField] protected UIMenuMainScores menuScores;
     [field: FormerlySerializedAs("menuResources")][field: SerializeField] public UIResourceBars menuResources { get; private set; }
     [SerializeField] private AudioClip menuMusic;
+    [SerializeField] private GameObject buttonDebugReset;
     [SerializeField] private GameObject buttonQuitGame;
+    [Header("Rewards")]
+    [SerializeField] private UIRewardButton buttonAd;
+    [SerializeField] private UIRewardButton buttonFb;
     private bool audioReady;
     private State state;
 
@@ -38,6 +43,11 @@ public class UIMainMenu : MonoBehaviour
 
     private void Start()
     {
+        if (GameManager.instance.mode.debugMode)
+            buttonDebugReset.SetActive(true);
+        else
+            buttonDebugReset.SetActive(false);
+
         if (menuMusic)
             AudioManager.instance.MusicPlay(menuMusic);
         menuOptions.Initialise(this);
@@ -111,14 +121,56 @@ public class UIMainMenu : MonoBehaviour
         menuMain.SetActive(true);
         menuOptions.gameObject.SetActive(false);
         menuShop.gameObject.SetActive(false);
+        UpdateRewardButtons();
+    }
+
+    public void ButtonAdReward()
+    {
+        SoundButton();
+        GameManager.instance.saveData.lastAdRewards = DateTime.Now;
+        Debug.Log("Insert watching ad!");
+        UpdateRewardButtons();
+    }
+
+    public void ButtonFbReward()
+    {
+        SoundButton();
+        GameManager.instance.saveData.lastFbRewards = DateTime.Now;
+        Debug.Log("Insert sharing to facebook!");
+        UpdateRewardButtons();
+    }
+
+    private void UpdateRewardButtons()
+    {
+        int delayNeeded;
+        double secondsSinceAdBonus = (DateTime.Now - GameManager.instance.saveData.lastAdRewards).TotalSeconds;
+        double secondsSinceFbBonus = (DateTime.Now - GameManager.instance.saveData.lastFbRewards).TotalSeconds;
+        Debug.Log("it's been " + secondsSinceAdBonus + " seconds since the last ad rewards and " + secondsSinceFbBonus + " seconds since the last fb rewards");
+        if (GameManager.instance.mode.debugMode)
+            delayNeeded = GlobalVars.DAILYDELAYDEBUG;
+        else
+            delayNeeded = GlobalVars.DAILYDELAY;
+
+        if (secondsSinceAdBonus > delayNeeded)
+            buttonAd.SetEnabled();
+        else
+            buttonAd.SetDisabled();
+
+        if (secondsSinceFbBonus > delayNeeded)
+            buttonFb.SetEnabled();
+        else
+            buttonFb.SetDisabled();
     }
 
     // DO NOT SHIP
     public void ButtonDEBUGWIPE()
     {
-        GameManager.instance.DEBUGWIPEDATA(false);
-        UpdateScores();
-        UpdateButtonParticles(menuShop.IsBuyAvailable());
+        if (GameManager.instance.mode.debugMode)
+        {
+            GameManager.instance.DEBUGWIPEDATA(false);
+            UpdateScores();
+            UpdateButtonParticles(menuShop.IsBuyAvailable());
+        }
     }
 
     public void UpdateScores()

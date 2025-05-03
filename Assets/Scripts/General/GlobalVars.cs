@@ -13,6 +13,8 @@ public static class GlobalVars
     public const string SAVETUTORIAL = "Tutorial";
     public const string SAVESETTINGS = "Settings";
     public const string SAVEPROGRESS = "Progress";
+    public const string SAVEDAILYAD = "RewardAd";
+    public const string SAVEDAILYFB = "RewardFacebook";
     public const int SCENEPLAY = 0;
     public const int SCENEMENU = 1;
     // save data flags
@@ -23,6 +25,11 @@ public static class GlobalVars
     public const int SAVEFLAGTUTORIALSHOP = 1 << 4; // 16
     public const int SAVEFLAGTUTGEMSGIVEN = 1 << 5; // 32
     public const int SAVEFLAGTUTITEMBOUGHT = 1 << 6; // 64
+    // rewards values
+    public const int DAILYDELAY = 86400;
+    public const int DAILYDELAYDEBUG = 5;
+    public const int DAILYADGEMS = 5;
+    public const int DAILYFBGEMS = 5;
 
     // standardised strings for displaying certain kinds of values
     public static string DisplayCoins(int coins)

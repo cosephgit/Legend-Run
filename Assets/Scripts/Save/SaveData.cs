@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class SaveData
     public int distance; // longest run record
     public int flags;
     public string[] owned; // string array of unique item strings which have been bought
+    public DateTime lastAdRewards;
+    public DateTime lastFbRewards;
 
     public SaveData(int coins, int gems, int distance, int flags, string[] owned)
     {
@@ -17,6 +20,8 @@ public class SaveData
         this.distance = distance;
         this.owned = owned;
         this.flags = flags;
+        lastAdRewards = DateTime.Now.Subtract(new TimeSpan(0, 0, GlobalVars.DAILYDELAY));
+        lastFbRewards = lastAdRewards;
     }
 
     public void SetFlag(int flag)
@@ -40,5 +45,7 @@ public class SaveData
         distance = 0;
         owned = new string[0];
         flags = 0;
+        lastAdRewards = DateTime.Now.Subtract(new TimeSpan(0, 0, GlobalVars.DAILYDELAY));
+        lastFbRewards = lastAdRewards;
     }
 }

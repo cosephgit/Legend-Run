@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 // SO_ShopItem
 // SciptableObject for each item in the shop, storing icon and effect data

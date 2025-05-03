@@ -14,6 +14,8 @@ public class PlayerPawnLoco : MonoBehaviour
     [Header("Animation settings")]
     [SerializeField] private float animSpeedBase = 1f;
     [SerializeField] private float animSpeedPerSpeed = 1f;
+    [SerializeField] private Color damageFlashColor = Color.red;
+    [SerializeField] private float damageFlashDuration = 0.1f;
     [Header("Jump settings")]
     [SerializeField] private float jumpHeight = 4f; // desired jump height
     [SerializeField] private float jumpGravity = -10f; // fake gravity
@@ -28,6 +30,8 @@ public class PlayerPawnLoco : MonoBehaviour
     private float heightFloor;
     private float speedBonus;
     public bool jumping { get; private set; }
+    private SkinnedMeshRenderer[] meshRenderers;
+    private Coroutine pawnFlashRoutine = null;
 
     private void Awake()
     {
@@ -36,6 +40,8 @@ public class PlayerPawnLoco : MonoBehaviour
         speedY = 0;
         speed = 0;
         speedBonus = 1f;
+        meshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        Debug.Log("<color=green>PlayerPawnLoco</color> found " + meshRenderers.Length + " mesh renderers");
         /* working out the math:
          * s = ut + 1/2at^2
          * find the peak:
@@ -136,5 +142,36 @@ public class PlayerPawnLoco : MonoBehaviour
                 AudioManager.instance.SoundPlayVaried(jumpSounds[Random.Range(0, jumpSounds.Length)], Vector2.zero);
             return true;
         }
+    }
+
+    public bool FlashPawn()
+    {
+        if (pawnFlashRoutine == null)
+        {
+            pawnFlashRoutine = StartCoroutine(DoFlashPawn());
+            return true;
+        }
+        Debug.Log("FlashPawn called while already flashing");
+        return false;
+    }
+
+    private void SetPawnColor(Color colorSet)
+    {
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            for (int j = 0; j < meshRenderers[i].materials.Length; j++)
+            {
+                Material meshMaterial = meshRenderers[i].materials[j];
+                meshMaterial.color = colorSet;
+            }
+        }
+    }
+
+    private IEnumerator DoFlashPawn()
+    {
+        SetPawnColor(damageFlashColor);
+        yield return new WaitForSeconds(damageFlashDuration);
+        SetPawnColor(Color.white);
+        pawnFlashRoutine = null;
     }
 }

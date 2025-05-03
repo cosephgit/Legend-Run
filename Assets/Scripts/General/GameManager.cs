@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int DEBUGGEMSTART = 100;
     [SerializeField] private bool DEBUGSKIPTUTCONTROLS;
 #endif
+    [field: SerializeField] public GameMode mode { get; private set; }
     public float volBGM { get => settingData.volumeBGM; }
     public float volSFX { get => settingData.volumeSFX; }
     public int coinsStash { get => saveData.coins; }
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour
     public bool tutorialDone { get => (saveData.GetFlag(GlobalVars.SAVEFLAGTUTORIAL)); }
     // pathing difficulty balancer
     private float diffKarma = 0f;
-    private SaveData saveData;
+    public SaveData saveData;
     private SettingData settingData;
 
     private void Awake()

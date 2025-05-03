@@ -53,6 +53,9 @@ MonoBehaviour:
   DEBUGWIPESAVEDATA: 0
   DEBUGCOINSTART: 1000
   DEBUGGEMSTART: 150
+  DEBUGSKIPTUTCONTROLS: 0
+  <mode>k__BackingField: {fileID: 11400000, guid: 991f461115d260f4ea72c5ebc51d73c1,
+    type: 2}
 --- !u!114 &8773073075246026000
 MonoBehaviour:
   m_ObjectHideFlags: 0
