@@ -192,6 +192,7 @@ public class UIShop : MonoBehaviour
             else
                 UIMenus.instance.menuResources.UpdateResources();
                 //PlayerPawn.instance.pawnPurse.ChangeBars();
+            StartCoroutine(ScrollToHoldPosition(shopItemScrollRect, shopItems[0].rectTransform));
             return true;
         }
         return false;
@@ -353,5 +354,12 @@ public class UIShop : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         scrollRect.content.localPosition = scrollRect.GetSnapToPositionToBringChildIntoView(targetObject);
+    }
+
+    private IEnumerator ScrollToHoldPosition(ScrollRect scrollRect, RectTransform targetObject)
+    {
+        Vector2 original = scrollRect.GetSnapToPositionToBringChildIntoView(targetObject); ;
+        yield return new WaitForEndOfFrame();
+        scrollRect.content.localPosition = scrollRect.content.localPosition + (Vector3)(scrollRect.GetSnapToPositionToBringChildIntoView(targetObject) - original);
     }
 }
