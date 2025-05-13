@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modeSubtitle: DEBUG
   debugMode: 1
+  tutorialSkip: 0
+  tutorialFast: 1

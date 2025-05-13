@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 // general methods used by all menus
 // created 31/8/23
@@ -23,17 +23,21 @@ public class UIMainMenu : MonoBehaviour
     [SerializeField] protected GameObject menuMain;
     [SerializeField] private RectTransform menuPlayRect;
     [SerializeField] private RectTransform menuShopRect;
+    [SerializeField] private TextMeshProUGUI textVersion;
+    [SerializeField] private TextMeshProUGUI textMode;
     [Header("General menu references")]
     [SerializeField] protected UIOptionsMenu menuOptions;
     [field: SerializeField] public UIShop menuShop { get; private set; }
     [SerializeField] protected UIMenuMainScores menuScores;
-    [field: FormerlySerializedAs("menuResources")][field: SerializeField] public UIResourceBars menuResources { get; private set; }
+    [field: SerializeField] public UIResourceBars menuResources { get; private set; }
     [SerializeField] private AudioClip menuMusic;
     [SerializeField] private GameObject buttonDebugReset;
     [SerializeField] private GameObject buttonQuitGame;
     [Header("Rewards")]
     [SerializeField] private UIRewardButton buttonAd;
     [SerializeField] private UIRewardButton buttonFb;
+    [Header("Ad providers")]
+    [SerializeField] private AdMenuBanner menuBanner;
     private bool audioReady;
     private State state;
 
@@ -43,11 +47,6 @@ public class UIMainMenu : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.instance.mode.debugMode)
-            buttonDebugReset.SetActive(true);
-        else
-            buttonDebugReset.SetActive(false);
-
         if (menuMusic)
             AudioManager.instance.MusicPlay(menuMusic);
         menuOptions.Initialise(this);
@@ -59,7 +58,25 @@ public class UIMainMenu : MonoBehaviour
         Debug.Log("UIMainMenu Start() running - just initialised resource bars");
         if (IsMainMenu())
         {
+            if (buttonDebugReset)
+            {
+                if (GameManager.instance.mode.debugMode)
+                    buttonDebugReset.SetActive(true);
+                else
+                    buttonDebugReset.SetActive(false);
+            }
+
             menuScores.Initialise();
+
+            textVersion.text = GlobalVars.GAMEVERSIONNAME + Application.version;
+            if (GameManager.instance.mode.modeSubtitle.Length > 0)
+            {
+                textMode.gameObject.SetActive(true);
+                textMode.text = GameManager.instance.mode.modeSubtitle;
+            }
+            else
+                textMode.gameObject.SetActive(false);
+
             UpdateButtonParticles(menuShop.IsBuyAvailable());
         }
         ButtonBack();

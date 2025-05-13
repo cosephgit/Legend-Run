@@ -10,4 +10,6 @@ public class GameMode : ScriptableObject
 {
     public string modeSubtitle = "";
     public bool debugMode = false;
+    public bool tutorialSkip = false;
+    public bool tutorialFast = false;
 }

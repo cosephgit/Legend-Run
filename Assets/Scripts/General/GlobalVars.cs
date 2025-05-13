@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public static class GlobalVars
 {
+    public const string GAMEVERSIONNAME = "LegendRun_v";
     public const string SAVEVOLUMEBGM = "VolBGM";
     public const string SAVEVOLUMESFX = "VolSFX";
     public const string SAVECOINS = "Coins";
@@ -30,6 +31,21 @@ public static class GlobalVars
     public const int DAILYDELAYDEBUG = 5;
     public const int DAILYADGEMS = 5;
     public const int DAILYFBGEMS = 5;
+    // ad service
+#if UNITY_ANDROID
+    public const string appKey = "85460dcd";
+    public const string bannerAdUnitId = "thnfvcsog13bhn08";
+    public const string interstitialAdUnitId = "aeyqi3vqlv6o8sh9";
+#elif UNITY_IPHONE
+    public const string appKey = "8545d445";
+    public const string bannerAdUnitId = "iep3rxsyp9na3rw8";
+	public const string interstitialAdUnitId = "wmgt0712uuux8ju4";
+#else
+    public const string appKey = "unexpected_platform";
+    public const string bannerAdUnitId = "unexpected_platform";
+    public const string interstitialAdUnitId = "unexpected_platform";
+#endif
+
 
     // standardised strings for displaying certain kinds of values
     public static string DisplayCoins(int coins)
