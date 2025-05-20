@@ -10,7 +10,6 @@ using TMPro;
 
 public class UIMenus : UIMainMenu
 {
-    public static UIMenus instance;
     [Header("In-game menu views")]
     [SerializeField] private GameObject menuPauseQuitConfirm;
     [Header("In-game menu general objects")]
@@ -24,19 +23,9 @@ public class UIMenus : UIMainMenu
     [SerializeField] private Button buttonResume; // the menu resume button - so it can be disabled on defeat screen
     [SerializeField] private bool DEBUGPRESENTATIONMODE = false;
 
-    private void Awake()
+    protected override void Initialise()
     {
-        if (instance)
-        {
-            if (instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-        }
-        else
-            instance = this;
-
+        base.Initialise();
 
         menuDefeat.Initialise();
         menuDefeatFirst.Initialise();

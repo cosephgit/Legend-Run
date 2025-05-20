@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 // general methods used by all menus
 // created 31/8/23
@@ -19,12 +18,14 @@ public class UIMainMenu : MonoBehaviour
         Shop
     }
 
+    public static UIMainMenu instance;
     [Header("Main menu references")]
     [SerializeField] protected GameObject menuMain;
     [SerializeField] private RectTransform menuPlayRect;
     [SerializeField] private RectTransform menuShopRect;
     [SerializeField] private TextMeshProUGUI textVersion;
     [SerializeField] private TextMeshProUGUI textMode;
+    [SerializeField] private TextMeshProUGUI googleMode;
     [Header("General menu references")]
     [SerializeField] protected UIOptionsMenu menuOptions;
     [field: SerializeField] public UIShop menuShop { get; private set; }
@@ -41,11 +42,29 @@ public class UIMainMenu : MonoBehaviour
     private bool audioReady;
     private State state;
 
-    private void Awake()
+    protected void Awake()
     {
+        if (instance)
+        {
+            if (instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+        else
+            instance = this;
+
+        if (IsMainMenu())
+            googleMode.text = "Logging in...";
     }
 
     private void Start()
+    {
+        Initialise();
+    }
+
+    protected virtual void Initialise()
     {
         if (menuMusic)
             AudioManager.instance.MusicPlay(menuMusic);
@@ -84,6 +103,15 @@ public class UIMainMenu : MonoBehaviour
         buttonQuitGame.SetActive(false);
 #endif
         audioReady = true;
+    }
+
+    // set the Google Play login details
+    public void LoginComplete(bool success)
+    {
+        Debug.Log("UIMainMenu.LoginComplete: " + success);
+        menuBanner.Initialise(success);
+        if (IsMainMenu())
+            googleMode.text = "Logged in? " + success;
     }
 
     public void SoundButton()

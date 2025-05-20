@@ -1,18 +1,18 @@
-﻿#if UNITY_EDITOR
-
-using UnityEngine;
+﻿using UnityEngine;
+/*
 using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEditor;
+*/
 
 // BuildScript
 // copied from sample ads mediation package and adapted
 
 public class BuildScript : MonoBehaviour
 {
-
+/*
 	static private string[] collectBuildScenes()
     {
         var scenes = new List<string>();
@@ -45,6 +45,5 @@ public class BuildScript : MonoBehaviour
         var scenes = collectBuildScenes();
         BuildPipeline.BuildPlayer(scenes, "iOS-Unity-Project" , BuildTarget.iOS, BuildOptions.None);
 	}
+*/
 }
-
-#endif

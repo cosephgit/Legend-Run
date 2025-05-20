@@ -1,3 +1,4 @@
+//using GooglePlayGames;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [field: SerializeField] public UpgradeManager upgrades { get; private set; }
     [SerializeField] private AudioMixer audioMixer;
+    //[Header("Main components")]
+    //[SerializeField] private GooglePlayIntegration gPlay;
     [Header("Karmic balance")]
     [SerializeField] private float diffKarmaBalance = 0.2f;
     [field: SerializeField]public SO_ShopSettings shopSettings { get; private set; }
@@ -45,6 +48,8 @@ public class GameManager : MonoBehaviour
             }
         }
         else instance = this;
+
+        DontDestroyOnLoad(gameObject);
 
         // transition from playerprefs to ES3
         if (ES3.KeyExists(GlobalVars.SAVEPROGRESS))
@@ -97,6 +102,12 @@ public class GameManager : MonoBehaviour
         SetVolumeBGM(settingData.volumeBGM, false);
         SetVolumeSFX(settingData.volumeSFX, false);
     }
+
+    private void Start()
+    {
+        //gPlay.Initialise();
+    }
+
 
     // DO NOT SHIP
     public void DEBUGWIPEDATA(bool refill)

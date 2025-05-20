@@ -16,8 +16,8 @@ public class AdRewardDisplay : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Debug.Log("unity-script: ShowRewardedVideoScript Start called");
-
+        Debug.Log("unity-script: ShowRewardedVideoScript Start called"); }
+        /*
         // Add Rewarded Video Events
         IronSourceRewardedVideoEvents.onAdOpenedEvent += RewardedVideoOnAdOpenedEvent;
         IronSourceRewardedVideoEvents.onAdClosedEvent += RewardedVideoOnAdClosedEvent;
@@ -27,8 +27,9 @@ public class AdRewardDisplay : MonoBehaviour
         IronSourceRewardedVideoEvents.onAdRewardedEvent += RewardedVideoOnAdRewardedEvent;
         IronSourceRewardedVideoEvents.onAdClickedEvent += RewardedVideoOnAdClickedEvent;
     }
-
+        */
     /************* RewardedVideo API *************/
+        /*
     public void ShowRewardedVideoButtonClicked()
     {
         Debug.Log("unity-script: ShowRewardedVideoButtonClicked");
@@ -72,4 +73,5 @@ public class AdRewardDisplay : MonoBehaviour
     {
         Debug.Log("unity-script: I got RewardedVideoOnAdClickedEvent With Placement" + ironSourcePlacement + "And AdInfo " + adInfo);
     }
+    */
 }

@@ -1,17 +1,18 @@
-using Unity.Services.LevelPlay;
+//using Unity.Services.LevelPlay;
 using UnityEngine;
 
 
 public class AdMenuBanner : MonoBehaviour
 {
     static string uniqueUserId = "demoUserUnity";
-    LevelPlayBannerAd bannerAd;
-    LevelPlayBannerAd bannerAdCustom;
+    //LevelPlayBannerAd bannerAd;
+    //LevelPlayBannerAd bannerAdCustom;
 
-    void Awake()
+    public void Initialise(bool success)
     {
-        Debug.Log("unity-script: Awake called");
-
+        Debug.Log("unity-script: Initialise called: success? " + success);
+    }
+        /*
         //Dynamic config example
         IronSourceConfig.Instance.setClientSideCallbacks(true);
 
@@ -38,7 +39,9 @@ public class AdMenuBanner : MonoBehaviour
 
         // TODO FOR iOS
         //https://developers.is.com/ironsource-mobile/unity/ios-privacy-settings-and-configurations/#step-1
-
+        
+        // REMOVE THIS BEFORE RELEASE BUILD
+        IronSource.Agent.setAdaptersDebug(true);
 
         LevelPlay.Init(GlobalVars.appKey, uniqueUserId, new[] { com.unity3d.mediation.LevelPlayAdFormat.REWARDED });
 
@@ -85,6 +88,10 @@ public class AdMenuBanner : MonoBehaviour
     void OnInitializationCompleted(LevelPlayConfiguration configuration)
     {
         Debug.Log("Initialization completed");
+
+        //https://developers.is.com/ironsource-mobile/unity/integration-helper-unity/
+        IronSource.Agent.validateIntegration();
+
         LoadBanner();
     }
 
@@ -133,4 +140,5 @@ public class AdMenuBanner : MonoBehaviour
     {
         bannerAd?.DestroyAd();
     }
+    */
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1824446485174424073}
   - component: {fileID: 1456099076218200043}
   - component: {fileID: 8773073075246026000}
+  - component: {fileID: 2405871037678008686}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -47,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <upgrades>k__BackingField: {fileID: 8773073075246026000}
   audioMixer: {fileID: 24100000, guid: d6c57297929cfb142a55028155c053b2, type: 2}
+  gPlay: {fileID: 2405871037678008686}
   diffKarmaBalance: 0.2
   <shopSettings>k__BackingField: {fileID: 11400000, guid: 092eb7d8dffe64042a721da5c41fa2e8,
     type: 2}
@@ -90,3 +92,15 @@ MonoBehaviour:
   boostGainBonus: 0.1
   boostShieldBase: 0
   boostShieldBonus: 1
+--- !u!114 &2405871037678008686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5153502425922551631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a0713f7c47f3e04db9e4e07b2b4514d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
