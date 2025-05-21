@@ -1,5 +1,5 @@
 using TMPro;
-//using Unity.Services.LevelPlay;
+using Unity.Services.LevelPlay;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +13,7 @@ public class AdInterstitialDisplay : MonoBehaviour
 
     public static string INTERSTITIAL_INSTANCE_ID = "0";
 
-    //LevelPlayInterstitialAd interstitialAd;
+    LevelPlayInterstitialAd interstitialAd;
 
     // Use this for initialization
     void Start()
@@ -22,7 +22,6 @@ public class AdInterstitialDisplay : MonoBehaviour
     }
 
     /************* Interstitial API *************/
-    /*
     public void LoadInterstitialButtonClicked()
     {
         // Create interstitial Ad
@@ -89,5 +88,4 @@ public class AdInterstitialDisplay : MonoBehaviour
     {
         interstitialAd?.DestroyAd();
     }
-    */
 }

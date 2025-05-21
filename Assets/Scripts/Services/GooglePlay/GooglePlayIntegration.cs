@@ -1,5 +1,5 @@
-//using GooglePlayGames;
-//using GooglePlayGames.BasicApi;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 using UnityEngine;
 
 public class GooglePlayIntegration : MonoBehaviour
@@ -8,8 +8,8 @@ public class GooglePlayIntegration : MonoBehaviour
 
     public void Initialise()
     {
-        //PlayGamesPlatform.Activate();
-        //PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
+        PlayGamesPlatform.Activate();
+        PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
         initComplete = false;
     }
 
@@ -17,7 +17,7 @@ public class GooglePlayIntegration : MonoBehaviour
     {
         return initComplete;
     }
-    /*
+    
     internal void ProcessAuthentication(SignInStatus status)
     {
         if (status == SignInStatus.Success)
@@ -39,5 +39,4 @@ public class GooglePlayIntegration : MonoBehaviour
             UIMainMenu.instance.LoginComplete(false);
         }
     }
-    */
 }

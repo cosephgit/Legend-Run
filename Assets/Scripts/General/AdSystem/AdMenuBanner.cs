@@ -1,18 +1,16 @@
-//using Unity.Services.LevelPlay;
+using Unity.Services.LevelPlay;
 using UnityEngine;
 
 
 public class AdMenuBanner : MonoBehaviour
 {
     static string uniqueUserId = "demoUserUnity";
-    //LevelPlayBannerAd bannerAd;
-    //LevelPlayBannerAd bannerAdCustom;
+    LevelPlayBannerAd bannerAd;
+    LevelPlayBannerAd bannerAdCustom;
 
     public void Initialise(bool success)
     {
         Debug.Log("unity-script: Initialise called: success? " + success);
-    }
-        /*
         //Dynamic config example
         IronSourceConfig.Instance.setClientSideCallbacks(true);
 
@@ -140,5 +138,4 @@ public class AdMenuBanner : MonoBehaviour
     {
         bannerAd?.DestroyAd();
     }
-    */
 }
